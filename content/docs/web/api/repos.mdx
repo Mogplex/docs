@@ -1,0 +1,100 @@
+---
+title: Repos
+description: GET /api/v1/mogplex/repos lists the cloud-linked repos owned by the authenticated user. Use the returned IDs as repoId for runs and as repo_id for sandbox filters.
+---
+
+`GET /api/v1/mogplex/repos`
+
+Returns the list of repos imported into the caller's Mogplex account. Use the
+returned `id` as `repoId` when starting a run via [POST /runs](/web/api/runs)
+or as `repo_id` when filtering [sandboxes](/web/api/sandboxes).
+
+## Scope
+
+`read` — see [Authentication → Scopes](/web/api/authentication#scopes).
+
+## Query parameters
+
+| Param   | Type    | Default | Notes                                                          |
+| ------- | ------- | ------- | -------------------------------------------------------------- |
+| `q`     | string  | —       | Case-insensitive substring filter on `full_name`               |
+| `limit` | integer | 100     | 1–200                                                          |
+
+## Example
+
+```bash
+export MOGPLEX_BASE_URL="https://www.mogplex.com"
+export MOGPLEX_TOKEN="mog_..."
+
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/repos?limit=10"
+```
+
+Representative response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "repos": [
+      {
+        "id": "8f3a2b1c-1234-4abc-9def-1234567890ab",
+        "full_name": "acme/web",
+        "default_branch": "main",
+        "root_directory": null
+      },
+      {
+        "id": "1a2b3c4d-5678-4abc-9def-1234567890cd",
+        "full_name": "acme/api",
+        "default_branch": "main",
+        "root_directory": "services/api"
+      }
+    ]
+  }
+}
+```
+
+Filter by substring:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/repos?q=web"
+```
+
+## Response shape
+
+```typescript
+type MogplexApiRepo = {
+  id: string;                       // UUID — use as repoId in POST /runs
+  full_name: string;                // owner/repo (GitHub convention)
+  default_branch: string | null;    // null when GitHub doesn't expose it
+  root_directory: string | null;    // monorepo subpath, null for repo root
+};
+```
+
+## Errors
+
+| Code              | HTTP | Cause                              |
+| ----------------- | ---- | ---------------------------------- |
+| `UNAUTHORIZED`    | 401  | Missing/invalid/expired PAT        |
+| `RATE_LIMITED`    | 429  | 60 req/min per PAT exceeded        |
+| `INTERNAL_ERROR`  | 500  | Unexpected server error            |
+
+See [Errors](/web/api/errors) for retry guidance.
+
+## CLI equivalent
+
+```bash
+mogplex repos list                     # pretty table
+mogplex repos list --json              # one JSON object per line
+mogplex repos list --query web --limit 10
+```
+
+See [Headless runs](/cli/automation/headless-runs).
+
+## Read next
+
+- [Runs](/web/api/runs) — start a run against one of these repos
+- [Sandboxes](/web/api/sandboxes) — filter sandboxes by `repo_id`

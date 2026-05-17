@@ -1,0 +1,99 @@
+---
+title: Errors
+description: Every Mogplex API error returns a typed envelope with a stable code, a human-readable message, and an HTTP status. Use the code (not the message) when scripting retries or branching on failure.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Every `/api/v1/mogplex/*` endpoint returns a JSON envelope on both success and
+failure. Branch on the `error.code` enum, not on the message string — messages
+are user-friendly and may shift between releases.
+
+## Envelope shape
+
+Success:
+
+```json
+{
+  "ok": true,
+  "data": { /* endpoint-specific */ }
+}
+```
+
+Failure:
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Missing required scope: write. Issue a new token with the 'write' scope at /settings/api-keys."
+  }
+}
+```
+
+The HTTP status code matches the error code per the table below.
+
+## Error codes
+
+| `error.code`             | HTTP | When you see it                                                                                                       | What to do                                                                                                |
+| ------------------------ | ---- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `BAD_REQUEST`            | 400  | Malformed JSON, missing required field, invalid harness, missing `Idempotency-Key` on `POST /runs`                    | Fix the request shape and retry                                                                           |
+| `UNAUTHORIZED`           | 401  | Missing, malformed, expired, or revoked PAT                                                                           | Re-issue a token at [settings/api-keys](https://www.mogplex.com/settings/api-keys)                        |
+| `FORBIDDEN`              | 403  | Valid PAT but missing the required scope (e.g. read-only token hitting `POST /runs`)                                  | Re-issue a token with the `write` scope                                                                   |
+| `NOT_FOUND`              | 404  | Resource doesn't exist or isn't owned by the caller                                                                   | Check the ID — most likely the resource was deleted or belongs to a different user                        |
+| `CONFLICT`               | 409  | Run already in a terminal state, sandbox not ready, lifecycle precondition failed                                     | Inspect current state via `GET /runs/{id}` before retrying                                                |
+| `IDEMPOTENCY_CONFLICT`   | 409  | Same `Idempotency-Key` reused with a **different** request body                                                       | Either use the same body or a fresh key                                                                   |
+| `RATE_LIMITED`           | 429  | Per-PAT (60/min) or per-user run-start limit exceeded                                                                 | Respect the `Retry-After` response header before retrying                                                 |
+| `SERVICE_UNAVAILABLE`    | 503  | Upstream limit-check backend unavailable                                                                              | Retry with backoff (respect `Retry-After` if present)                                                     |
+| `INTERNAL_ERROR`         | 500  | Unexpected server error                                                                                               | Retry once with backoff; if persistent, report with the request ID from response headers                  |
+
+## Retry guidance
+
+The codes split cleanly by whether retry will help:
+
+- **Transient — retry with backoff:** `RATE_LIMITED` (429), `SERVICE_UNAVAILABLE` (503), `INTERNAL_ERROR` (500). Honor `Retry-After` when present.
+- **Conditional — fix one thing first:** `CONFLICT` (409), `IDEMPOTENCY_CONFLICT` (409). Re-read state before retrying.
+- **Permanent for this request — don't retry:** `BAD_REQUEST` (400), `UNAUTHORIZED` (401), `FORBIDDEN` (403), `NOT_FOUND` (404). Fix the request shape, credentials, or scope before issuing a new call.
+
+<Callout>
+The CLI's `MogplexApiClientError` exposes `isUnauthorized`, `isForbidden`, and
+`isRateLimited` getters so command code can branch on common cases without
+matching string codes. See [@mogplex/cloud-api](https://github.com/webrenew/mogplex-cli/blob/main/packages/cloud-api/src/errors.ts).
+</Callout>
+
+## Idempotency
+
+`POST /api/v1/mogplex/runs` requires an `Idempotency-Key` header (max 200 chars,
+case-sensitive, your choice of format). The server records the key alongside a
+hash of the request body:
+
+- **Same key, same body** → replays the original result (`replayed: true` in the response).
+- **Same key, different body** → returns `IDEMPOTENCY_CONFLICT` (409). Either use the same body or pick a new key.
+- **No key** → returns `BAD_REQUEST` (400) with `"Idempotency-Key is required"`.
+
+Use a UUID per logical request. The CLI's `mogplex run` auto-generates one when
+you don't pass `--idempotency-key`.
+
+## Rate limit headers
+
+When `RATE_LIMITED` (429) returns, the response includes:
+
+```
+Retry-After: 60
+```
+
+The window is a rolling 60 seconds per PAT for the per-key limit, or per-user
+for the run-start limit. Per-user limits are configured at:
+
+- 10 run starts per minute
+- 30 run starts per hour
+- 150 run starts per day
+
+`SERVICE_UNAVAILABLE` (503) also sets `Retry-After: 60` when the limit backend
+is temporarily unreachable.
+
+## Read next
+
+- [Authentication](/web/api/authentication) — how to issue, scope, and revoke PATs
+- [Runs](/web/api/runs) — the most common endpoint that exercises every error code above

@@ -26,7 +26,7 @@ The core question is: your teammate is in Claude Code, Cursor, or a custom Claud
 | --- | --- |
 | Is skill-aware (Claude Code, Agent SDK, Cursor project rules) | [Skills](/extend/skills) |
 | Supports remote MCP with OAuth, and the Mogplex MCP server is live | [MCP server](/extend/mcp-server) |
-| Needs scripted, headless access to Mogplex | Wait for the [MCP server](/extend/mcp-server) — the current CLI is interactive-only |
+| Needs scripted, headless access to Mogplex | Use the [CLI's automation surface](/cli/automation) (`mogplex run`, `mogplex runs events --follow`) or the [v1 REST API](/web/api) directly. Both ship today. |
 
 Skills are the recommended path until the MCP server is generally available. They teach a skill-aware agent to guide the user through the Mogplex cockpit (slash commands, login flow, repo-local config) without ever needing the user to paste a token.
 

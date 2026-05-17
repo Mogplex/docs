@@ -1,0 +1,171 @@
+---
+title: CI integration
+description: Use mogplex run + runs events --follow from GitHub Actions, GitLab CI, or any CI runner that can hit a public HTTPS endpoint. A worked GitHub Actions example, secret handling, and a retry pattern.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The CLI is suitable for CI any time you want to delegate code-change work to a
+Mogplex agent — for example, opening cleanup PRs on a schedule, applying a
+codemod against a list of repos, or driving "dispatched" automation runs from
+a workflow.
+
+## Prereqs
+
+1. A PAT with the `write` scope, issued at
+   [mogplex.com/settings/api-keys](https://www.mogplex.com/settings/api-keys).
+2. Store the token in your CI's secret store. Never commit it.
+3. Pick the repo ID(s) you want to operate on:
+   ```bash
+   MOGPLEX_API_KEY=mog_... mogplex repos list
+   ```
+
+## GitHub Actions example
+
+A scheduled workflow that asks Mogplex to keep dependencies fresh weekly. The
+workflow itself only installs the CLI, then delegates everything to the agent.
+
+```yaml
+# .github/workflows/mogplex-weekly-cleanup.yml
+name: Mogplex weekly cleanup
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"    # Mondays 12:00 UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install mogplex CLI
+        run: |
+          curl -fsSL https://install.mogplex.com/install.sh | sh
+          mogplex --help | head -1
+
+      - name: Start cleanup run
+        id: start
+        env:
+          MOGPLEX_API_KEY: ${{ secrets.MOGPLEX_API_KEY }}
+          MOGPLEX_REPO_ID: ${{ vars.MOGPLEX_REPO_ID }}
+        run: |
+          set -euo pipefail
+          RUN=$(
+            mogplex run \
+              --repo "$MOGPLEX_REPO_ID" \
+              --harness codex \
+              --create-branch \
+              --idempotency-key "weekly-cleanup-$(date -u +%Y-%m-%d)" \
+              --json \
+              "Run the dependency cleanup checklist. Update minor/patch versions, run tests, open a PR if changes pass." \
+            | jq -r '.runId'
+          )
+          # mogplex exits non-zero on API failure, but guard against an empty
+          # runId (e.g. unexpected response shape) so downstream steps don't
+          # call `runs events ''` with a confusing error.
+          [ -n "$RUN" ] && [ "$RUN" != "null" ] || { echo "Failed to extract run ID"; exit 1; }
+          echo "run_id=$RUN" >> "$GITHUB_OUTPUT"
+          echo "Started run $RUN"
+
+      - name: Tail events
+        env:
+          MOGPLEX_API_KEY: ${{ secrets.MOGPLEX_API_KEY }}
+        run: |
+          mogplex runs events "${{ steps.start.outputs.run_id }}" \
+            --follow --timeout 1500
+
+      - name: Report final status
+        if: always()
+        env:
+          MOGPLEX_API_KEY: ${{ secrets.MOGPLEX_API_KEY }}
+        run: |
+          STATUS=$(
+            mogplex runs get "${{ steps.start.outputs.run_id }}" --json \
+            | jq -r '.status'
+          )
+          echo "::notice::Final run status: $STATUS"
+          [ "$STATUS" = "success" ]
+```
+
+A few details worth calling out:
+
+- **Idempotency key** is derived from the date so a manual `workflow_dispatch`
+  retry on the same day replays the original run instead of starting a fresh
+  one. Change the date in the key to force a new run.
+- **`--create-branch`** ensures Mogplex commits to a generated working branch
+  rather than the repo's default branch. The agent's PR draft surfaces in the
+  Mogplex web UI and (depending on your repo setup) is opened on GitHub
+  automatically.
+- **`if: always()`** on the report step makes the final status visible even if
+  the tail step exits non-zero (timeout, cancellation, transient).
+- **No `actions/checkout`** — the workflow doesn't need a working copy. Mogplex
+  drives the repo from the cloud sandbox.
+
+## Secret handling
+
+Three secrets matter for typical CI use:
+
+| Secret              | Required? | Notes                                                    |
+| ------------------- | --------- | -------------------------------------------------------- |
+| `MOGPLEX_API_KEY`   | yes       | PAT with `write` scope. Store as a repository secret.    |
+| `MOGPLEX_REPO_ID`   | no        | If you only run against one repo, store as a variable.   |
+| `MOGPLEX_URL`       | rarely    | Override only when targeting a staging Mogplex instance. |
+
+<Callout type="warn">
+PATs are bearer tokens with no audience check. Don't reuse the same token
+across CI for unrelated projects — issue one per project so a leak from one
+repo doesn't compromise the others. Revoke compromised tokens at
+[settings/api-keys](https://www.mogplex.com/settings/api-keys).
+</Callout>
+
+## Retry pattern for transient failures
+
+```bash
+attempt=0
+until mogplex runs events "$RUN_ID" --follow --timeout 600 ; do
+  rc=$?
+  attempt=$((attempt + 1))
+  case "$rc" in
+    75) sleep $((30 * attempt)) ;;          # rate-limited; back off
+    69) sleep 60 ;;                          # service unavailable; wait
+    64|65) echo "auth issue (exit $rc)"; exit "$rc" ;;
+    *)  echo "non-retryable (exit $rc)"; exit "$rc" ;;
+  esac
+  if [ "$attempt" -ge 3 ]; then
+    echo "giving up after $attempt attempts"
+    exit "$rc"
+  fi
+done
+```
+
+Exit codes (64 unauth, 65 forbidden, 69 service unavailable, 75 rate-limited)
+let CI scripts distinguish "fix your token" from "wait and retry." See
+[Automation overview → Exit codes](/cli/automation#exit-codes).
+
+<Callout>
+The CLI does not surface the raw `Retry-After` response header, so the sleep
+values above are conservative defaults rather than server-directed waits. If
+you call the API directly with `curl`, parse `Retry-After` from the response
+and honor it — see [API → Errors](/web/api/errors) and
+[API → Authentication](/web/api/authentication).
+</Callout>
+
+## Read-only dashboards
+
+For dashboards or metric collectors that should never start a run, issue a
+read-only PAT (scope `["read"]`) and use the listing commands:
+
+```bash
+mogplex repos list --json     | jq '. | {id, full_name}'
+mogplex sandboxes list --json | jq 'select(.status == "running")'
+```
+
+A read-only PAT hitting `mogplex run` exits with code `65` (forbidden) and a
+`FORBIDDEN` error code — useful as a fail-safe guardrail.
+
+## Read next
+
+- [Headless runs](/cli/automation/headless-runs) — the full command reference
+- [API → Authentication](/web/api/authentication) — PAT scope model and rate limits
+- [API → Errors](/web/api/errors) — error codes and retry guidance

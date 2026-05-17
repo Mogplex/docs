@@ -3,7 +3,12 @@
   "pages": [
     "index",
     "authentication",
+    "errors",
     "models",
+    "runs",
+    "repos",
+    "sandboxes",
+    "mcp",
     "working-requests",
     "route-families"
   ]

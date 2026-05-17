@@ -1,0 +1,134 @@
+---
+title: Automation
+description: The Mogplex CLI ships a headless subcommand surface alongside the interactive TUI. Use it for CI runs, dashboards, scheduled jobs, or anywhere a real terminal isn't available.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+`mogplex` is two things in one binary:
+
+- An **interactive cockpit** (the TUI you get when you run `mogplex` with no
+  arguments). Covered in [CLI → Quickstart](/cli/quickstart).
+- A **headless subcommand surface** for scripts, CI, dashboards, and scheduled
+  jobs. Covered here.
+
+The dispatch is automatic: if the first argument is a known subcommand
+(`repos`, `run`, `runs`, `sandboxes`), the CLI runs headlessly and exits. Any
+other invocation boots the TUI.
+
+## When to use which
+
+| You want to…                                            | Use                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------ |
+| Edit code interactively with the agent                  | `mogplex` (TUI)                                        |
+| Start a cloud run from a script or CI step              | [`mogplex run`](/cli/automation/headless-runs)         |
+| Tail a run's events from a CI log                       | `mogplex runs events <id> --follow`                    |
+| Power a status dashboard with read-only access          | `mogplex repos list` + `mogplex sandboxes list --json` |
+| Cancel a runaway run from a Slack bot or webhook        | `mogplex runs cancel <id>`                             |
+
+The headless surface talks to the same `/api/v1/mogplex/*` endpoints
+documented under [API Reference](/web/api). The CLI just bundles the typed
+client, output formatting, exit codes, and credential resolution.
+
+## Quick start
+
+```bash
+# Set up a personal access token at https://www.mogplex.com/settings/api-keys
+export MOGPLEX_API_KEY="mog_..."
+
+# List your repos to find an ID
+mogplex repos list
+
+# Start a run
+mogplex run --repo <repo-id> --harness codex "Refactor auth to use bearer tokens"
+
+# Tail it
+mogplex runs events <run-id> --follow
+```
+
+## Commands
+
+| Command                                  | Scope    | Purpose                                |
+| ---------------------------------------- | -------- | -------------------------------------- |
+| `mogplex repos list`                     | `read`   | List your cloud-linked repos           |
+| `mogplex run`                            | `write`  | Start an agent run                     |
+| `mogplex runs get <id>`                  | `read`   | Get a run's current state              |
+| `mogplex runs events <id>`               | `read`   | List or tail a run's event stream      |
+| `mogplex runs cancel <id>`               | `write`  | Request cancellation                   |
+| `mogplex sandboxes list`                 | `read`   | List cloud sandboxes                   |
+| `mogplex sandboxes stop <id>`            | `write`  | Stop a sandbox (placeholder, see below) |
+
+<Callout>
+`mogplex sandboxes stop` is a placeholder until the v1 sandbox lifecycle routes
+ship. Today it prints a message pointing you at the web UI. The CLI will
+switch to the v1 endpoint automatically once it lands.
+</Callout>
+
+## Output formats
+
+Every command supports `--json` for machine-readable output (NDJSON for lists,
+single object for `get` / `start` / `cancel`). Without `--json` you get a
+human-friendly table or summary.
+
+```bash
+mogplex repos list                # table
+mogplex repos list --json         # one JSON repo per line
+```
+
+## Auth precedence
+
+```
+1. MOGPLEX_API_KEY env var       (highest priority)
+2. ~/.mogplex/auth.json          (from `mogplex` → /login)
+```
+
+Set `MOGPLEX_API_KEY` for CI and one-shots (`MOGPLEX_API_KEY=mog_... mogplex
+repos list`). The auth.json fallback works without any env setup once you've
+signed in via the TUI.
+
+See [Authentication](/web/api/authentication) for PAT issuance, scope model
+(`read` / `write`), revocation, expiry, and rate limits.
+
+## Base URL
+
+The CLI hits `https://www.mogplex.com` by default. Override with:
+
+```bash
+export MOGPLEX_URL="https://staging.mogplex.com"
+```
+
+For local development, set `MOGPLEX_DEV=1` and `NODE_ENV` to something other
+than `production` to allow `http://localhost:*`.
+
+## Exit codes
+
+The CLI follows clig.dev / sysexits conventions:
+
+| Code | Meaning                                                          |
+| ---- | ---------------------------------------------------------------- |
+| 0    | Success                                                           |
+| 1    | Generic failure                                                  |
+| 2    | Usage error (bad args, unknown subcommand)                       |
+| 64   | Unauthorized (no token / 401)                                    |
+| 65   | Forbidden (PAT lacks required scope / 403)                       |
+| 69   | Service unavailable (503)                                        |
+| 75   | Temporary failure / rate limited (429) — caller can retry        |
+
+Branch on exit codes in shell scripts:
+
+```bash
+mogplex runs events "$RUN_ID" --follow
+case $? in
+  0)  echo "run completed cleanly" ;;
+  64) echo "auth failed — refresh MOGPLEX_API_KEY"; exit 1 ;;
+  65) echo "PAT lacks write scope" ; exit 1 ;;
+  75) echo "rate limited — backing off" ; sleep 60 ; exec "$0" "$@" ;;
+  *)  echo "unexpected failure (exit $?)" ; exit 1 ;;
+esac
+```
+
+## Read next
+
+- [Headless runs](/cli/automation/headless-runs) — `mogplex run` and event tailing in detail
+- [CI integration](/cli/automation/ci-integration) — GitHub Actions example
+- [API → Runs](/web/api/runs) — the REST endpoints the CLI wraps

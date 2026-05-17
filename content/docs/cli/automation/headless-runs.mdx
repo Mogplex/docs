@@ -1,0 +1,216 @@
+---
+title: Headless runs
+description: Start, inspect, tail, and cancel cloud runs from the terminal without launching the TUI. Idempotency keys are auto-generated and --follow streams events to stdout.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The `mogplex run` / `mogplex runs` commands cover the full agent-run lifecycle
+from any shell. They wrap the [v1 runs API](/web/api/runs) one-for-one and
+add the conveniences you'd want in CI: auto-generated idempotency keys,
+streaming output, and exit-code-mapped errors.
+
+## Prereqs
+
+A PAT with the `write` scope (start/cancel require it; get/events require `read`):
+
+```bash
+export MOGPLEX_API_KEY="mog_..."
+```
+
+Issue one at [mogplex.com/settings/api-keys](https://www.mogplex.com/settings/api-keys).
+Issue a read-only token for dashboards that should never start runs.
+
+## Start a run
+
+```bash
+mogplex run --repo <repo-id> "Refactor the auth module to use bearer tokens."
+```
+
+Output (pretty):
+
+```
+started run run-uuid (pending)
+repo    8f3a2b1c-1234-4abc-9def-1234567890ab
+harness codex
+branch  mogplex/run/2026-05-17/refactor-auth (base main, created)
+tail events: mogplex runs events run-uuid --follow
+```
+
+### Required flag
+
+`--repo <id>` — get repo IDs from `mogplex repos list`. Without it the CLI
+exits with `2` (usage error) and the message:
+
+```
+error: run: --repo <id> is required (find IDs via `mogplex repos list`)
+```
+
+### Common flags
+
+| Flag                                | Default                     | Notes                                                          |
+| ----------------------------------- | --------------------------- | -------------------------------------------------------------- |
+| `--harness codex` / `claude-code`   | server-chosen (`codex`)     | Picks the agent runtime                                        |
+| `--base-branch <name>`              | repo default branch         | Base for `--create-branch` work                                |
+| `--branch <name>`                   | inherits from base          | Working branch the agent commits to                            |
+| `--create-branch`                   | `false`                     | If set, creates the working branch from base                   |
+| `--root <dir>`                      | repo root                   | Monorepo subpath                                                |
+| `--idempotency-key <k>`             | auto UUID                   | Pass when orchestrating retries yourself                       |
+| `--json`                            | pretty                      | Emit the full API envelope as one JSON line                    |
+
+### Idempotent retries
+
+Re-running `mogplex run` with the same `--idempotency-key` and same body
+returns the original run with `matched existing run …` instead of `started`.
+
+```bash
+KEY=$(uuidgen)
+
+# First call — starts the run
+mogplex run --repo $REPO --idempotency-key "$KEY" "Fix flaky tests"
+# → started run run-abc (pending)
+
+# Network glitch, retry — replays the same run
+mogplex run --repo $REPO --idempotency-key "$KEY" "Fix flaky tests"
+# → matched existing run run-abc (pending)
+```
+
+Same key with a different body fails fast with exit code 1 + an envelope
+error code of `IDEMPOTENCY_CONFLICT`.
+
+### JSON output
+
+```bash
+mogplex run --repo $REPO --json "Fix flaky tests"
+```
+
+Emits one line of JSON — the
+[`StartMogplexApiAgentRunResult`](/web/api/runs#start-a-run) object with
+top-level fields like `runId`, `status`, `repoId`, and `branch`. The CLI
+unwraps the REST `{ok, data}` envelope for you, so jq paths are flat:
+
+```bash
+RUN_ID=$(mogplex run --repo $REPO --json "Fix flaky tests" | jq -r '.runId')
+```
+
+## Inspect a run
+
+```bash
+mogplex runs get <run-id>
+```
+
+```
+run     run-uuid
+status  streaming
+harness codex
+repo    8f3a2b1c-...
+branch  feat/x (base main, created)
+sandbox vsb_abc
+events  /api/v1/mogplex/runs/run-uuid/events
+cancel  /api/v1/mogplex/runs/run-uuid/cancel
+created 2026-05-17T10:14:00.000Z
+updated 2026-05-17T10:15:30.000Z
+```
+
+`--json` emits the [`MogplexApiRunDetail`](/web/api/runs#get-a-run) object
+with flat top-level fields (`runId`, `status`, etc.) — the REST `{ok, data}`
+wrapper is stripped.
+
+## Tail events with `--follow`
+
+```bash
+mogplex runs events <run-id> --follow
+```
+
+Pretty output, one event per line:
+
+```
+2026-05-17T10:14:10.000Z  stream_started  Agent started
+2026-05-17T10:14:15.000Z  tool_call       tool=edit_file  Editing src/auth.ts
+2026-05-17T10:14:22.000Z  tool_result     tool=edit_file  3 lines changed
+2026-05-17T10:14:30.000Z  assistant_message  Switching to bearer-token middleware
+...
+--- run run-uuid success ---
+```
+
+`--follow` polls every 1.5s, de-dupes events by ID, and exits when the run
+reaches a terminal status (`success`, `failed`, `cancelled`). A trailing line
+prints the final status.
+
+### Timeout
+
+```bash
+mogplex runs events <run-id> --follow --timeout 600   # 10 minutes
+```
+
+`--timeout` is a wall-clock cap in seconds. Default `1800` (30 minutes).
+Hitting the timeout prints:
+
+```
+error: --follow timed out after 600s waiting for terminal status
+```
+
+…and exits with code `1`. The run keeps going on the server — re-run
+`mogplex runs events <id> --follow` to resume tailing.
+
+### JSON streaming
+
+```bash
+mogplex runs events <run-id> --follow --json
+```
+
+One [`PresentedAiCallEvent`](/web/api/runs#list-run-events) per line. The
+final line is `{"runId":"...","status":"success"}`. Perfect for piping into
+`jq`, a structured log shipper, or a CI annotation step.
+
+<Callout>
+The events feed is sanitized server-side: sensitive payload keys are redacted,
+strings/arrays/objects are capped. Safe to dump into a public CI log without
+leaking provider keys or session tokens.
+</Callout>
+
+## Cancel a run
+
+```bash
+mogplex runs cancel <run-id>
+```
+
+```
+cancellation requested for run run-uuid
+status: cancellation_requested
+```
+
+Idempotent — cancelling a run that's already terminal returns the terminal
+state with no side effects.
+
+## End-to-end sketch
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ID="${MOGPLEX_REPO:?set MOGPLEX_REPO to a UUID from \`mogplex repos list\`}"
+
+RUN_ID=$(
+  mogplex run --repo "$REPO_ID" --create-branch --json \
+    "Apply the linter autofixes and commit them" \
+  | jq -r '.runId'
+)
+echo "started run $RUN_ID"
+
+mogplex runs events "$RUN_ID" --follow --timeout 900
+
+STATUS=$(mogplex runs get "$RUN_ID" --json | jq -r '.status')
+case "$STATUS" in
+  success)   echo "✓ run succeeded" ; exit 0 ;;
+  cancelled) echo "✗ cancelled" ; exit 1 ;;
+  failed)    echo "✗ failed" ; exit 1 ;;
+  *)         echo "? unexpected status: $STATUS" ; exit 2 ;;
+esac
+```
+
+## Read next
+
+- [CI integration](/cli/automation/ci-integration) — GitHub Actions worked example
+- [API → Runs](/web/api/runs) — the REST endpoints this command wraps
+- [API → Errors](/web/api/errors) — error codes mapped to exit codes

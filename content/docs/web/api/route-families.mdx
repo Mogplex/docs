@@ -11,6 +11,37 @@ Most route groups map directly to a product area.
 If you want copy-paste examples first, go to
 [Working Requests](/web/api/working-requests) and then come back here.
 
+## v1 public surface
+
+Representative routes:
+
+- `/api/v1/mogplex/repos` (GET)
+- `/api/v1/mogplex/sandboxes` (GET)
+- `/api/v1/mogplex/runs` (POST)
+- `/api/v1/mogplex/runs/{runId}` (GET)
+- `/api/v1/mogplex/runs/{runId}/events` (GET)
+- `/api/v1/mogplex/runs/{runId}/cancel` (POST)
+- `/api/v1/mogplex/mcp` (POST, JSON-RPC)
+
+This is the stable, **PAT-only** surface for headless callers — the CLI's
+`mogplex repos|run|runs|sandboxes` commands, the in-app MCP server, and any
+third-party integration. Every endpoint returns the same typed envelope
+documented at [Errors](/web/api/errors), and mutations enforce the `write`
+scope per [Authentication](/web/api/authentication).
+
+Good first calls in this family:
+
+- `GET /api/v1/mogplex/repos` to discover repo IDs
+- `POST /api/v1/mogplex/runs` (with `Idempotency-Key`) to start an agent run
+- `GET /api/v1/mogplex/runs/{id}/events` to tail it
+
+Read [Runs](/web/api/runs) for a full walkthrough.
+
+This family is intentionally narrower than the internal control-plane families
+below — it covers headless agent-run automation and nothing else. Other
+behaviors stay on the internal `/api/*` surface until they have a stable
+public contract.
+
 ## Identity and setup
 
 Representative routes:
