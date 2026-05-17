@@ -1,7 +1,9 @@
 ---
 title: Authentication
-description: Understand how the hosted Mogplex API resolves PATs, Playwright headers, and browser sessions, plus when session-only auth is required.
+description: The Mogplex API resolves bearer tokens, internal Playwright headers, and browser sessions in that order. This page covers PAT issuance, scopes, rate limits, and the Idempotency-Key requirement on mutations.
 ---
+
+import { Callout } from 'fumadocs-ui/components/callout';
 
 The hosted Mogplex API is shared by the web app, the CLI, and internal test
 workflows.
@@ -9,109 +11,198 @@ workflows.
 That means auth is resolved in priority order instead of assuming every caller
 is a browser.
 
-## Current auth resolution order
+## Auth resolution order
 
-The common control-plane auth helper resolves in this order:
+The common control-plane helper resolves in this order:
 
-1. `Authorization: Bearer mog_...` personal access token
+1. `Authorization: Bearer mog_...` personal access token (PAT)
 2. internal Playwright auth headers used in end-to-end testing
 3. browser session auth from the signed-in web app
 
-This is why one route helper can often serve both browser and CLI callers.
-
-## Browser sessions
-
-Normal web app usage goes through the signed-in browser session.
-
-One important detail: the product ultimately resolves to the Mogplex **profile
-id**, not just the raw Supabase `auth.users.id`. Product data is scoped to the
-profile row the rest of the app uses.
-
-So when docs or code say "user id" in this control plane, it usually means the
-Mogplex profile id.
+The public `/api/v1/mogplex/*` surface accepts **only** PATs — the Playwright
+and session paths are for internal callers. Use a PAT for anything outside the
+browser.
 
 ## Personal access tokens
 
-The CLI and internal tooling authenticate with Mogplex personal access tokens
-using the `mog_` bearer format.
+PATs use the `mog_` bearer format: `mog_` prefix followed by 32 base62
+characters. They are stored as a SHA-256 hash; the plaintext value is shown to
+you exactly once at creation time.
 
-That path has highest priority on purpose, so a CLI call does not accidentally
-fall back to a browser cookie or mixed auth state.
+### Issuing a PAT
 
-Current PAT behavior includes:
+Through the web UI:
 
-- one-time plaintext display at creation
-- hashed storage on the server
-- optional expiration
-- last-used tracking
-- lightweight per-key rate limiting during resolution
+1. Sign in at [mogplex.com](https://www.mogplex.com).
+2. Go to **Settings → API Keys**.
+3. Click **Create token**, give it a name, pick scopes and (optionally) an expiry, and copy the plaintext value.
 
-## Internal Playwright auth
+Through the management API (this endpoint requires browser-session auth — PATs
+can't issue other PATs):
 
-The Playwright path exists for end-to-end tests and internal automation. It is
-checked before browser-session auth so test traffic can force a known identity
-without depending on an interactive browser login flow.
+```bash
+curl -sS \
+  -X POST \
+  --cookie "$YOUR_SESSION_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"laptop CLI","scopes":["read","write"],"expiresInDays":90}' \
+  "$MOGPLEX_BASE_URL/api/settings/api-keys"
+```
 
-This path is not the normal integration path for user tooling.
+Response (the plaintext `token` field is returned once):
 
-## Session-only endpoints
+```json
+{
+  "id": "key-uuid",
+  "token": "mog_AbCdEf1234567890aBcDeF1234567890aB",
+  "prefix": "mog_AbCdEf12",
+  "scopes": ["read", "write"],
+  "expiresAt": "2026-08-15T00:00:00.000Z"
+}
+```
 
-Not every route that "needs auth" accepts every auth source.
+<Callout type="warn">
+The plaintext token is shown only at creation. The server stores a SHA-256
+hash and the first 12 characters as a display prefix — neither can be reversed.
+If you lose the token, revoke the row and create a new one.
+</Callout>
 
-Some sensitive routes intentionally require a real session-based identity and
-reject PAT auth. The token-management routes are the clearest example:
+### Revoking a PAT
 
-- `/api/settings/api-keys`
-- related revoke and create token endpoints
+```bash
+curl -sS \
+  -X DELETE \
+  --cookie "$YOUR_SESSION_COOKIE" \
+  "$MOGPLEX_BASE_URL/api/settings/api-keys/{id}"
+```
 
-These use the session-only auth helper because it would be unsafe or circular
-to let a PAT manage PATs or other sensitive account credentials freely.
+Revocation sets `revoked_at` on the row. The next request that uses the
+revoked token returns `UNAUTHORIZED` (401) — there is no grace period.
 
-So the practical rule is:
+### Expiry
 
-- **shared product routes** often accept PATs
-- **sensitive account-management routes** may require a browser session
+If a token has `expiresAt`, requests after that timestamp return
+`UNAUTHORIZED` (401). The CLI does not refresh tokens automatically; issue a
+new one when an old one nears expiry.
+
+## Scopes
+
+Two scopes exist today:
+
+| Scope   | Grants                                                                                          |
+| ------- | ----------------------------------------------------------------------------------------------- |
+| `read`  | All `GET /api/v1/mogplex/*` endpoints (repos, sandboxes, runs, run events)                       |
+| `write` | Mutating endpoints: `POST /runs`, `POST /runs/{id}/cancel`, future sandbox lifecycle POSTs       |
+
+Tokens default to `["read", "write"]` unless you explicitly request a smaller
+set. Tokens issued before scope enforcement landed were backfilled to
+`["read", "write"]` so existing automation kept working.
+
+Read-only tokens are useful for dashboards, CI assertions, or analytics
+collectors — anything that should never start a run.
+
+When a read-only token hits a write endpoint, the server returns:
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Missing required scope: write. Issue a new token with the 'write' scope at /settings/api-keys."
+  }
+}
+```
+
+HTTP status: `403`. See [Errors](/web/api/errors) for the full code table.
+
+## Rate limits
+
+### Per-PAT request limit
+
+60 requests per 60 seconds per PAT, rolling window. When exceeded, the server
+returns:
+
+```
+HTTP/1.1 429 Too Many Requests
+Retry-After: 60
+Content-Type: application/json
+
+{"ok":false,"error":{"code":"RATE_LIMITED","message":"Rate limit exceeded. Retry after 60s."}}
+```
+
+### Per-user run-start limits
+
+`POST /api/v1/mogplex/runs` additionally enforces user-level run-start budgets:
+
+- 10 run starts per minute
+- 30 run starts per hour
+- 150 run starts per day
+
+These are independent of the per-PAT limit. A user with multiple PATs shares
+the same run-start budget across them. Hitting any of these returns
+`RATE_LIMITED` (429) with a `Retry-After` header.
+
+If the limit-check backend is temporarily unavailable, the server returns
+`SERVICE_UNAVAILABLE` (503) with `Retry-After: 60` so callers know not to
+hammer.
+
+## Idempotency-Key (required on mutations)
+
+`POST /api/v1/mogplex/runs` requires an `Idempotency-Key` header. The header
+makes safe retries possible: the server records the key + a hash of the request
+body, and replays the original result on a duplicate request.
+
+```bash
+KEY=$(uuidgen)
+curl -sS \
+  -X POST \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $KEY" \
+  -d '{"repoId":"<repo-id>","prompt":"Fix the tests"}' \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/runs"
+```
+
+Behavior:
+
+- **Missing key** → 400 `BAD_REQUEST` `"Idempotency-Key is required"`.
+- **Key longer than 200 chars** → 400 `BAD_REQUEST`.
+- **Same key, same body** → replays the original result with `replayed: true` in the response data.
+- **Same key, different body** → 409 `IDEMPOTENCY_CONFLICT`.
+
+Use a fresh UUID per logical operation; reuse the same UUID across retries of
+the same operation.
+
+<Callout>
+The CLI's `mogplex run` auto-generates an idempotency key via
+`crypto.randomUUID()` when you don't pass `--idempotency-key`. Pass one
+explicitly when you orchestrate your own retries.
+</Callout>
 
 ## CLI browser handoff
 
-Browser-based CLI login runs through `/cli-auth`.
+The browser-based CLI login runs through `/cli-auth`:
 
-That page:
+1. The user runs `mogplex` in the terminal and chooses browser login.
+2. The CLI opens `/cli-auth` with a localhost callback + nonce.
+3. The page checks that the user is signed in (redirecting through `/login` if not), validates the callback, and shows a consent screen.
+4. On consent, the server mints a PAT and POSTs it back to the CLI listener.
+5. The CLI writes the token to `~/.mogplex/auth.json`.
 
-1. checks that the user is already signed into the web app
-2. validates the localhost callback and nonce the CLI requested
-3. shows a consent screen in the browser
-4. generates a PAT and POSTs it back to the CLI listener
+The CLI never sees raw session cookies; the browser never sees the CLI's
+private localhost port.
 
-If the user is not signed in yet, the flow redirects through `/login` and then
-returns to `/cli-auth`.
+## Practical debugging
 
-## Shared-route examples
+If a request fails, identify which auth path you're on:
 
-A few routes are especially helpful for understanding the mixed auth model:
-
-- `/api/auth/user` returns setup-aware identity and capability state
-- `/api/settings` stores shared preferences like default model and theme
-- `/api/mcp-servers` can serve both web and CLI-oriented shapes depending on
-  `?format=cli`
-
-That pattern is common in Mogplex: one route family supports multiple product
-surfaces, with the auth helper deciding who the caller is.
-
-## Practical debugging rule
-
-If you are debugging an API request, first identify which auth path it should
-have used.
-
-That usually tells you whether the bug is:
-
-- missing PAT
-- missing browser session
-- wrong caller expectations
-- or a session-only endpoint being hit from PAT-backed tooling
+- **No `Authorization` header** → 401 `UNAUTHORIZED`. Set the header.
+- **Header present, 401** → the token is invalid, expired, or revoked.
+- **Header present, 403** → the token works but lacks the required scope. Re-issue with `write` if you're calling a mutation.
+- **403 on a token-management route** → those routes require browser-session auth and reject PATs by design.
 
 ## Read next
 
-- [Working Requests](/web/api/working-requests) for copy-paste requests that
-  already work well with PAT auth
-- [Route Families](/web/api/route-families) for the broader control-plane map
+- [Errors](/web/api/errors) — the full error code table and retry guidance
+- [Runs](/web/api/runs) — the most common write endpoint, exercises every auth check above
+- [Working Requests](/web/api/working-requests) — copy-paste curl examples for setup-state routes

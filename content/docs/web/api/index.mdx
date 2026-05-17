@@ -15,12 +15,16 @@ compatibility contract.
 
 ## Read this section in order
 
-- [Authentication](/web/api/authentication) for which callers PAT auth can
-  represent and where session-only auth still applies
+- [Authentication](/web/api/authentication) for PAT lifecycle, scopes
+  (`read` / `write`), idempotency, and rate limits
+- [Errors](/web/api/errors) for the typed error envelope, code table, and
+  retry guidance
+- [Runs](/web/api/runs), [Repos](/web/api/repos), [Sandboxes](/web/api/sandboxes),
+  [MCP](/web/api/mcp) for the v1 public surface (`/api/v1/mogplex/*`)
 - [Models](/web/api/models) for the standalone model catalog, CLI model export,
   and per-user enablement rules
 - [Working Requests](/web/api/working-requests) for concrete `curl` examples
-  that are already useful on day one
+  on internal control-plane routes
 - [Route Families](/web/api/route-families) for the broader control-plane map
 
 ## Start with safe first requests

@@ -1,0 +1,117 @@
+---
+title: Sandboxes
+description: GET /api/v1/mogplex/sandboxes lists the cloud sandboxes owned by the authenticated user, with optional filters for repo and status.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+`GET /api/v1/mogplex/sandboxes`
+
+Lists cloud sandboxes the caller owns. Useful for cleanup scripts, dashboards,
+or scoping a run to an existing branch.
+
+<Callout>
+v1 sandbox lifecycle routes (stop / pause / resume / get-by-id) are not yet
+exposed. They will land alongside the sandbox-lifecycle refactor. Until then,
+use the web UI at `mogplex.com/sandboxes/{id}` for lifecycle actions.
+</Callout>
+
+## Scope
+
+`read` — see [Authentication → Scopes](/web/api/authentication#scopes).
+
+## Query parameters
+
+| Param      | Type    | Default | Notes                                                          |
+| ---------- | ------- | ------- | -------------------------------------------------------------- |
+| `repo_id`  | string  | —       | UUID; restrict to sandboxes for a single repo                  |
+| `status`   | string  | —       | e.g. `running`, `paused`, `stopped`, `error`                   |
+| `limit`    | integer | 100     | 1–200                                                          |
+
+## Example
+
+```bash
+export MOGPLEX_BASE_URL="https://www.mogplex.com"
+export MOGPLEX_TOKEN="mog_..."
+
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/sandboxes?status=running&limit=20"
+```
+
+Representative response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "sandboxes": [
+      {
+        "id": "sandbox-uuid",
+        "sandbox_id": "vsb_acme_web_main",
+        "repo_id": "8f3a2b1c-1234-4abc-9def-1234567890ab",
+        "status": "running",
+        "base_branch": "main",
+        "working_branch": "feat/refactor-auth",
+        "root_directory": null,
+        "preview_url": "https://abc123.sandbox.mogplex.com",
+        "created_at": "2026-05-17T10:14:00.000Z",
+        "last_active_at": "2026-05-17T10:42:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+Filter by repo:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/sandboxes?repo_id=8f3a2b1c-..."
+```
+
+## Response shape
+
+```typescript
+type MogplexApiSandbox = {
+  id: string;                          // Mogplex sandbox record UUID
+  sandbox_id: string | null;           // Underlying provider sandbox ID (may be null pre-allocation)
+  repo_id: string;
+  status: string;                       // e.g. "running", "paused", "stopped", "error"
+  base_branch: string;
+  working_branch: string;
+  root_directory: string | null;        // Monorepo subpath
+  preview_url: string | null;           // HTTPS URL to the running preview when applicable
+  created_at: string;                   // ISO 8601
+  last_active_at: string;               // ISO 8601 — most recent observed activity
+};
+```
+
+Sandboxes are ordered by `last_active_at` desc (server-side default).
+
+## Errors
+
+| Code              | HTTP | Cause                              |
+| ----------------- | ---- | ---------------------------------- |
+| `UNAUTHORIZED`    | 401  | Missing/invalid/expired PAT        |
+| `RATE_LIMITED`    | 429  | 60 req/min per PAT exceeded        |
+| `INTERNAL_ERROR`  | 500  | Unexpected server error            |
+
+See [Errors](/web/api/errors) for retry guidance.
+
+## CLI equivalent
+
+```bash
+mogplex sandboxes list                                  # pretty table
+mogplex sandboxes list --json                           # NDJSON
+mogplex sandboxes list --repo <repo-id> --status running
+```
+
+`mogplex sandboxes stop <id>` is a placeholder until the v1 lifecycle routes
+land. Today it points users at the web UI.
+
+## Read next
+
+- [Repos](/web/api/repos) — list `repo_id` values
+- [Runs](/web/api/runs) — sandboxes are created/used as runs execute

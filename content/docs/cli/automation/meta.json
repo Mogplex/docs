@@ -1,0 +1,4 @@
+{
+  "title": "Automation",
+  "pages": ["index", "headless-runs", "ci-integration"]
+}

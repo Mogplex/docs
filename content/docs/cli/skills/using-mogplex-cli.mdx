@@ -16,7 +16,7 @@ description: Umbrella skill for guiding a user through the Mogplex CLI cockpit w
 
 ## Body
 
-The Mogplex CLI is an interactive cockpit. There is no headless `exec` surface — agents cannot drive the TUI directly. Use this skill to **advise** the user on what to run, what to type in the composer, and what to put in repo-local config files.
+The Mogplex CLI ships two surfaces in one binary: an interactive cockpit (the TUI) and a [headless subcommand surface](/cli/automation) (`mogplex run`, `mogplex runs events`, etc.) for scripts and CI. Agents cannot drive the TUI itself, but they can shell out to the headless commands. Use this skill to **advise** the user on which to use, what to type in the composer when they're in the cockpit, and what to put in repo-local config files.
 
 ### When to use this skill
 
@@ -75,10 +75,10 @@ is it a config / file change?
 
 ### What you cannot do
 
-- Drive the TUI from a script. The CLI is interactive-only.
+- Drive the **TUI** from a script. The cockpit is interactive-only. (For headless work, use `mogplex run` / `mogplex runs events --follow` — see [Automation](/cli/automation).)
 - Read auth state from outside the cockpit. There is no `login status` subcommand; only the cockpit knows.
 - Mutate `~/.mogplex/auth.json` directly. Tell the user to use `/login` or `/logout` in the cockpit.
-- Run a slash command headlessly. Slash commands only execute inside the running cockpit.
+- Run a slash command headlessly. Slash commands only execute inside the running cockpit — the equivalent for scripts is the `mogplex <subcommand>` surface.
 
 ### What you **can** do
 
