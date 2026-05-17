@@ -2,38 +2,38 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
-/* Mogplex brand colors */
+/* Mogplex brand colors — monochrome theme, aligned with mogplex.com */
 :root {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Light mode tokens */
+  /* Light mode tokens — warm cream surface, neutral ink */
   --color-fd-background: #f6f5f1;
   --color-fd-foreground: #171717;
   --color-fd-card: #ffffff;
   --color-fd-muted: #efede7;
-  --color-fd-muted-foreground: #6b7280;
-  --color-fd-primary: #7c3aed;
-  --color-fd-primary-foreground: #ffffff;
-  --color-fd-accent: #f3e8ff;
-  --color-fd-accent-foreground: #6d28d9;
+  --color-fd-muted-foreground: #78716c;
+  --color-fd-primary: #171717;
+  --color-fd-primary-foreground: #fafaf9;
+  --color-fd-accent: #ebe7dd;
+  --color-fd-accent-foreground: #171717;
   --color-fd-border: #ddd7ca;
-  --color-fd-ring: #7c3aed;
+  --color-fd-ring: #171717;
 }
 
 .dark {
-  /* Dark mode tokens */
+  /* Dark mode tokens — pure black surface, white ink */
   --color-fd-background: #0a0a0a;
   --color-fd-foreground: #ededed;
-  --color-fd-card: #0f0f12;
+  --color-fd-card: #111111;
   --color-fd-muted: #1a1a1a;
-  --color-fd-muted-foreground: #9ca3af;
-  --color-fd-primary: #8b5cf6;
-  --color-fd-primary-foreground: #ffffff;
-  --color-fd-accent: #1e1b2e;
-  --color-fd-accent-foreground: #c4b5fd;
+  --color-fd-muted-foreground: #a1a1a1;
+  --color-fd-primary: #ffffff;
+  --color-fd-primary-foreground: #0a0a0a;
+  --color-fd-accent: #1e1e1e;
+  --color-fd-accent-foreground: #ededed;
   --color-fd-border: #262626;
-  --color-fd-ring: #8b5cf6;
+  --color-fd-ring: #ffffff;
 }
 
 html {
