@@ -20,7 +20,8 @@ compatibility contract.
 - [Errors](/web/api/errors) for the typed error envelope, code table, and
   retry guidance
 - [Runs](/web/api/runs), [Repos](/web/api/repos), [Sandboxes](/web/api/sandboxes),
-  [MCP](/web/api/mcp) for the v1 public surface (`/api/v1/mogplex/*`)
+  [MCP servers](/web/api/mcp-servers), [MCP](/web/api/mcp) for the v1 public
+  surface (`/api/v1/mogplex/*`)
 - [Models](/web/api/models) for the standalone model catalog, CLI model export,
   and per-user enablement rules
 - [Working Requests](/web/api/working-requests) for concrete `curl` examples
@@ -36,7 +37,7 @@ If you only want the most useful first calls, start here:
 - `GET /api/settings` to inspect shared defaults like theme and default model
 - `GET /api/models` to inspect the visible catalog and enabled model set
 - `GET /api/github/installations` to confirm real GitHub App coverage
-- `GET /api/mcp-servers?format=cli` to export the CLI-ready MCP view
+- `GET /api/v1/mogplex/mcp/servers` to export the CLI-ready MCP view (PAT-only)
 - `GET /api/observability/stats` to inspect runtime health and cost summary
 
 See [Working Requests](/web/api/working-requests) for full examples.

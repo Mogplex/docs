@@ -8,6 +8,7 @@
     "runs",
     "repos",
     "sandboxes",
+    "mcp-servers",
     "mcp",
     "working-requests",
     "route-families"
