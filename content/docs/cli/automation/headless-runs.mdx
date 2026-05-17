@@ -84,9 +84,10 @@ error code of `IDEMPOTENCY_CONFLICT`.
 mogplex run --repo $REPO --json "Fix flaky tests"
 ```
 
-Emits one line of JSON — the full
-[`StartMogplexApiAgentRunResult`](/web/api/runs#start-a-run) envelope. Pipe
-into `jq`:
+Emits one line of JSON — the
+[`StartMogplexApiAgentRunResult`](/web/api/runs#start-a-run) object with
+top-level fields like `runId`, `status`, `repoId`, and `branch`. The CLI
+unwraps the REST `{ok, data}` envelope for you, so jq paths are flat:
 
 ```bash
 RUN_ID=$(mogplex run --repo $REPO --json "Fix flaky tests" | jq -r '.runId')
@@ -111,8 +112,9 @@ created 2026-05-17T10:14:00.000Z
 updated 2026-05-17T10:15:30.000Z
 ```
 
-`--json` emits the full
-[`MogplexApiRunDetail`](/web/api/runs#get-a-run) object.
+`--json` emits the [`MogplexApiRunDetail`](/web/api/runs#get-a-run) object
+with flat top-level fields (`runId`, `status`, etc.) — the REST `{ok, data}`
+wrapper is stripped.
 
 ## Tail events with `--follow`
 
