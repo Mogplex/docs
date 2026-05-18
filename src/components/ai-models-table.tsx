@@ -21,9 +21,7 @@ type Model = {
 };
 
 type Snapshot = {
-  source: string;
   fetched_at: string;
-  count: number;
   models: Model[];
 };
 
@@ -39,8 +37,12 @@ function formatContext(value: number | null): string {
 function formatPrice(value: number | null): string {
   if (value == null) return '—';
   const perMtok = value * 1_000_000;
+  if (perMtok === 0) return '$0';
   if (perMtok >= 1) return `$${perMtok.toFixed(2)}`;
-  return `$${perMtok.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')}`;
+  if (perMtok >= 0.001) {
+    return `$${perMtok.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')}`;
+  }
+  return `$${perMtok.toExponential(1)}`;
 }
 
 function formatFetched(iso: string): string {
@@ -133,7 +135,7 @@ export function AiModelsTable() {
         />
 
         <p className="text-xs text-fd-muted-foreground">
-          Showing {filtered.length} of {DATA.count} models. Snapshot fetched{' '}
+          Showing {filtered.length} of {DATA.models.length} models. Snapshot fetched{' '}
           {formatFetched(DATA.fetched_at)}. Pricing is per million tokens.
         </p>
       </div>

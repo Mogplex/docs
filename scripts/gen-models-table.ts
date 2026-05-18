@@ -56,12 +56,15 @@ type Row = {
   recommendation_bucket: string | null;
 };
 
+const PAGE_SIZE = 10_000;
+
 async function main() {
   const url = new URL(`${SUPABASE_URL}/rest/v1/ai_models`);
   url.searchParams.set('select', SELECT);
   url.searchParams.set('is_hidden', 'eq.false');
   url.searchParams.set('is_available', 'eq.true');
   url.searchParams.set('order', 'provider.asc,name.asc');
+  url.searchParams.set('limit', String(PAGE_SIZE));
 
   const res = await fetch(url, {
     headers: {
@@ -76,10 +79,17 @@ async function main() {
 
   const rows = (await res.json()) as Row[];
 
+  if (rows.length === 0) {
+    throw new Error('No rows returned — check RLS policies or filters.');
+  }
+  if (rows.length >= PAGE_SIZE) {
+    throw new Error(
+      `Received ${rows.length} rows — at or above PAGE_SIZE (${PAGE_SIZE}). Snapshot may be truncated; raise PAGE_SIZE or add pagination.`,
+    );
+  }
+
   const snapshot = {
-    source: `${SUPABASE_URL}/rest/v1/ai_models`,
     fetched_at: new Date().toISOString(),
-    count: rows.length,
     models: rows,
   };
 
