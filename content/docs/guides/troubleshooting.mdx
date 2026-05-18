@@ -19,13 +19,13 @@ work started.
 | Slack mention replies but does not start repo work | Slack channel link, user mapping, repo-agent enabled state, or workspace limits |
 | Route exists but no run appears | route source, coverage, enabled state, or published automation |
 | Run appears but fails | runtime, model, tool, connection, sandbox, or prompt |
-| Preview is unhealthy | repo settings, Vercel linkage, sandbox state, or dev command |
-| Model is missing from a picker | model catalog, provider access, default model, or repo exclusion |
+| Preview is unhealthy | repo settings, managed sandbox access, optional Vercel metadata, sandbox state, or dev command |
+| Model is missing from a picker | model catalog, plan access, default model, or repo exclusion |
 | CLI signs in but state looks wrong | CLI auth, account state, local config, or synced hosted state |
 
 ## Debug order
 
-1. Check [Settings](/web/settings) for identity, provider access, model
+1. Check [Settings](/web/settings) for identity, account access, model
    defaults, CLI tokens, connections, and GitHub account state.
 2. Check [Installations](/web/installations) for GitHub App coverage.
 3. Check [Projects](/web/spaces) for repo visibility, repo settings, and
@@ -101,7 +101,7 @@ Check:
 
 - whether the model is visible in the live catalog
 - whether the model is enabled for the account
-- whether provider access or bring-your-own-key state is required
+- whether the account plan includes access to that model
 - whether the agent is pinned to a hidden legacy model
 - whether a repo or route excludes the model
 - whether the CLI has synced the expected hosted state
@@ -142,7 +142,8 @@ Check:
 - dev command
 - dev port
 - environment mapping
-- linked Vercel team and project
+- managed sandbox access
+- optional linked Vercel team and project metadata
 - sandbox timeout
 - active branch and preview URL
 

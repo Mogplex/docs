@@ -60,7 +60,7 @@ The repo settings dialog has three tabs.
 
 General settings are where you control the runtime shape for that repo:
 
-- sandbox billing mode: Mogplex billing or your linked Vercel project
+- managed sandbox access state for hosted workspace launches
 - repo-linked Vercel team and Vercel project
 - env mapping mode: sandbox only, sandbox + preview conventions, or sync from a
   linked Vercel project
@@ -86,7 +86,7 @@ work.
    [Installations](/web/installations).
 3. Sync repos and find the target repo in Projects.
 4. Open repo settings if you need to set a root directory, dev command, preview
-   port, or Vercel linkage before boot.
+   port, or optional Vercel metadata before boot.
 5. Open the workspace. If no sandbox is running yet, Mogplex can launch it as
    part of that action.
 6. From the repo card, choose the next layer:
@@ -123,9 +123,8 @@ sandbox instead of going through the repo card.
   missing.
 - **Open workspace feels slow the first time**:
   the repo probably needs its sandbox created or installed first.
-- **User-billed sandbox launch fails**:
-  the repo is set to use your Vercel project, but the linked team or project is
-  missing or invalid.
+- **Sandbox launch says access is unavailable**:
+  the account plan may not include managed sandbox access yet.
 - **Preview opens the wrong app in a monorepo**:
   create a sub-project repo or set `root_directory`, `dev_command`, and
   `dev_port` explicitly.

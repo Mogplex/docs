@@ -1,6 +1,6 @@
 ---
 title: Authentication
-description: In-app login, credential precedence, browser sign-in, stored provider keys, and what `/login` and `/logout` actually change.
+description: In-app login, credential precedence, browser sign-in, account-backed access, and what `/login` and `/logout` actually change.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
@@ -9,22 +9,12 @@ The CLI ships to end users — auth is in-app. You do **not** need to set enviro
 
 ## Resolution order
 
-When the CLI starts up, it resolves credentials in this order:
+When the CLI starts up, it resolves credentials in this order. The normal
+customer path is account-backed login; provider env vars are compatibility and
+development overrides.
 
-1. **Provider env var in the current shell.** If set, it wins — no matter what is stored on disk.
-
-   | Provider   | Environment variable           |
-   | ---------- | ------------------------------ |
-   | Mogplex    | `MOGPLEX_API_KEY`              |
-   | Anthropic  | `ANTHROPIC_API_KEY`            |
-   | OpenAI     | `OPENAI_API_KEY`               |
-   | Google     | `GOOGLE_GENERATIVE_AI_API_KEY` |
-   | Groq       | `GROQ_API_KEY`                 |
-   | Mistral    | `MISTRAL_API_KEY`              |
-   | DeepSeek   | `DEEPSEEK_API_KEY`             |
-   | xAI        | `XAI_API_KEY`                  |
-   | Cohere     | `COHERE_API_KEY`               |
-   | Vercel     | `VERCEL_API_TOKEN`             |
+1. **Auth env var in the current shell.** `MOGPLEX_API_KEY` and legacy local
+   provider env vars can override what is stored on disk.
 
 2. **Stored credentials** in `~/.mogplex/auth.json` (mode `0600`). If you previously used Codex and have `CODEX_HOME` set, the CLI still honors it but it is deprecated — set `MOGPLEX_HOME` instead. See [Configuration and Flags → Storage](/cli/guides/configuration-and-flags#storage).
 
@@ -34,10 +24,11 @@ The practical rule: shell env vars outrank everything else.
 
 ## In-app login
 
-On first run, the login screen offers two paths:
+On first run, use the Mogplex account path:
 
 - **Sign in with Mogplex** — opens a browser flow for account-backed login. The CLI listens on a local callback and stores a Mogplex token. Recommended.
-- **Use a provider API key** — store an Anthropic, OpenAI, Google, Groq, Mistral, DeepSeek, xAI, Cohere, or Vercel AI Gateway key locally.
+
+Account-backed login is the product path for normal use.
 
 You can re-open the login screen later from the composer:
 
@@ -47,26 +38,26 @@ You can re-open the login screen later from the composer:
 
 ## What account-backed login means
 
-Browser login is not the same thing as storing a direct provider key.
-
-When you sign in with Mogplex, the CLI stores a `mogplex` credential in `~/.mogplex/auth.json` and can reuse hosted state:
+When you sign in with Mogplex, the CLI stores a `mogplex` credential in
+`~/.mogplex/auth.json` and can reuse hosted state:
 
 - synced model catalog
 - remote MCP server definitions
-- account-backed model access configured for your Mogplex user
+- plan-backed model access configured for your Mogplex user
 
-If account login succeeds but prompts fail, the hosted account usually does not have usable model access yet. Add a provider key in [Web Settings](/web/settings).
+If account login succeeds but prompts fail, the hosted account usually does not
+have usable model access yet. Check [Available Models](/web/models) and
+[Plans & Billing](/plans-and-billing).
 
-## Provider keys (env or stored)
+## Provider env vars
 
-Direct provider credentials still work and still take precedence over the account login path. This is the preferred pattern for CI and ephemeral shells.
+Direct provider environment variables are a compatibility and development
+escape hatch, not the product setup path for billed Mogplex accounts. They
+still take precedence over the account login path when they are present, so
+unset them before debugging billed account behavior.
 
-```bash
-export OPENAI_API_KEY=sk-...
-mogplex
-```
-
-If both a stored credential and an env var exist for the same provider, the env var wins.
+If both a stored credential and an env var exist for the same provider, the env
+var wins.
 
 ## `/logout`
 
@@ -74,7 +65,7 @@ If both a stored credential and an env var exist for the same provider, the env 
 /logout
 ```
 
-Clears the Mogplex token (and provider key, if stored) from `~/.mogplex/auth.json`. Three things to remember:
+Clears the Mogplex token from `~/.mogplex/auth.json`. Three things to remember:
 
 - **Env vars still win.** If the matching env var is set, the next session will still authenticate through it.
 - **Restart for certainty.** The current process may still hold the old adapter. Quit (`/quit`) and relaunch if you need an immediate clean slate.
@@ -94,8 +85,8 @@ mogplex --attach run_abc123 --logout
 
 ## Common outcomes
 
-- The login screen appears at startup → no credentials anywhere; sign in or store a provider key.
-- Login succeeds but prompts fail → account login is active but the hosted account lacks model access. Fix in [Web Settings](/web/settings).
+- The login screen appears at startup → no Mogplex credential is available; sign in.
+- Login succeeds but prompts fail → account login is active but the hosted account lacks model access. Check [Available Models](/web/models) and [Plans & Billing](/plans-and-billing).
 - The CLI behaves differently than the in-app login implies → check env vars first; they outrank stored auth.
 
 ## See also

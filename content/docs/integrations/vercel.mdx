@@ -1,20 +1,19 @@
 ---
 title: Vercel
-description: Configure Personal Vercel, repo-linked projects, sandbox billing, environment sync, and preview troubleshooting for Mogplex.
+description: Configure repo-linked Vercel project metadata, environment sync, and preview troubleshooting for Mogplex.
 ---
 
-Vercel is optional for some Mogplex accounts and required for others.
+Vercel is optional integration metadata for repos that need project-aware
+preview settings.
 
-Use it when sandbox-backed workspace sessions should run against your own
-Vercel project instead of Mogplex-managed platform sandbox billing, or when a
-repo needs Vercel-linked project settings for previews and environment sync.
+Mogplex-managed billing owns sandbox access. Use the Vercel integration when a
+repo needs Vercel-linked project settings for previews, root directories, and
+environment sync. Do not use it as an external sandbox account path.
 
 ## Where Vercel is configured
 
-Vercel setup is split across account and repo state:
+Vercel setup is primarily repo state:
 
-- [Settings](/web/settings#personal-vercel) links Personal Vercel for the
-  account.
 - [Projects](/web/spaces) owns repo-specific Vercel team, project, root
   directory, env mapping, install command, dev command, port, and timeout
   settings.
@@ -23,17 +22,15 @@ Vercel setup is split across account and repo state:
 - [Observability](/web/observability) shows the call, job, sandbox, model, and
   cost trail after work starts.
 
-## Billing modes
+## Billing model
 
-Repo settings can use either Mogplex-managed sandbox billing or a linked Vercel
-project, depending on what the account supports.
+Sandbox usage is billed through Mogplex. A linked Vercel project can provide
+preview metadata and environment sync, but it is not the billing source for
+Mogplex sandboxes.
 
-If platform sandbox billing is not enabled for the account, Mogplex can require
-Personal Vercel before sandbox-backed workspace work starts.
-
-That does not mean every routing setup needs Vercel first. You can still
-configure GitHub coverage, repo import, agents, triggers, assignments, and
-automations before finishing the sandbox path.
+That means you can configure GitHub coverage, repo import, agents, triggers,
+assignments, and automations without asking users to attach their own sandbox
+account.
 
 ## Repo-linked project settings
 
@@ -72,12 +69,12 @@ Start from the surface that owns the failure:
 - Repo configuration problem: [Projects](/web/spaces)
 - Runtime already exists but looks stuck: [Sandboxes](/web/sandboxes)
 - Need the call or job trail behind the runtime: [Observability](/web/observability)
-- Account-level Vercel connection missing: [Settings](/web/settings#personal-vercel)
+- Account lacks managed sandbox access: [Plans & Billing](/plans-and-billing)
 
 Common failure modes:
 
-- **Sandbox launch asks for Personal Vercel**: the account or repo is on a
-  user-billed sandbox path and Personal Vercel is not linked yet.
+- **Sandbox launch says access is unavailable**: the account plan may not
+  include managed sandbox access yet.
 - **Preview opens the wrong app**: set the repo root directory, install
   command, dev command, and dev port explicitly.
 - **Env values are missing**: inspect env mapping mode, linked Vercel project
@@ -88,7 +85,7 @@ Common failure modes:
 ## Read next
 
 <Cards>
-  <Card title="Settings" href="/web/settings#personal-vercel" />
+  <Card title="Plans & Billing" href="/plans-and-billing" />
   <Card title="Projects" href="/web/spaces" />
   <Card title="Sandboxes" href="/web/sandboxes" />
   <Card title="Observability" href="/web/observability" />

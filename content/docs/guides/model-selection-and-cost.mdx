@@ -33,7 +33,7 @@ Model configuration appears in several places:
 | Surface | What it controls |
 | --- | --- |
 | [Settings -> Models](/web/models) | Enabled models, disabled models, and the default model for new work |
-| [Settings -> API Keys](/web/settings) | Provider access for hosted work when platform AI is not enough |
+| [Plans & Billing](/plans-and-billing) | Account-level managed access for hosted model usage |
 | [Agents](/web/agents) | The default model for that reusable agent |
 | [Automations](/web/automations) | Node-level model overrides inside one workflow draft |
 | [Repo settings](/web/spaces) | Repo-specific exclusions from the globally enabled model set |
@@ -47,13 +47,14 @@ automation node, assignment, or repo rule.
 
 1. Open [Available Models](/web/models) and make sure the account has at least
    one enabled model.
-2. Set a default model that is safe for ordinary new work.
-3. Give specialized agents explicit models when the job needs it.
-4. Use automation node overrides only when one node differs from the base
+2. Confirm the plan includes the level of model usage the workflow needs.
+3. Set a default model that is safe for ordinary new work.
+4. Give specialized agents explicit models when the job needs it.
+5. Use automation node overrides only when one node differs from the base
    agent on purpose.
-5. Add repo-specific exclusions when a codebase should not use a model family,
+6. Add repo-specific exclusions when a codebase should not use a model family,
    provider, or cost profile.
-6. Review [Observability](/web/observability) and [Cost & Usage](/cli/reference/cost-and-usage)
+7. Review [Observability](/web/observability) and [Cost & Usage](/cli/reference/cost-and-usage)
    after real runs, not just after setup.
 
 ## When to override the default

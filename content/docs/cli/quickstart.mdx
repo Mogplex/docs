@@ -25,8 +25,9 @@ mogplex
 
 If you are not authenticated, the in-app login screen appears. Pick one:
 
-- **Sign in with Mogplex** — opens a browser for account-backed login. Recommended; reuses synced model catalog and remote MCP definitions.
-- **Use a provider API key** — store an Anthropic, OpenAI, Google, Groq, Mistral, DeepSeek, xAI, Cohere, or Vercel AI Gateway key locally.
+- **Sign in with Mogplex** — opens a browser for account-backed login. This
+  reuses your plan-backed model access, synced model catalog, and remote MCP
+  definitions.
 
 Stored credentials live in `~/.mogplex/auth.json` (file mode `0600`).
 
@@ -87,7 +88,8 @@ See [Concepts → Attach](/cli/concepts/attach).
 
 ## Common first-run issues
 
-- Login succeeds but no models available — add a provider key in [Web Settings](/web/settings) (account-backed login inherits hosted model access).
+- Login succeeds but no models available — check [Available Models](/web/models)
+  and the account plan. Account-backed login inherits managed hosted access.
 - Header says `transport: offline` — core is unreachable. Check network and retry; the daemon transport surfaces a reconnect banner.
 - A slash command "doesn't work" — check `/help` for the actual registry.
 

@@ -98,22 +98,21 @@ When a run exists but stays pending:
 1. Check summary cards for stale pending work or start failures.
 2. Open the run row and inspect the first event.
 3. Check sandbox allocation state if the run needs a sandbox.
-4. Check provider access if the run never reaches a model call.
+4. Check managed model access if the run never reaches a model call.
 5. Check whether the source surface is repeatedly re-enqueuing the same work.
 
 If the run came from the public API, use
 `GET /api/v1/mogplex/runs/{runId}` and
 `GET /api/v1/mogplex/runs/{runId}/events` to compare API state with the UI.
 
-## Model Or Provider Failure
+## Model Or Access Failure
 
-For provider errors:
+For model access errors:
 
 1. Confirm the model exists in [Available Models](/web/models).
-2. Confirm the user or team has provider access.
-3. Confirm a stored provider key is valid if platform AI is not enabled.
-4. Check whether the agent, repo, or route excludes the model.
-5. Compare token and cost fields to see whether the call reached the provider.
+2. Confirm the user or team plan includes access to hosted model usage.
+3. Check whether the agent, repo, or route excludes the model.
+4. Compare token and cost fields to see whether the call reached execution.
 
 Use [Model Selection and Cost](/guides/model-selection-and-cost) when the model
 is available but the default, route, or cost policy is unclear.
@@ -137,7 +136,7 @@ For sandbox-backed failures:
 
 1. Open the linked sandbox from the Activity row when available.
 2. Check root directory, install command, dev command, dev port, and env source.
-3. Check Vercel project or platform sandbox entitlement.
+3. Check managed sandbox access and optional Vercel project metadata.
 4. Check branch and preview URL.
 5. Stop, restart, or delete only after capturing the first failure event.
 
@@ -172,7 +171,7 @@ When handing the issue to another person, include:
 - sandbox ID or preview URL if applicable
 - what changed immediately before the failure
 
-Leave out raw provider keys, `mog_...` tokens, Slack link URLs, decrypted MCP
+Leave out raw credentials, `mog_...` tokens, Slack link URLs, decrypted MCP
 config, and full `.env` files. See
 [Security and Data Handling](/reference/security-and-data-handling) for the
 safe-sharing checklist.

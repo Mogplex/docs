@@ -53,7 +53,7 @@ Sandboxes is the operational runtime list. It answers:
 
 1. Confirm GitHub coverage in [Installations](/web/installations).
 2. Sync and find the repo in [Projects](/web/spaces).
-3. Set root directory, dev command, preview port, Vercel linkage, or env
+3. Set root directory, dev command, preview port, optional Vercel metadata, or env
    mapping if needed.
 4. Open the workspace or start preview from the repo card.
 
@@ -71,11 +71,12 @@ Use Projects to create sub-project entries or set `root_directory`,
 `dev_command`, and `dev_port` explicitly. Do not rely on one repo root when the
 actual app lives under a package or app directory.
 
-## Vercel relationship
+## Billing and Vercel relationship
 
-Sandbox and preview behavior can depend on linked Vercel state, especially when
-the repo uses a user-billed project. If sandbox launch fails after repo setup,
-read [Vercel](/integrations/vercel) before editing routing or agent behavior.
+Sandbox access is billed through Mogplex. Optional linked Vercel project
+metadata can still matter for preview env sync or project-specific settings. If
+sandbox launch fails after repo setup, confirm [Plans & Billing](/plans-and-billing)
+and [Vercel](/integrations/vercel) before editing routing or agent behavior.
 
 ## Read next
 

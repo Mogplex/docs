@@ -28,9 +28,11 @@ the login screen, model picker, and permissions picker.
 
 ## Environment variables
 
-### Auth (provider keys)
+### Auth escape hatches
 
-See the table in [Authentication → Resolution order](/cli/guides/authentication#resolution-order). Setting any provider env var overrides stored credentials for that provider.
+See the table in [Authentication → Resolution order](/cli/guides/authentication#resolution-order).
+Provider env vars are compatibility and development escape hatches; normal
+Mogplex usage should start with account-backed login.
 
 ### Transport selection
 
@@ -65,7 +67,7 @@ The runtime loader merges built-in defaults, user config, project config,
 environment-derived values, and launcher overrides. In normal interactive use,
 prefer the visible cockpit controls first:
 
-- `/login` and the login screen for account and provider credentials
+- `/login` and the login screen for account credentials
 - `/permissions` for permission mode
 - `/model` for current model selection
 - `/mcp` for MCP inspection and sync actions
@@ -77,7 +79,7 @@ better owned by the current session UI.
 
 | Path | Contents |
 | --- | --- |
-| `~/.mogplex/auth.json` | Mogplex token and provider credentials (mode `0600`). |
+| `~/.mogplex/auth.json` | Mogplex token and compatibility auth state (mode `0600`). |
 | `~/.mogplex/config.toml` | User-level advanced config. |
 | `~/.mogplex/permissions.json` | Global permission mode and rules. |
 | `./.mogplex/config.toml` | Project-level advanced config. |

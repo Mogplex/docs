@@ -1,6 +1,6 @@
 ---
 title: Sandbox Setup Checklist
-description: Configure repo, branch, root directory, commands, ports, env, Vercel linkage, and preview expectations before debugging sandbox runs.
+description: Configure repo, branch, root directory, commands, ports, env, managed access, and preview expectations before debugging sandbox runs.
 ---
 
 Use this checklist when a workspace, preview, or cloud run depends on a Mogplex
@@ -20,7 +20,8 @@ contract before changing agents, prompts, routes, or models.
 | Dev command | The preview process must start the actual app or service |
 | Dev port | The preview router needs the port the app listens on |
 | Environment variables | Missing secrets usually look like app boot or preview health failures |
-| Vercel linkage | User-billed preview behavior can depend on linked Vercel project state |
+| Managed sandbox access | Workspace launch depends on the account plan including sandbox access |
+| Vercel project metadata | Optional env sync and preview settings can depend on linked Vercel project state |
 | Branch intent | Decide whether the sandbox should work on default branch, an existing branch, or a new branch |
 | Timeout and idle behavior | Long-running previews need realistic timeout expectations |
 
@@ -31,8 +32,8 @@ contract before changing agents, prompts, routes, or models.
 3. Set `root_directory` for monorepos.
 4. Set install command, dev command, and dev port.
 5. Add required env vars or secrets.
-6. Link or confirm Vercel state when the repo relies on Vercel-backed preview
-   behavior.
+6. Confirm managed sandbox access, and only then check optional Vercel-linked
+   preview metadata if the repo uses it.
 7. Launch one workspace manually before adding triggers or automations.
 
 If the manual workspace launch fails, fix the project settings before debugging

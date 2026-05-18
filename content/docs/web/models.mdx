@@ -8,7 +8,7 @@ table.
 
 That is intentional. Model availability, pricing, context length, provider
 reachability, recommendations, and enabled state can change by account, team,
-provider keys, and sync state. Use this page to understand how to read the
+plan, entitlement, and sync state. Use this page to understand how to read the
 catalog and where model choices take effect.
 
 ## Where to see models
@@ -50,15 +50,14 @@ rewrite of every saved configuration.
 For a model to be useful, two things must line up:
 
 1. the model must be visible and available in the catalog
-2. the account or team must have a provider path that can reach it
+2. the account or team must have plan-backed access to use it
 
-Mogplex supports hosted provider access through Settings API keys and platform
-access. The Settings **API Keys** section stores encrypted keys for provider
-access such as AI Gateway, OpenAI, and Anthropic. The runtime uses that provider
-access when it resolves a selected model for hosted work.
+Mogplex-hosted model access is managed by the account plan. Settings can show
+which models are enabled for the account, but users do not need external model
+credentials for hosted runs.
 
-If platform AI is not enabled for an account, add a supported provider key in
-[Settings](/web/settings) before debugging agents, flows, or CLI login.
+If no usable model is available, check the account plan or entitlement state
+before debugging agents, flows, or CLI login.
 
 ## Enabled models vs hidden models
 
@@ -120,14 +119,14 @@ That scope split is:
 | Symptom | Check |
 | --- | --- |
 | No models appear in an agent picker | Open Settings → Models and confirm at least one model is enabled. |
-| A model appears but a run fails with provider access errors | Add or verify provider keys in Settings → API Keys. |
+| A model appears but a run fails with access errors | Check the account plan, entitlement state, and model availability. |
 | The CLI signs in but no shared model list appears | Confirm the web account has model access and that the CLI is using account-backed login. |
 | A saved agent references a hidden or stale model | Move it to a visible enabled model in the agent editor. |
 | A repo cannot use a globally enabled model | Check repo settings for a repo-specific model exclusion. |
 
 ## Read next
 
-- [Settings](/web/settings) for account-level API keys, preferences, and models
+- [Settings](/web/settings) for account preferences, access tokens, and models
 - [API → Models](/web/api/models) for the route contract behind the catalog
 - [Agents](/web/agents) for model choice on reusable agents
 - [CLI → Authentication](/cli/guides/authentication) for account-backed model

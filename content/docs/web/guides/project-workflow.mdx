@@ -87,21 +87,16 @@ Two practical nuances matter here:
 - Once installation-backed sync is active, covered repos become the preferred
   source of truth in Projects, which helps avoid stale OAuth-only duplicates.
 
-## 5. Set up sandbox billing if you plan to launch workspaces
+## 5. Confirm managed sandbox access if you plan to launch workspaces
 
-Repo import and routing setup do not require Vercel, but sandbox-backed
-workspace sessions do.
+Repo import and routing setup do not require sandbox access, but
+sandbox-backed workspace sessions do.
 
-Mogplex supports two main paths:
+Hosted sandbox access is billed through Mogplex. Users do not need to attach an
+external sandbox account for workspace sessions.
 
-- Mogplex-managed platform sandbox access for accounts that have it enabled
-- your own Vercel billing project linked through [Settings](/web/settings)
-
-If Vercel is connected but you have not selected a billing project yet,
-Projects will push you toward creating a project with Vercel billing attached.
-
-If you only want to configure routing first, you can do that before you finish
-the sandbox path.
+If you only want to configure routing first, you can do that before the account
+has managed sandbox access.
 
 ## 6. Open a workspace
 
@@ -153,7 +148,7 @@ If you want the shortest version:
 1. Connect GitHub in [Settings](/web/settings)
 2. Install the GitHub App for the repo owner
 3. Open [Projects](/web/spaces) and import or create the repo
-4. Link Vercel billing if you need sandbox-backed workspaces
+4. Confirm managed sandbox access if you need sandbox-backed workspaces
 5. Open a workspace
 6. Add a Trigger, Assignment, or Automation
 7. Test the exact GitHub event you expect, then confirm it in
