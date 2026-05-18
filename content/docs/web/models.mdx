@@ -1,15 +1,26 @@
 ---
 title: Available Models
-description: Understand where Mogplex shows the live model catalog, how defaults and enabled models work, and how the web app, CLI, agents, flows, and repos use model access.
+description: Browse the Mogplex model catalog snapshot, then learn how defaults and enabled models work and how the web app, CLI, agents, flows, and repos use model access.
 ---
 
-Mogplex keeps the live model catalog in the web app, not in a static docs
-table.
+import { AiModelsTable } from '@/components/ai-models-table';
 
-That is intentional. Model availability, pricing, context length, provider
-reachability, recommendations, and enabled state can change by account, team,
-plan, entitlement, and sync state. Use this page to understand how to read the
-catalog and where model choices take effect.
+The live model catalog lives in the web app. This page mirrors a recent
+snapshot for browsing, then explains how to read the catalog and where model
+choices take effect.
+
+Model availability, pricing, context length, provider reachability,
+recommendations, and enabled state can change by account, team, plan,
+entitlement, and sync state. Treat the snapshot below as a reference; the web
+app is the source of truth.
+
+## Catalog snapshot
+
+<AiModelsTable />
+
+Search by id, provider, or name. Filter by provider or capability — selecting
+multiple capabilities requires all of them. The snapshot is regenerated from
+the Supabase `ai_models` table by `pnpm gen:models`.
 
 ## Where to see models
 
