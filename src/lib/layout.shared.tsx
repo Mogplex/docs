@@ -5,7 +5,7 @@ export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
-        <span className="inline-flex items-center gap-2 text-fd-foreground">
+        <span className="inline-flex items-center gap-2 text-[rgba(255,255,255,0.96)]">
           <svg
             width="20"
             height="20"
