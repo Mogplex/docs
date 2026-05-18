@@ -53,18 +53,22 @@ Representative response:
     "github_state": "app_installed_with_synced_repos",
     "github_installation_count": 2,
     "github_covered_repo_count": 8,
-    "managed_access": {
-      "allowModels": true,
-      "allowSandboxes": false
+    "platform_access": {
+      "allowPlatformAi": true,
+      "allowPlatformSandbox": false
     },
     "vercel": {
       "platformState": "ready",
+      "personalState": "linked",
       "linkedProjectState": "repo",
-      "statusLabel": "Project metadata ready"
+      "statusLabel": "Platform ready"
     }
   }
 }
 ```
+
+Current API field names still use `platform_access` and `allowPlatform*`.
+Treat those fields as the route's managed account-access flags.
 
 Use this call to answer:
 
