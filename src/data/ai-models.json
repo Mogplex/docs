@@ -1,0 +1,1710 @@
+{
+  "source": "https://enxvgkxsrpbtqlaeotjz.supabase.co/rest/v1/ai_models",
+  "fetched_at": "2026-05-18T21:17:53.304Z",
+  "count": 84,
+  "models": [
+    {
+      "id": "alibaba/qwen3-max-thinking",
+      "provider": "alibaba",
+      "name": "Qwen 3 Max Thinking",
+      "context_length": 256000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.0000012,
+      "pricing_output": 0.000006,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3.5-flash",
+      "provider": "alibaba",
+      "name": "Qwen 3.5 Flash",
+      "context_length": 1000000,
+      "capabilities": [
+        "vision",
+        "explicit-caching",
+        "file-input",
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 1e-7,
+      "pricing_output": 4e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3.5-plus",
+      "provider": "alibaba",
+      "name": "Qwen 3.5 Plus",
+      "context_length": 1000000,
+      "capabilities": [
+        "vision",
+        "explicit-caching",
+        "file-input",
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 4e-7,
+      "pricing_output": 0.0000024,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3.6-27b",
+      "provider": "alibaba",
+      "name": "Qwen 3.6 27B",
+      "context_length": 256000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "vision"
+      ],
+      "pricing_input": 6e-7,
+      "pricing_output": 0.0000036,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen-3.6-max-preview",
+      "provider": "alibaba",
+      "name": "Qwen 3.6 Max Preview",
+      "context_length": 240000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "vision"
+      ],
+      "pricing_input": 0.0000013,
+      "pricing_output": 0.0000078,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3.6-plus",
+      "provider": "alibaba",
+      "name": "Qwen 3.6 Plus",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input"
+      ],
+      "pricing_input": 5e-7,
+      "pricing_output": 0.000003,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3-max",
+      "provider": "alibaba",
+      "name": "Qwen3 Max",
+      "context_length": 262144,
+      "capabilities": [
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.0000012,
+      "pricing_output": 0.000006,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3-max-preview",
+      "provider": "alibaba",
+      "name": "Qwen3 Max Preview",
+      "context_length": 262144,
+      "capabilities": [
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.0000012,
+      "pricing_output": 0.000006,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3-vl-thinking",
+      "provider": "alibaba",
+      "name": "Qwen3 VL 235B A22B Thinking",
+      "context_length": 131072,
+      "capabilities": [
+        "vision",
+        "reasoning",
+        "tool-use",
+        "file-input"
+      ],
+      "pricing_input": 4e-7,
+      "pricing_output": 0.000004,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "alibaba/qwen3-235b-a22b-thinking",
+      "provider": "alibaba",
+      "name": "Qwen3 VL 235B A22B Thinking",
+      "context_length": 131072,
+      "capabilities": [
+        "vision",
+        "reasoning",
+        "tool-use",
+        "file-input"
+      ],
+      "pricing_input": 4e-7,
+      "pricing_output": 0.000004,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "anthropic/claude-haiku-4.5",
+      "provider": "anthropic",
+      "name": "Claude Haiku 4.5",
+      "context_length": 200000,
+      "capabilities": [
+        "file-input",
+        "reasoning",
+        "tool-use",
+        "vision",
+        "explicit-caching"
+      ],
+      "pricing_input": 0.000001,
+      "pricing_output": 0.000005,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "anthropic/claude-opus-4.6",
+      "provider": "anthropic",
+      "name": "Claude Opus 4.6",
+      "context_length": 1000000,
+      "capabilities": [
+        "tool-use",
+        "reasoning",
+        "vision",
+        "file-input",
+        "explicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.000005,
+      "pricing_output": 0.000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "anthropic/claude-opus-4.7",
+      "provider": "anthropic",
+      "name": "Claude Opus 4.7",
+      "context_length": 1000000,
+      "capabilities": [
+        "tool-use",
+        "reasoning",
+        "vision",
+        "file-input",
+        "explicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.000005,
+      "pricing_output": 0.000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": true,
+      "recommendation_bucket": "frontier"
+    },
+    {
+      "id": "anthropic/claude-sonnet-4.5",
+      "provider": "anthropic",
+      "name": "Claude Sonnet 4.5",
+      "context_length": 1000000,
+      "capabilities": [
+        "file-input",
+        "reasoning",
+        "tool-use",
+        "vision",
+        "explicit-caching"
+      ],
+      "pricing_input": 0.000003,
+      "pricing_output": 0.000015,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "anthropic/claude-sonnet-4.6",
+      "provider": "anthropic",
+      "name": "Claude Sonnet 4.6",
+      "context_length": 1000000,
+      "capabilities": [
+        "file-input",
+        "reasoning",
+        "tool-use",
+        "vision",
+        "explicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.000003,
+      "pricing_output": 0.000015,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": true,
+      "recommendation_bucket": "frontier"
+    },
+    {
+      "id": "arcee-ai/trinity-large-thinking",
+      "provider": "arcee-ai",
+      "name": "Trinity Large Thinking",
+      "context_length": 262100,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 2.5e-7,
+      "pricing_output": 9e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "bytedance/seed-1.6",
+      "provider": "bytedance",
+      "name": "Seed 1.6",
+      "context_length": 256000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 2.5e-7,
+      "pricing_output": 0.000002,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "deepseek/deepseek-v3.1-terminus",
+      "provider": "deepseek",
+      "name": "DeepSeek V3.1 Terminus",
+      "context_length": 131072,
+      "capabilities": [
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 2.7e-7,
+      "pricing_output": 0.000001,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "deepseek/deepseek-v3.2",
+      "provider": "deepseek",
+      "name": "DeepSeek V3.2",
+      "context_length": 128000,
+      "capabilities": [
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 2.8e-7,
+      "pricing_output": 4.2e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "deepseek/deepseek-v3.2-thinking",
+      "provider": "deepseek",
+      "name": "DeepSeek V3.2 Thinking",
+      "context_length": 128000,
+      "capabilities": [
+        "tool-use"
+      ],
+      "pricing_input": 6.2e-7,
+      "pricing_output": 0.00000185,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "deepseek/deepseek-v4-flash",
+      "provider": "deepseek",
+      "name": "DeepSeek V4 Flash",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 1.4e-7,
+      "pricing_output": 2.8e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "deepseek/deepseek-v4-pro",
+      "provider": "deepseek",
+      "name": "DeepSeek V4 Pro",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 4.35e-7,
+      "pricing_output": 8.7e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "deepseek/deepseek-v3.1",
+      "provider": "deepseek",
+      "name": "DeepSeek-V3.1",
+      "context_length": 163840,
+      "capabilities": [
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 5.6e-7,
+      "pricing_output": 0.00000168,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemini-3-flash",
+      "provider": "google",
+      "name": "Gemini 3 Flash",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "file-input",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 5e-7,
+      "pricing_output": 0.000003,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemini-3-pro-preview",
+      "provider": "google",
+      "name": "Gemini 3 Pro Preview",
+      "context_length": 1000000,
+      "capabilities": [
+        "file-input",
+        "tool-use",
+        "reasoning",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.000002,
+      "pricing_output": 0.000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemini-3.1-flash-lite",
+      "provider": "google",
+      "name": "Gemini 3.1 Flash Lite",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "vision",
+        "web-search"
+      ],
+      "pricing_input": 2.5e-7,
+      "pricing_output": 0.0000015,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemini-3.1-flash-lite-preview",
+      "provider": "google",
+      "name": "Gemini 3.1 Flash Lite Preview",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input",
+        "web-search"
+      ],
+      "pricing_input": 2.5e-7,
+      "pricing_output": 0.0000015,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemini-3.1-pro-preview",
+      "provider": "google",
+      "name": "Gemini 3.1 Pro Preview",
+      "context_length": 1000000,
+      "capabilities": [
+        "file-input",
+        "tool-use",
+        "reasoning",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.000002,
+      "pricing_output": 0.000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemma-4-26b-a4b-it",
+      "provider": "google",
+      "name": "Gemma 4 26B A4B IT",
+      "context_length": 262144,
+      "capabilities": [
+        "vision",
+        "tool-use",
+        "file-input"
+      ],
+      "pricing_input": 1.3e-7,
+      "pricing_output": 4e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "google/gemma-4-31b-it",
+      "provider": "google",
+      "name": "Gemma 4 31B IT",
+      "context_length": 262144,
+      "capabilities": [
+        "tool-use",
+        "vision",
+        "file-input"
+      ],
+      "pricing_input": 1.4e-7,
+      "pricing_output": 4e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "inception/mercury-2",
+      "provider": "inception",
+      "name": "Mercury 2",
+      "context_length": 128000,
+      "capabilities": [
+        "tool-use",
+        "reasoning"
+      ],
+      "pricing_input": 2.5e-7,
+      "pricing_output": 7.5e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "kwaipilot/kat-coder-pro-v2",
+      "provider": "kwaipilot",
+      "name": "Kat Coder Pro V2",
+      "context_length": 256000,
+      "capabilities": [
+        "tool-use",
+        "reasoning",
+        "implicit-caching"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 0.0000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "meituan/longcat-flash-chat",
+      "provider": "meituan",
+      "name": "LongCat Flash Chat",
+      "context_length": 128000,
+      "capabilities": [
+        "tool-use"
+      ],
+      "pricing_input": null,
+      "pricing_output": null,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "minimax/minimax-m2",
+      "provider": "minimax",
+      "name": "MiniMax M2",
+      "context_length": 205000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 0.0000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "minimax/minimax-m2.1",
+      "provider": "minimax",
+      "name": "MiniMax M2.1",
+      "context_length": 204800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 0.0000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "minimax/minimax-m2.1-lightning",
+      "provider": "minimax",
+      "name": "MiniMax M2.1 Lightning",
+      "context_length": 204800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 0.0000024,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "minimax/minimax-m2.5",
+      "provider": "minimax",
+      "name": "MiniMax M2.5",
+      "context_length": 204800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 0.0000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": true,
+      "recommendation_bucket": "open"
+    },
+    {
+      "id": "minimax/minimax-m2.5-highspeed",
+      "provider": "minimax",
+      "name": "MiniMax M2.5 High Speed",
+      "context_length": 204800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 6e-7,
+      "pricing_output": 0.0000024,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "minimax/minimax-m2.7",
+      "provider": "minimax",
+      "name": "Minimax M2.7",
+      "context_length": 204800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "vision"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 0.0000012,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": true,
+      "recommendation_bucket": "open"
+    },
+    {
+      "id": "minimax/minimax-m2.7-highspeed",
+      "provider": "minimax",
+      "name": "MiniMax M2.7 High Speed",
+      "context_length": 204800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "vision"
+      ],
+      "pricing_input": 6e-7,
+      "pricing_output": 0.0000024,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "mistral/devstral-2",
+      "provider": "mistral",
+      "name": "Devstral 2",
+      "context_length": 256000,
+      "capabilities": [
+        "tool-use"
+      ],
+      "pricing_input": 4e-7,
+      "pricing_output": 0.000002,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "moonshotai/kimi-k2",
+      "provider": "moonshotai",
+      "name": "Kimi K2 Instruct",
+      "context_length": 131072,
+      "capabilities": [
+        "tool-use"
+      ],
+      "pricing_input": 5.7e-7,
+      "pricing_output": 0.0000023,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "moonshotai/kimi-k2-thinking",
+      "provider": "moonshotai",
+      "name": "Kimi K2 Thinking",
+      "context_length": 262114,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 6e-7,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "moonshotai/kimi-k2-thinking-turbo",
+      "provider": "moonshotai",
+      "name": "Kimi K2 Thinking Turbo",
+      "context_length": 262114,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.00000115,
+      "pricing_output": 0.000008,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "moonshotai/kimi-k2-turbo",
+      "provider": "moonshotai",
+      "name": "Kimi K2 Turbo",
+      "context_length": 256000,
+      "capabilities": [
+        "tool-use"
+      ],
+      "pricing_input": 0.00000115,
+      "pricing_output": 0.000008,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "moonshotai/kimi-k2.5",
+      "provider": "moonshotai",
+      "name": "Kimi K2.5",
+      "context_length": 262114,
+      "capabilities": [
+        "reasoning",
+        "vision",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 6e-7,
+      "pricing_output": 0.000003,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "moonshotai/kimi-k2.6",
+      "provider": "moonshotai",
+      "name": "Kimi K2.6",
+      "context_length": 262000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "vision",
+        "file-input",
+        "implicit-caching"
+      ],
+      "pricing_input": 9.5e-7,
+      "pricing_output": 0.000004,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.1-codex-max",
+      "provider": "openai",
+      "name": "GPT 5.1 Codex Max",
+      "context_length": 400000,
+      "capabilities": [
+        "reasoning",
+        "file-input",
+        "tool-use",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.00001,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.1-codex-mini",
+      "provider": "openai",
+      "name": "GPT 5.1 Codex Mini",
+      "context_length": 400000,
+      "capabilities": [
+        "reasoning",
+        "file-input",
+        "vision",
+        "tool-use",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 2.5e-7,
+      "pricing_output": 0.000002,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.1-thinking",
+      "provider": "openai",
+      "name": "GPT 5.1 Thinking",
+      "context_length": 400000,
+      "capabilities": [
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "reasoning",
+        "vision",
+        "web-search",
+        "image-generation"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.00001,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.2",
+      "provider": "openai",
+      "name": "GPT 5.2",
+      "context_length": 400000,
+      "capabilities": [
+        "tool-use",
+        "vision",
+        "file-input",
+        "reasoning",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00000175,
+      "pricing_output": 0.000014,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.2-chat",
+      "provider": "openai",
+      "name": "GPT 5.2 Chat",
+      "context_length": 128000,
+      "capabilities": [
+        "vision",
+        "file-input",
+        "tool-use",
+        "reasoning",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00000175,
+      "pricing_output": 0.000014,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.2-codex",
+      "provider": "openai",
+      "name": "GPT 5.2 Codex",
+      "context_length": 400000,
+      "capabilities": [
+        "file-input",
+        "tool-use",
+        "reasoning",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.00000175,
+      "pricing_output": 0.000014,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.3-codex",
+      "provider": "openai",
+      "name": "GPT 5.3 Codex",
+      "context_length": 400000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "file-input",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.00000175,
+      "pricing_output": 0.000014,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.4",
+      "provider": "openai",
+      "name": "GPT 5.4",
+      "context_length": 1050000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "vision",
+        "file-input",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.0000025,
+      "pricing_output": 0.000015,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.4-mini",
+      "provider": "openai",
+      "name": "GPT 5.4 Mini",
+      "context_length": 400000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "vision",
+        "file-input",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 7.5e-7,
+      "pricing_output": 0.0000045,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.4-nano",
+      "provider": "openai",
+      "name": "GPT 5.4 Nano",
+      "context_length": 400000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "web-search",
+        "vision",
+        "file-input"
+      ],
+      "pricing_input": 2e-7,
+      "pricing_output": 0.00000125,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.4-pro",
+      "provider": "openai",
+      "name": "GPT 5.4 Pro",
+      "context_length": 1050000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "vision",
+        "file-input",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00003,
+      "pricing_output": 0.00018,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.5",
+      "provider": "openai",
+      "name": "GPT 5.5",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "web-search",
+        "implicit-caching",
+        "file-input",
+        "vision"
+      ],
+      "pricing_input": 0.000005,
+      "pricing_output": 0.00003,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.5-pro",
+      "provider": "openai",
+      "name": "GPT 5.5 Pro",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "web-search",
+        "vision"
+      ],
+      "pricing_input": 0.00003,
+      "pricing_output": 0.00018,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5-codex",
+      "provider": "openai",
+      "name": "GPT-5-Codex",
+      "context_length": 400000,
+      "capabilities": [
+        "file-input",
+        "implicit-caching",
+        "reasoning",
+        "tool-use",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.00001,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.1-instant",
+      "provider": "openai",
+      "name": "GPT-5.1 Instant",
+      "context_length": 128000,
+      "capabilities": [
+        "tool-use",
+        "vision",
+        "file-input",
+        "reasoning",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.00001,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.1-codex",
+      "provider": "openai",
+      "name": "GPT-5.1-Codex",
+      "context_length": 400000,
+      "capabilities": [
+        "file-input",
+        "tool-use",
+        "reasoning",
+        "vision",
+        "web-search",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.00001,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "openai/gpt-5.3-chat",
+      "provider": "openai",
+      "name": "GPT-5.3 Chat",
+      "context_length": 128000,
+      "capabilities": [
+        "vision",
+        "file-input",
+        "tool-use",
+        "reasoning",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00000175,
+      "pricing_output": 0.000014,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.20-non-reasoning-beta",
+      "provider": "xai",
+      "name": "Grok 4.20 Beta Non-Reasoning",
+      "context_length": 2000000,
+      "capabilities": [
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.20-reasoning-beta",
+      "provider": "xai",
+      "name": "Grok 4.20 Beta Reasoning",
+      "context_length": 2000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "vision",
+        "file-input",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.20-multi-agent-beta",
+      "provider": "xai",
+      "name": "Grok 4.20 Multi Agent Beta",
+      "context_length": 2000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.20-multi-agent",
+      "provider": "xai",
+      "name": "Grok 4.20 Multi-Agent",
+      "context_length": 2000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.20-non-reasoning",
+      "provider": "xai",
+      "name": "Grok 4.20 Non-Reasoning",
+      "context_length": 2000000,
+      "capabilities": [
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.20-reasoning",
+      "provider": "xai",
+      "name": "Grok 4.20 Reasoning",
+      "context_length": 2000000,
+      "capabilities": [
+        "reasoning",
+        "vision",
+        "tool-use",
+        "file-input",
+        "implicit-caching",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xai/grok-4.3",
+      "provider": "xai",
+      "name": "Grok 4.3",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "vision",
+        "web-search"
+      ],
+      "pricing_input": 0.00000125,
+      "pricing_output": 0.0000025,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xiaomi/mimo-v2.5",
+      "provider": "xiaomi",
+      "name": "MiMo M2.5",
+      "context_length": 1050000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "file-input",
+        "vision"
+      ],
+      "pricing_input": 4e-7,
+      "pricing_output": 0.000002,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xiaomi/mimo-v2-flash",
+      "provider": "xiaomi",
+      "name": "MiMo V2 Flash",
+      "context_length": 262144,
+      "capabilities": [
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 1e-7,
+      "pricing_output": 3e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xiaomi/mimo-v2-pro",
+      "provider": "xiaomi",
+      "name": "MiMo V2 Pro",
+      "context_length": 1000000,
+      "capabilities": [
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 0.000001,
+      "pricing_output": 0.000003,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "xiaomi/mimo-v2.5-pro",
+      "provider": "xiaomi",
+      "name": "MiMo V2.5 Pro",
+      "context_length": 1050000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "vision",
+        "file-input",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.000001,
+      "pricing_output": 0.000003,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-4.6",
+      "provider": "zai",
+      "name": "GLM 4.6",
+      "context_length": 200000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 6e-7,
+      "pricing_output": 0.0000022,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-4.7",
+      "provider": "zai",
+      "name": "GLM 4.7",
+      "context_length": 131000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.00000225,
+      "pricing_output": 0.00000275,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-4.7-flash",
+      "provider": "zai",
+      "name": "GLM 4.7 Flash",
+      "context_length": 200000,
+      "capabilities": [
+        "reasoning",
+        "tool-use"
+      ],
+      "pricing_input": 7e-8,
+      "pricing_output": 4e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-5",
+      "provider": "zai",
+      "name": "GLM 5",
+      "context_length": 202800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.000001,
+      "pricing_output": 0.0000032,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-5-turbo",
+      "provider": "zai",
+      "name": "GLM 5 Turbo",
+      "context_length": 202800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.0000012,
+      "pricing_output": 0.000004,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-5.1",
+      "provider": "zai",
+      "name": "GLM 5.1",
+      "context_length": 202800,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 0.0000014,
+      "pricing_output": 0.0000044,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-5v-turbo",
+      "provider": "zai",
+      "name": "GLM 5V Turbo",
+      "context_length": 200000,
+      "capabilities": [
+        "reasoning",
+        "tool-use",
+        "implicit-caching",
+        "vision",
+        "file-input"
+      ],
+      "pricing_input": 0.0000012,
+      "pricing_output": 0.000004,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-4.6v",
+      "provider": "zai",
+      "name": "GLM-4.6V",
+      "context_length": 128000,
+      "capabilities": [
+        "vision",
+        "file-input",
+        "reasoning",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": 3e-7,
+      "pricing_output": 9e-7,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    },
+    {
+      "id": "zai/glm-4.6v-flash",
+      "provider": "zai",
+      "name": "GLM-4.6V-Flash",
+      "context_length": 128000,
+      "capabilities": [
+        "vision",
+        "reasoning",
+        "file-input",
+        "tool-use",
+        "implicit-caching"
+      ],
+      "pricing_input": null,
+      "pricing_output": null,
+      "pricing_cache_read": null,
+      "pricing_cache_write": null,
+      "is_available": true,
+      "is_hidden": false,
+      "is_recommended": false,
+      "recommendation_bucket": null
+    }
+  ]
+}
