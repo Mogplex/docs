@@ -1,0 +1,134 @@
+---
+title: Available Models
+description: Understand where Mogplex shows the live model catalog, how defaults and enabled models work, and how the web app, CLI, agents, flows, and repos use model access.
+---
+
+Mogplex keeps the live model catalog in the web app, not in a static docs
+table.
+
+That is intentional. Model availability, pricing, context length, provider
+reachability, recommendations, and enabled state can change by account, team,
+provider keys, and sync state. Use this page to understand how to read the
+catalog and where model choices take effect.
+
+## Where to see models
+
+Open [Settings](/web/settings) and use the **Models** section.
+
+That section is the product-facing model catalog. It shows the models Mogplex
+can currently present to the signed-in account, including:
+
+- provider
+- model name and model id
+- context length when known
+- input and output pricing when known
+- capabilities when present in the catalog
+- availability
+- enabled or disabled state
+- recommendation badges when Mogplex has current recommendation metadata
+- the current default model
+
+The API-shaped reference for this same data lives at
+[API → Models](/web/api/models).
+
+## What the Models section controls
+
+The Models section controls account-level model preference state.
+
+| Control | What it changes |
+| --- | --- |
+| Enabled / Disabled | Whether a model is selectable for new work. Disabled models are removed from normal pickers and from the CLI-oriented model list. |
+| Set default | Which enabled model new agents and new automation nodes use unless another model is chosen. |
+| Search and filters | How you inspect the catalog by provider, model id, state, pricing metadata, and sort order. |
+
+Existing agents, automation nodes, and repo settings can still carry explicit
+model choices. A default is the starting point for new work, not a global
+rewrite of every saved configuration.
+
+## How model access is determined
+
+For a model to be useful, two things must line up:
+
+1. the model must be visible and available in the catalog
+2. the account or team must have a provider path that can reach it
+
+Mogplex supports hosted provider access through Settings API keys and platform
+access. The Settings **API Keys** section stores encrypted keys for provider
+access such as AI Gateway, OpenAI, and Anthropic. The runtime uses that provider
+access when it resolves a selected model for hosted work.
+
+If platform AI is not enabled for an account, add a supported provider key in
+[Settings](/web/settings) before debugging agents, flows, or CLI login.
+
+## Enabled models vs hidden models
+
+Most users only need the enabled/disabled split:
+
+- **Enabled** models appear in normal model pickers.
+- **Disabled** models stay in the account catalog but are not offered for new
+  work.
+
+Mogplex also has a hidden-model state for legacy catalog hygiene. Hidden models
+do not appear as normal choices, but saved agents or flows can still show legacy
+warnings if they reference an old hidden model id. Move those saved definitions
+to a visible enabled model when you edit them.
+
+## How the CLI uses models
+
+When you sign in to the CLI with Mogplex account login, the cockpit can reuse
+the hosted model catalog.
+
+In the CLI:
+
+- the Header shows the active model for the current run
+- `/model` opens the Model Picker drawer
+- the picker uses the synced enabled model list when account-backed state is
+  available
+- switching models can be gated by the `change_model` approval rule
+
+See [CLI → Quickstart](/cli/quickstart) and
+[Reference → Drawers](/cli/reference/drawers).
+
+## How agents and automations use models
+
+[Agents](/web/agents) choose from enabled models. When you create a new custom
+agent or fork a preset, Mogplex starts from the current default model unless you
+choose another enabled model.
+
+[Automations](/web/automations) follow the same principle for new agent nodes.
+The default model is a convenience for new nodes; node-level overrides still
+belong to the automation draft.
+
+If an agent or automation node says its model is unavailable, check the Models
+section before editing prompts or routing logic.
+
+## Repo-level exclusions
+
+Repos can have their own model surface in repo settings.
+
+Models enabled globally can be excluded for one repo or space without disabling
+them everywhere else. Use this when one codebase should not use a specific
+provider, model family, or cost profile.
+
+That scope split is:
+
+- global enabled state in **Settings → Models**
+- repo-specific exclusions in the repo or space settings
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| No models appear in an agent picker | Open Settings → Models and confirm at least one model is enabled. |
+| A model appears but a run fails with provider access errors | Add or verify provider keys in Settings → API Keys. |
+| The CLI signs in but no shared model list appears | Confirm the web account has model access and that the CLI is using account-backed login. |
+| A saved agent references a hidden or stale model | Move it to a visible enabled model in the agent editor. |
+| A repo cannot use a globally enabled model | Check repo settings for a repo-specific model exclusion. |
+
+## Read next
+
+- [Settings](/web/settings) for account-level API keys, preferences, and models
+- [API → Models](/web/api/models) for the route contract behind the catalog
+- [Agents](/web/agents) for model choice on reusable agents
+- [CLI → Authentication](/cli/guides/authentication) for account-backed model
+  sync in the CLI

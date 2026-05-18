@@ -1,0 +1,96 @@
+---
+title: GitHub
+description: Connect Mogplex to GitHub identity, App coverage, repo import, comments, PRs, issues, reviews, triggers, and automations.
+---
+
+GitHub is the first integration most Mogplex accounts need.
+
+It does two separate jobs:
+
+- identity and repo discovery through GitHub OAuth
+- webhook-backed routing through the Mogplex GitHub App
+
+Keep those separate while debugging. A repo can be visible in
+[Projects](/web/spaces) and still fail to trigger hosted work if the owner does
+not have GitHub App coverage.
+
+## Setup order
+
+1. Open [Settings](/web/settings) and connect GitHub.
+2. Install the Mogplex GitHub App for the user or org that owns the repos.
+3. Confirm installation coverage in [Installations](/web/installations).
+4. Sync or import repos in [Projects](/web/spaces).
+5. Choose the routing surface that matches the work:
+   [Triggers](/web/triggers), [Assignments](/web/assignments), or
+   [Automations](/web/automations).
+6. Verify the first run in [Observability](/web/observability).
+
+## OAuth vs GitHub App coverage
+
+| State | What it unlocks | What it does not unlock yet |
+| --- | --- | --- |
+| GitHub disconnected | Nothing GitHub-backed | Repo import, repo creation, webhook routing |
+| OAuth connected | Account identity and repo import | Webhook-backed routing |
+| App installed | Repo coverage for GitHub events | Synced repos until import or sync completes |
+| App installed and repos synced | Full GitHub-backed setup | N/A |
+
+Use [GitHub App Coverage](/web/guides/github-app-coverage) when a repo is
+visible but [Triggers](/web/triggers) or [Automations](/web/automations) cannot
+route work into it.
+
+## What GitHub can start
+
+Mogplex GitHub routing can start work from issue comments, PR comments, PR
+review comments, commit comments, repo events, and the specific routing events
+exposed by the current trigger or automation surface.
+
+The important choice is scope:
+
+- use [Triggers](/web/triggers) for one GitHub event waking one agent
+- use [Assignments](/web/assignments) for durable repo-owned work
+- use [Automations](/web/automations) for graph-shaped work with branching,
+  delays, publishing, or parallel agents
+
+## Mention routing
+
+Mogplex recognizes two mention forms in GitHub comments:
+
+- `@mogplex`
+- `@mogplex/<agent-slug>`
+
+Bare `@mogplex` routes only to the default mention target. Targeted mentions
+route by agent slug.
+
+Use [GitHub Mention Routing](/web/guides/github-mention-routing) for the exact
+rules, including entry-agent behavior in automations.
+
+## Where to check state
+
+- [Settings](/web/settings): GitHub connection state and account-level setup
+- [Installations](/web/installations): App coverage, repo eligibility, and
+  synced repo state
+- [Projects](/web/spaces): imported repo list, repo settings, and workspace
+  entry points
+- [Observability](/web/observability): run status and failure trail after a
+  GitHub event starts work
+
+## Common failures
+
+- **Repo is visible but triggers are empty**: OAuth is connected, but App
+  coverage is missing for the repo owner.
+- **Mention does not wake the expected agent**: the comment may be bare
+  `@mogplex` when it needed `@mogplex/<agent-slug>`, or the wrong route is
+  marked default.
+- **Automation cannot find the expected repo**: check installation coverage and
+  repo sync before editing the automation.
+- **PR review work starts in the wrong shape**: use an Assignment for standing
+  repo responsibility, not a one-off Trigger.
+
+## Read next
+
+<Cards>
+  <Card title="GitHub App Coverage" href="/web/guides/github-app-coverage" />
+  <Card title="GitHub Mention Routing" href="/web/guides/github-mention-routing" />
+  <Card title="Project Workflow" href="/web/guides/project-workflow" />
+  <Card title="Choose the Right Routing Surface" href="/web/guides/choose-routing-surface" />
+</Cards>

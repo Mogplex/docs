@@ -1,0 +1,88 @@
+---
+title: Projects and Sandboxes
+description: Understand how Mogplex connects imported repos, workspace sessions, repo settings, preview runtimes, and sandbox operations.
+---
+
+Projects and Sandboxes are the repo execution layer of the app.
+
+Use [Projects](/web/spaces) when you are choosing or configuring a repo. Use
+[Sandboxes](/web/sandboxes) when the runtime itself is the thing you need to
+inspect or control.
+
+## Mental model
+
+| Term | Meaning |
+| --- | --- |
+| Repo | The imported GitHub repository Mogplex knows about |
+| Project | The app grouping layer shown as Projects at `/spaces` |
+| Workspace session | The live repo session you open from the app |
+| Sandbox | The runtime and preview environment attached to repo work |
+
+This split matters because repo visibility, workspace launch, and sandbox
+health are related but not identical.
+
+## Use Projects when
+
+- syncing repos or checking whether the right repo is visible
+- searching and organizing repo cards
+- opening a workspace
+- configuring root directory, install command, dev command, dev port, env
+  mapping, timeout, secrets, or snapshot state
+- creating repo-bound assignments or cron-backed work
+- choosing a sub-project inside a monorepo
+
+Projects is where sandbox launch usually begins because the repo card has the
+repo settings needed to start the right runtime.
+
+## Use Sandboxes when
+
+- you need one cross-repo list of live and pending previews
+- a runtime is stuck creating, installing, unhealthy, stale, or attached to the
+  wrong branch
+- you need to open a workspace pinned to a specific sandbox instance
+- you need manual Stop or Delete controls
+- you want to jump from a runtime to health or observability
+
+Sandboxes is the operational runtime list. It answers:
+
+**Which preview is actually alive right now?**
+
+## Common paths
+
+### First repo setup
+
+1. Confirm GitHub coverage in [Installations](/web/installations).
+2. Sync and find the repo in [Projects](/web/spaces).
+3. Set root directory, dev command, preview port, Vercel linkage, or env
+   mapping if needed.
+4. Open the workspace or start preview from the repo card.
+
+### Broken preview
+
+1. Find the runtime in [Sandboxes](/web/sandboxes).
+2. Open Health if the runtime exists but the preview is unhealthy.
+3. Open [Observability](/web/observability) from sandbox context when you need
+   run, call, cost, or tool detail.
+4. Stop or delete stale runtimes only when the current state supports it.
+
+### Monorepo work
+
+Use Projects to create sub-project entries or set `root_directory`,
+`dev_command`, and `dev_port` explicitly. Do not rely on one repo root when the
+actual app lives under a package or app directory.
+
+## Vercel relationship
+
+Sandbox and preview behavior can depend on linked Vercel state, especially when
+the repo uses a user-billed project. If sandbox launch fails after repo setup,
+read [Vercel](/integrations/vercel) before editing routing or agent behavior.
+
+## Read next
+
+<Cards>
+  <Card title="Sandbox Setup Checklist" href="/guides/sandbox-setup-checklist" />
+  <Card title="Projects" href="/web/spaces" />
+  <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="Vercel" href="/integrations/vercel" />
+  <Card title="Observability" href="/capabilities/observability" />
+</Cards>

@@ -1,0 +1,24 @@
+{
+  "title": "Reference",
+  "pages": [
+    "index",
+    "[API Reference](/web/api)",
+    "[API Quickstart](/web/api/quickstart)",
+    "[API Authentication](/web/api/authentication)",
+    "[API Errors](/web/api/errors)",
+    "[API Models](/web/api/models)",
+    "[API Runs](/web/api/runs)",
+    "[API Repos](/web/api/repos)",
+    "[API Sandboxes](/web/api/sandboxes)",
+    "[API MCP](/web/api/mcp)",
+    "glossary",
+    "security-and-data-handling",
+    "[CLI Reference](/cli/reference)",
+    "[Slash Commands](/cli/commands)",
+    "[Keybindings](/cli/reference/keybindings)",
+    "[Panels](/cli/reference/panels)",
+    "[Drawers](/cli/reference/drawers)",
+    "[Cost & Usage](/cli/reference/cost-and-usage)",
+    "[Export](/cli/reference/export)"
+  ]
+}

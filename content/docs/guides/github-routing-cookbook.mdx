@@ -1,0 +1,162 @@
+---
+title: GitHub Routing Cookbook
+description: Pick concrete Mogplex routing patterns for mentions, PR review, issue triage, CI failure response, scheduled work, and multi-agent workflows.
+---
+
+Use this cookbook when the job begins in GitHub and you need the right Mogplex
+route.
+
+For the full decision model, read [Routing](/capabilities/routing) and
+[Choose the Right Routing Surface](/web/guides/choose-routing-surface).
+
+## Recipe map
+
+| Job | Best first surface |
+| --- | --- |
+| Someone comments `@mogplex` | Trigger or Automation with mention start |
+| Someone comments `@mogplex/<slug>` | Trigger or Automation with matching entry agent slug |
+| Every PR needs review | Assignment when repo-owned, Trigger when installation-owned |
+| Review should optionally fix code | Automation |
+| New issues need triage | Assignment for one repo, Trigger for one installation |
+| CI failures need investigation | Assignment or Automation |
+| Scheduled maintenance | Assignment with cron or cron refactor type |
+| CI should start Mogplex directly | Headless run or v1 API |
+
+## Bare mention route
+
+Use a bare mention route when users should be able to write:
+
+```text
+@mogplex can you summarize the state of this PR?
+```
+
+Choose:
+
+- [Triggers](/web/triggers) when one mention should wake one agent
+- [Automations](/web/automations) when the mention should start a workflow
+  graph
+
+The route must be marked as the default mention target for the installation.
+Only one default target should own the expected behavior for a given
+installation.
+
+## Targeted mention route
+
+Use targeted mentions when one repo or org has multiple durable agents:
+
+```text
+@mogplex/triage classify this issue and suggest labels.
+@mogplex/review inspect this diff for correctness issues.
+```
+
+Rules:
+
+- the slash is required
+- the text after `/` must match the entry agent slug
+- `@mogplex triage` is not targeted routing
+- targeted mentions are resolved from GitHub comments, not issue or PR titles
+
+Keep slugs short and job-shaped. Good slugs are easier to remember and easier
+to debug in routing rows.
+
+## PR review
+
+Use [Assignments](/web/assignments) when one repo should always have the same
+review behavior.
+
+Use [Triggers](/web/triggers) when the rule belongs to one GitHub App
+installation and one event should wake one agent.
+
+Use [Automations](/web/automations) when review should branch:
+
+```text
+pr_opened -> review -> condition -> edit or end
+```
+
+In automations, use the `review` role for the code-inspection node. Use a
+separate `edit` node when the graph should apply changes after the review
+result.
+
+## Issue triage
+
+Use [Assignments](/web/assignments) when issue triage is standing work for one
+repo.
+
+Use [Triggers](/web/triggers) when `issue_opened` or `issue_comment` should
+wake one triage agent at the installation level.
+
+Use [Automations](/web/automations) when triage should classify and then branch
+into follow-up work.
+
+The first agent is usually `triage`, not `review`, because the job is to read
+the thread and decide next steps.
+
+## CI failure response
+
+For one repo, start with a CI failure assignment.
+
+For one direct event-to-agent rule, use a CI failure trigger.
+
+For a guarded repair flow, use an automation:
+
+```text
+ci_failure -> review -> condition -> edit -> publish or end
+```
+
+After the route starts, read the route row first for pending, suppressed,
+deferred, failed, or pressure state. Then use [Observability](/web/observability)
+for model calls, tool calls, sandbox linkage, errors, tokens, and cost.
+
+## Scheduled work
+
+Use [Assignments](/web/assignments) when recurring work belongs to one repo.
+
+Good examples:
+
+- weekly dependency hygiene
+- stale issue review
+- recurring documentation check
+- scheduled refactor investigation
+
+Use a normal cron assignment when the job is operational. Use cron refactor
+when the expected work is code-oriented refactoring.
+
+## CI or script starts work directly
+
+Use [Headless Runs](/platform/headless-runs), [CI Integration](/cli/automation/ci-integration),
+or [API Quickstart](/web/api/quickstart) when GitHub Actions or another system
+should start a run directly.
+
+That path is best when the external system already knows:
+
+- repo id
+- prompt
+- branch intent
+- root directory
+- timeout or cancellation policy
+
+If the source event is already a GitHub webhook Mogplex supports, a Trigger,
+Assignment, or Automation is usually easier to operate than custom CI glue.
+
+## Debugging order
+
+When routing does not fire:
+
+1. confirm GitHub App coverage in [Installations](/web/installations)
+2. confirm the repo is imported in [Projects](/web/spaces)
+3. confirm the route is enabled or published
+4. confirm the event type matches the GitHub event that actually happened
+5. for mentions, confirm bare vs targeted syntax
+6. inspect the route row for pressure, suppression, deferral, or failure
+7. move to [Observability](/web/observability) only after a run exists
+
+## Read next
+
+<Cards>
+  <Card title="Routing" href="/capabilities/routing" />
+  <Card title="Choose Routing Surface" href="/web/guides/choose-routing-surface" />
+  <Card title="GitHub Mention Routing" href="/web/guides/github-mention-routing" />
+  <Card title="Triggers" href="/web/triggers" />
+  <Card title="Assignments" href="/web/assignments" />
+  <Card title="Automations" href="/web/automations" />
+</Cards>

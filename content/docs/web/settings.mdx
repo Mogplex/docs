@@ -46,10 +46,18 @@ Settings currently groups together:
 - **Account** state for GitHub identity, GitHub App coverage, and Personal
   Vercel linkage
 - **Connections** for REST APIs and MCP servers your agents can use
+- **Slack** for workspace install, channel-to-repo links, and repo-agent
+  controls
 - **API Keys** for encrypted hosted model-provider credentials
 - **CLI Access Tokens** for CLI and script authentication
 - **Preferences** for theme and default model
 - **Models** for the hosted model catalog your account can actually use
+
+For the model-specific operating guide, see
+[Available Models](/web/models).
+
+For the connection-specific operating guide, see
+[Connections and MCP](/configure-and-extend/connections-and-mcp).
 
 ## Start at the top of the page first
 
@@ -160,8 +168,10 @@ with repo context:
   account-wide
 
 Use Settings to onboard and validate the integration itself. Use the repo
-context when one codebase needs a different tool surface. For the exact model,
-see [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides).
+context when one codebase needs a different tool surface. For the full
+configuration model, see
+[Connections and MCP](/configure-and-extend/connections-and-mcp) and
+[Connection Scope and Overrides](/web/guides/connection-scope-and-overrides).
 
 ### Current MCP quick-add presets
 
@@ -179,6 +189,25 @@ Some presets use direct credentials, while others use an OAuth flow. Settings
 surfaces the connection health state and last-tested metadata so you can fix the
 integration before debugging agent prompts.
 
+## Slack
+
+The Slack section installs the Mogplex Slack app and manages workspace-level
+Slack behavior.
+
+Use it to:
+
+- install or disconnect Slack workspaces
+- link Slack channels to Mogplex repos
+- enable or disable Slack-started repo-agent runs
+- restrict repo-agent runs to specific Slack user IDs
+- set a monthly Slack repo-agent run limit
+
+Linked channels change `@mogplex` behavior. In an unlinked channel, Mogplex can
+reply conversationally. In a linked channel, a real instruction after
+`@mogplex` starts a repo-agent run against the linked repo.
+
+For the full Slack model, see [Slack](/integrations/slack).
+
 ## API Keys
 
 The **API Keys** section stores encrypted hosted credentials for:
@@ -186,6 +215,7 @@ The **API Keys** section stores encrypted hosted credentials for:
 - AI Gateway
 - OpenAI
 - Anthropic
+- OpenRouter
 
 These keys are for hosted Mogplex execution, not for local shell env vars.
 
@@ -231,6 +261,10 @@ The important split is:
 If an agent cannot select the model you expect, check **Models** before you
 edit the agent itself.
 
+Use [Available Models](/web/models) when you need the fuller model-access
+mental model: enabled state, defaults, provider access, CLI sync, hidden legacy
+models, and repo-level exclusions.
+
 ## Fast troubleshooting map
 
 - **Triggers page is empty**: GitHub OAuth may be connected, but App coverage is
@@ -240,6 +274,9 @@ edit the agent itself.
   connection setup.
 - **A connection exists but agent calls still fail**: test the connection here
   before debugging prompts or routing.
+- **Slack replies but does not start repo work**: check channel-to-repo links,
+  repo-agent enabled state, Slack user mapping, and monthly/user limits in the
+  Slack section.
 - **Sandbox launch asks for Personal Vercel**: that setup is optional overall,
   but required for user-billed sandbox flows when platform sandbox billing is
   unavailable.

@@ -1,0 +1,72 @@
+---
+title: Mogplex CLI
+description: Use the Mogplex CLI as a terminal cockpit for repo-local runs, approvals, diffs, MCP, memory, models, cost, and export.
+---
+
+The Mogplex CLI is the terminal cockpit for active repo work.
+
+Run `mogplex` when you want to start, steer, inspect, approve, pause, resume,
+kill, or export an agent run from the terminal.
+
+## What the CLI is best at
+
+- watching a run end to end without leaving the repo
+- approving or rejecting gated tool calls as they happen
+- opening diffs, MCP detail, memory, model choice, cost, and export drawers
+- attaching to an in-flight run that started somewhere else
+- using slash commands for operator control
+
+The CLI is built around live structured events. It is not only a command
+launcher and it is not only a log viewer.
+
+## Main entrypoints
+
+| Need | Start here |
+| --- | --- |
+| Install the CLI | [Installation](/cli/installation) |
+| First local run | [CLI Quickstart](/cli/quickstart) |
+| Understand the cockpit | [CLI Overview](/cli) |
+| Learn the control model | [CLI Concepts](/cli/concepts) |
+| Type commands in the composer | [Slash Commands](/cli/commands) |
+| Use panels, drawers, keys, cost, or export | [CLI Reference](/cli/reference) |
+| Run without the interactive UI | [Headless Runs](/platform/headless-runs) |
+
+## Where local state lives
+
+The CLI reads local Mogplex state from `~/.mogplex`, including auth,
+permissions, project overrides, and redacted logs.
+
+Project-level behavior can also come from repo-local configuration and
+permission rules. Use the CLI pages when you need exact behavior for approval
+gates, permission modes, attach mode, transports, drawers, or keybindings.
+
+## CLI vs headless runs
+
+Use the interactive CLI when a human operator should supervise the run.
+
+Use [Headless Runs](/platform/headless-runs) when a CI job, dashboard, script,
+or other automation should start a run and consume events without opening the
+terminal UI.
+
+Both paths still rely on the same hosted run concepts and API-backed state.
+
+## App relationship
+
+The app owns shared account setup and routing. The CLI owns local supervision.
+
+That means a healthy CLI experience usually depends on:
+
+- [Settings](/web/settings) for auth, models, CLI tokens, and connections
+- [Available Models](/web/models) for model availability and defaults
+- [Projects](/web/spaces) for imported repos and hosted repo state
+- [Observability](/web/observability) for cross-surface run inspection after
+  work starts
+
+## Read next
+
+<Cards>
+  <Card title="CLI Quickstart" href="/cli/quickstart" />
+  <Card title="Slash Commands" href="/cli/commands" />
+  <Card title="Permissions" href="/cli/concepts/permissions" />
+  <Card title="Headless Runs" href="/platform/headless-runs" />
+</Cards>

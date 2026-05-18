@@ -1,0 +1,187 @@
+---
+title: Observability Runbook
+description: Trace failed, stuck, expensive, or noisy Mogplex work from source surface to run events, tool calls, sandboxes, and API state.
+---
+
+Use this runbook after something has tried to run.
+
+If no work was emitted at all, start with the owning route surface instead:
+[GitHub](/integrations/github), [Triggers](/web/triggers),
+[Assignments](/web/assignments), [Automations](/web/automations),
+[Slack](/integrations/slack), [CLI](/platform/cli), or the
+[API Quickstart](/web/api/quickstart).
+
+## First Question
+
+Ask one question before opening every page:
+
+**Did Mogplex create a run, call, or sandbox record?**
+
+| Answer | Start here |
+| --- | --- |
+| No | Source surface: GitHub coverage, Slack channel link, Trigger, Assignment, Automation, CLI, or API request. |
+| Yes | [Observability](/web/observability), then the linked run, call, or sandbox row. |
+| Unsure | Check Observability by time window, then search by repo or source surface. |
+
+Observability is strongest after work exists. It is not the best proof that a
+GitHub webhook, Slack mention, or API request was routed correctly before a run
+was created.
+
+## Gather The Minimum Facts
+
+Before changing configuration, capture:
+
+- source surface: CLI, API, Slack, GitHub mention, Trigger, Assignment, or
+  Automation
+- repo owner/name and Mogplex repo ID
+- run ID or call ID if one exists
+- sandbox ID if a preview/runtime exists
+- model and provider
+- first error message
+- whether the status is pending, streaming, success, failed, or cancelled
+
+Those facts usually identify the owning layer.
+
+## Read The Summary Cards First
+
+Open [Observability](/web/observability) and read the cards before opening row
+details.
+
+Use them to decide whether the problem is:
+
+- broad pressure, such as stale pending work or start failures
+- isolated runtime failure
+- high token or cost usage
+- sandbox-related
+- local CLI activity rather than hosted automation
+
+Then open the exact Activity row.
+
+## Expand The Activity Row
+
+The expanded row is the source of truth for runtime debugging.
+
+Check in this order:
+
+1. surface badge
+2. repo and source metadata
+3. model and call type
+4. error string
+5. event timeline
+6. tool calls
+7. sandbox metadata and preview URL
+8. raw metadata only if the higher-level fields are not enough
+
+Do not edit the agent prompt until you know whether the failure came from the
+model, a tool, connection state, sandbox state, or routing setup.
+
+## No Run Appears
+
+If no row appears in Observability:
+
+- GitHub event: check [Installations](/web/installations) and
+  [GitHub Routing Cookbook](/guides/github-routing-cookbook).
+- Slack mention: check [Slack](/integrations/slack) channel links, user
+  mapping, repo-agent enabled state, and monthly/user limits.
+- Trigger or Assignment: check enabled state, repo scope, and selected agent.
+- Automation: check published version, active state, start event, and entry
+  agent role.
+- API request: check token scope, idempotency key, response code, and repo ID.
+- CLI run: check CLI auth, local config, and whether the failure is local-only.
+
+The fastest fix is usually on the source surface, not in Observability.
+
+## Pending Or Stuck Work
+
+When a run exists but stays pending:
+
+1. Check summary cards for stale pending work or start failures.
+2. Open the run row and inspect the first event.
+3. Check sandbox allocation state if the run needs a sandbox.
+4. Check provider access if the run never reaches a model call.
+5. Check whether the source surface is repeatedly re-enqueuing the same work.
+
+If the run came from the public API, use
+`GET /api/v1/mogplex/runs/{runId}` and
+`GET /api/v1/mogplex/runs/{runId}/events` to compare API state with the UI.
+
+## Model Or Provider Failure
+
+For provider errors:
+
+1. Confirm the model exists in [Available Models](/web/models).
+2. Confirm the user or team has provider access.
+3. Confirm a stored provider key is valid if platform AI is not enabled.
+4. Check whether the agent, repo, or route excludes the model.
+5. Compare token and cost fields to see whether the call reached the provider.
+
+Use [Model Selection and Cost](/guides/model-selection-and-cost) when the model
+is available but the default, route, or cost policy is unclear.
+
+## Tool Or Connection Failure
+
+For external tool failures:
+
+1. Open [Settings](/web/settings#connections) and test the connection.
+2. Confirm the connection is enabled.
+3. Confirm the repo did not exclude a global connection.
+4. Confirm project-scoped connections are attached to the repo that ran.
+5. Open the Activity row and inspect the tool-call payload and error.
+
+If the failure involves MCP sync into the CLI, check
+[MCP Servers API](/web/api/mcp-servers) and local CLI auth separately.
+
+## Sandbox Or Preview Failure
+
+For sandbox-backed failures:
+
+1. Open the linked sandbox from the Activity row when available.
+2. Check root directory, install command, dev command, dev port, and env source.
+3. Check Vercel project or platform sandbox entitlement.
+4. Check branch and preview URL.
+5. Stop, restart, or delete only after capturing the first failure event.
+
+Use [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) for launch
+configuration, and [Projects and Sandboxes](/platform/projects-and-sandboxes)
+for the platform model.
+
+## Cost Or Token Spike
+
+For unexpectedly high usage:
+
+1. Filter Activity by surface.
+2. Sort or scan for high-token calls.
+3. Compare model, run source, tool calls, and sandbox linkage.
+4. Check whether an automation loop, Slack route, or API retry generated extra
+   starts.
+5. Move the policy decision back to the source: model choice, routing volume,
+   repo exclusion, or monthly limit.
+
+Use [Model Selection and Cost](/guides/model-selection-and-cost) when the fix is
+policy, not a one-off failed run.
+
+## Escalation Packet
+
+When handing the issue to another person, include:
+
+- run ID or call ID
+- source surface and exact trigger text or API response
+- repo owner/name and repo ID
+- first event and first error
+- model id
+- sandbox ID or preview URL if applicable
+- what changed immediately before the failure
+
+Leave out raw provider keys, `mog_...` tokens, Slack link URLs, decrypted MCP
+config, and full `.env` files. See
+[Security and Data Handling](/reference/security-and-data-handling) for the
+safe-sharing checklist.
+
+## Read Next
+
+<Cards>
+  <Card title="Observability" href="/capabilities/observability" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+  <Card title="Slack" href="/integrations/slack" />
+  <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
+</Cards>

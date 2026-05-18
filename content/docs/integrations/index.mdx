@@ -1,0 +1,61 @@
+---
+title: Integrations
+description: Connect Mogplex to GitHub, Vercel, Slack, CI, the hosted API, MCP clients, and local agent hosts.
+---
+
+Integrations connect Mogplex to the systems that own source code, identity,
+runtime credentials, automation, and external tools.
+
+<Cards>
+  <Card
+    title="GitHub"
+    href="/integrations/github"
+    description="Connect identity, confirm App coverage, import repos, and route GitHub comments, PRs, issues, and reviews."
+  />
+  <Card
+    title="Vercel"
+    href="/integrations/vercel"
+    description="Understand Personal Vercel, repo-linked projects, sandbox billing, env sync, and preview troubleshooting."
+  />
+  <Card
+    title="Slack"
+    href="/integrations/slack"
+    description="Install Mogplex in Slack, link channels to repos, control repo-agent runs, and debug DMs, threads, and attachments."
+  />
+  <Card
+    title="CI Integration"
+    href="/cli/automation/ci-integration"
+    description="Run Mogplex from GitHub Actions or another CI system and tail structured run events."
+  />
+  <Card
+    title="Hosted API"
+    href="/web/api"
+    description="Use the API behind projects, repos, agents, assignments, automations, sandboxes, settings, and runtime inspection."
+  />
+  <Card
+    title="GitHub App Coverage"
+    href="/web/guides/github-app-coverage"
+    description="Deep dive on OAuth visibility versus App-backed triggerability."
+  />
+  <Card
+    title="GitHub Mention Routing"
+    href="/web/guides/github-mention-routing"
+    description="Route bare and targeted `@mogplex` mentions through Triggers or Automations without ambiguity."
+  />
+  <Card
+    title="Connections and MCP"
+    href="/configure-and-extend/connections-and-mcp"
+    description="Configure external REST and MCP tools, repo scope resolution, and CLI MCP sync."
+  />
+  <Card
+    title="MCP Clients"
+    href="/extend/mcp-server"
+    description="Understand the current skills-based path and the planned Mogplex-as-MCP-server path."
+  />
+</Cards>
+
+## Integration order
+
+Start with GitHub identity and GitHub App coverage before debugging webhook
+routing. Add provider keys, Vercel, Slack, MCP servers, and CI entry points
+only after the account can see and cover the repo that should run.

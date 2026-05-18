@@ -72,7 +72,7 @@ Do not confuse the two directions:
 
 | Direction | Where configured | Who authenticates |
 | --- | --- | --- |
-| **Mogplex consumes an MCP server** (Zapier, Notion, …) | [Settings → Connections](/web/settings) | Mogplex to the external service |
+| **Mogplex consumes an MCP server** (Zapier, Notion, Supabase) | [Connections and MCP](/configure-and-extend/connections-and-mcp) | Mogplex to the external service |
 | **Mogplex exposed as an MCP server** | [Settings → Connections → Local agents](/web/settings) (when live) | External agent to Mogplex |
 
 Both can be in use at the same time. An agent running outside Mogplex can call the Mogplex MCP server, and Mogplex can turn around and call a Notion MCP connection from within the same logical tool call.
@@ -89,5 +89,5 @@ When the server ships, this page will update with the live endpoints, the final 
 
 - [Skills](/extend/skills) — today's substitute
 - [CLI Skills reference](/cli/skills) — canonical skill files
-- [Settings → Connections](/web/settings) — inbound MCP (Mogplex as consumer)
+- [Connections and MCP](/configure-and-extend/connections-and-mcp) — inbound MCP (Mogplex as consumer)
 - [MCP specification](https://modelcontextprotocol.io/specification)

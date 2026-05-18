@@ -1,0 +1,102 @@
+---
+title: Quickstart
+description: Set up Mogplex for one repo, pick the right first routing surface, run locally, and verify that work is visible.
+---
+
+Use this path when you want the first credible Mogplex setup for one repo.
+
+The goal is not to configure every capability. The goal is to prove that
+Mogplex can see the repo, has the right GitHub App coverage, can run locally,
+and can route the next hosted job through the smallest surface that fits.
+
+## 1. Connect the account
+
+Open [Settings](/web/settings), sign in, and connect the account state Mogplex
+needs before it can do useful work:
+
+- GitHub identity
+- GitHub App coverage for the user or org that owns the repo
+- provider keys or platform model access
+- CLI access tokens if you plan to use the terminal cockpit
+- Slack workspace and channel links if work should start from Slack
+- shared connections and MCP definitions, if the repo needs external tools
+
+If a repo is visible through OAuth but not covered by the GitHub App, hosted
+routing will still fail later. Use [Installations](/web/installations) to
+confirm coverage before debugging triggers or automations. The
+[GitHub integration guide](/integrations/github) explains the full setup model.
+
+## 2. Open the repo
+
+Go to [Projects](/web/spaces), sync repos, and open the target repo.
+
+That repo surface is where hosted work starts. From there, check that the repo
+appears once, belongs to the expected owner, and has the coverage state you
+expect. If the repo needs sandbox-backed previews through a user-billed
+project, configure the [Vercel integration](/integrations/vercel) before
+debugging workspace launch.
+
+## 3. Check agents and models
+
+Open [Agents](/web/agents) and confirm at least one reusable agent is ready for
+the job. Use [Available Models](/web/models) if model pickers, agents,
+automations, or CLI runs do not show the models you expect.
+
+Use [Agent Authoring](/configure-and-extend/agent-authoring) when the agent's
+job, slug, prompt, model, rules, or routing fit is still unclear. Use
+[Model Selection and Cost](/guides/model-selection-and-cost) before connecting
+a high-volume route to a model choice.
+
+## 4. Choose the smallest routing surface
+
+Use the lightest surface that matches the job:
+
+| Job shape | Start here |
+| --- | --- |
+| One GitHub event should wake one agent | [Triggers](/web/triggers) |
+| One repo owns recurring or standing work | [Assignments](/web/assignments) |
+| The work needs branching, delays, drafts, or parallel agents | [Automations](/web/automations) |
+| The event starts in GitHub and you need a recipe | [GitHub Routing Cookbook](/guides/github-routing-cookbook) |
+| The request starts from Slack | [Slack](/integrations/slack) |
+| You are not sure yet | [Choose the Right Routing Surface](/web/guides/choose-routing-surface) |
+
+## 5. Run locally
+
+Install the [Mogplex CLI](/cli/installation), then run:
+
+```bash
+mogplex
+```
+
+The CLI opens the terminal cockpit for live agents, timeline events, approvals,
+diffs, MCP, memory, model selection, cost, and run control.
+
+For scripted or CI-driven work, use [Headless Runs](/cli/automation/headless-runs)
+instead of the interactive cockpit. Use [API Quickstart](/web/api/quickstart)
+when another system should start and inspect runs directly.
+
+## 6. Verify the run
+
+Use [Observability](/web/observability) once work is running. A healthy first
+pass should show:
+
+- the repo you expected
+- the surface that started the work
+- model calls and token usage
+- tool calls and sandbox activity when relevant
+- enough status detail to understand whether the run is active, blocked,
+  complete, or failed
+
+## Read next
+
+<Cards>
+  <Card title="How Mogplex Fits Together" href="/platform/how-mogplex-fits-together" />
+  <Card title="GitHub Routing Cookbook" href="/guides/github-routing-cookbook" />
+  <Card title="Slack" href="/integrations/slack" />
+  <Card title="Observability Runbook" href="/guides/observability-runbook" />
+  <Card title="Sandbox Setup Checklist" href="/guides/sandbox-setup-checklist" />
+  <Card title="Platform" href="/platform" />
+  <Card title="Capabilities" href="/capabilities" />
+  <Card title="Configure & Extend" href="/configure-and-extend" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+</Cards>

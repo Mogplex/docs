@@ -1,0 +1,163 @@
+---
+title: Repo Instructions
+description: Use AGENTS.md, AGENTS.override.md, and agent.json to give Mogplex durable repo-local context without stuffing every run prompt.
+---
+
+Repo instructions are the durable context layer for local Mogplex work.
+
+Use them for facts that should survive across prompts: repo layout, build
+commands, verification rules, ownership boundaries, style conventions, and
+known workflow constraints.
+
+Do not use them as a scratchpad for one temporary task. The current prompt is
+still the right place for volatile instructions.
+
+## What Mogplex reads
+
+The CLI runtime can load two repo-local files:
+
+| File | Purpose |
+| --- | --- |
+| `AGENTS.md` | Markdown instructions injected into the run's system prompt. |
+| `agent.json` | Minimal structured project configuration, including prompt suffix metadata. |
+
+`AGENTS.md` is the main file. `agent.json` is useful when a project needs a
+small structured override beside the prose instructions.
+
+## Discovery order
+
+Mogplex discovers instruction fragments from the current working directory and
+the active Mogplex home directory.
+
+The current discovery model is:
+
+1. `$MOGPLEX_HOME/AGENTS.md` for user-level guidance.
+2. the git project root's `AGENTS.md`.
+3. nested `AGENTS.md` files between the project root and the current working
+   directory.
+
+Within each directory, `AGENTS.override.md` wins over `AGENTS.md`.
+
+That gives you three useful layers:
+
+| Layer | Best for |
+| --- | --- |
+| User | Personal operating preferences that should apply across repos. |
+| Project root | Repo-wide architecture, commands, and policy. |
+| Subproject | Monorepo package-specific setup or verification detail. |
+
+Keep the project-root file broad. Put package-specific exceptions closer to the
+package that needs them.
+
+## Session behavior
+
+Instruction files are startup context for the run, not live chat messages.
+
+Mogplex assembles the system prompt by combining the base runtime prompt,
+discovered `AGENTS.md` fragments, and the supported `agent.json` prompt suffix.
+The assembled prompt is cached for the session.
+
+If you change instruction files while a session is already running, treat the
+next session as the clean verification point unless the surface you are using
+explicitly reloads project configuration.
+
+## Create a starter file
+
+In the CLI composer:
+
+```text
+/init
+```
+
+`/init` asks Mogplex to scan the repo and create:
+
+- `AGENTS.md`
+- `.agents/commands/review.md`
+
+Use the generated file as a draft. Read it before trusting it, especially in a
+large repo where build and test commands may be conditional.
+
+## Good AGENTS.md content
+
+Good repo instructions are short, operational, and checkable:
+
+```mdx
+# AGENTS.md
+
+## Commands
+
+- Install: `pnpm install`
+- Lint: `pnpm lint`
+- Typecheck: `pnpm types:check`
+- Build: `pnpm build`
+
+## Repo Rules
+
+- Use `rg` for source search.
+- Keep docs claims grounded in sibling app and CLI repos.
+- Do not hand-edit generated command reference files.
+- Preserve unrelated dirty worktree changes.
+
+## Verification
+
+- For docs-only edits, run `git diff --check`.
+- For TypeScript or MDX structure changes, run `pnpm types:check`.
+```
+
+Prefer commands and rules over philosophy. A future run should be able to use
+the file without asking what the sentence means.
+
+## `agent.json`
+
+`agent.json` is a strict JSON object at the project root.
+
+The current schema accepts:
+
+```json
+{
+  "model": "anthropic/claude-sonnet-4-6",
+  "system_prompt_suffix": "Prefer focused fixes and cite touched files.",
+  "disabled_tools": ["example-tool"],
+  "extra_slash_dirs": [".agents/team-commands"],
+  "personality": "direct"
+}
+```
+
+Use `system_prompt_suffix` only for short, durable behavior that belongs after
+the markdown instructions.
+
+For model routing, provider access, and tool policy, prefer the first-class
+Mogplex controls unless the specific surface you are using documents that it
+honors the `agent.json` field.
+
+## What not to put here
+
+Avoid:
+
+- secrets, tokens, API keys, or passwords
+- task-specific notes that only matter today
+- long copied docs from external systems
+- instructions that contradict the repo's actual scripts
+- broad personality prose that does not change execution
+
+If a sentence cannot guide a future command, edit, test, or review decision, it
+probably does not belong in repo instructions.
+
+## Related reusable layers
+
+| Layer | Use it for |
+| --- | --- |
+| `AGENTS.md` | Repo and package instructions for local runs. |
+| [Custom Slash Commands](/configure-and-extend/custom-slash-commands) | Reusable prompt templates in the CLI composer. |
+| [Agent Authoring](/configure-and-extend/agent-authoring) | Durable hosted agent identity, prompt, slug, and model. |
+| [Skills, Rules, and Context](/web/agents/skills-rules-context) | Product-side reusable procedures, policy, and background context. |
+| [Assignments](/web/assignments) | Standing repo-owned hosted work. |
+
+## Read next
+
+<Cards>
+  <Card title="Custom Slash Commands" href="/configure-and-extend/custom-slash-commands" />
+  <Card title="Project Commands" href="/cli/guides/project-commands" />
+  <Card title="Agent Authoring" href="/configure-and-extend/agent-authoring" />
+  <Card title="Permissions" href="/cli/concepts/permissions" />
+</Cards>

@@ -1,0 +1,109 @@
+---
+title: How Mogplex Fits Together
+description: Understand the core Mogplex object model from account state to GitHub coverage, repos, agents, routing, runs, sandboxes, and observability.
+---
+
+Mogplex is easier to debug once the platform objects have clear ownership.
+
+Most product questions reduce to this chain:
+
+```text
+account -> GitHub installation -> repo -> agent -> route -> run -> observability
+                                      \
+                                       sandbox
+```
+
+Each object answers a different question.
+
+## Core objects
+
+| Object | Owns | Start here when |
+| --- | --- | --- |
+| Account state | Identity, provider access, CLI tokens, model defaults, Slack installs, connections, MCP definitions | sign-in, model, provider, token, Slack, or connection state looks wrong |
+| GitHub installation | App-backed coverage for one GitHub user or org | repos are visible but GitHub events do not trigger work |
+| Repo | Imported repository state and repo-specific settings | the target repo is missing, duplicated, hidden, or needs runtime settings |
+| Agent | Reusable behavior, slug, prompt, model, skills, rules, and context | the worker itself behaves wrong or a mention slug does not resolve |
+| Route | The rule that decides what wakes work | the wrong event, repo, or workflow starts work |
+| Run | One execution of Mogplex work | work started and you need status, events, or final state |
+| Sandbox | Runtime and preview environment for repo work | previews, workspace sessions, branches, ports, env, or stale runtimes are involved |
+| Observability record | Captured runtime details | you need calls, tools, errors, tokens, cost, pressure, or sandbox linkage |
+
+## Ownership map
+
+| Product area | Primary ownership |
+| --- | --- |
+| [Settings](/web/settings) | account state |
+| [Installations](/web/installations) | GitHub App coverage |
+| [Slack](/integrations/slack) | Slack workspace install, channel-to-repo links, and Slack-started repo-agent controls |
+| [Projects](/web/spaces) | repos, workspace sessions, repo settings, sandbox launch |
+| [Agents](/web/agents) | reusable behavior and mention slugs |
+| [Triggers](/web/triggers) | installation-scoped event-to-agent routes |
+| [Assignments](/web/assignments) | repo-scoped standing work |
+| [Automations](/web/automations) | workflow graph routing |
+| [CLI](/platform/cli) | local run supervision |
+| [Headless Runs](/platform/headless-runs) | script and CI execution |
+| [Sandboxes](/web/sandboxes) | cross-repo runtime operations |
+| [Observability](/web/observability) | runtime inspection |
+
+## The important splits
+
+### Visibility vs triggerability
+
+Repo visibility means Mogplex can see a repo through account sync.
+
+Triggerability means the owning GitHub user or org has App-backed coverage, so
+GitHub webhook events can start hosted work.
+
+A repo can be visible without being triggerable. When that happens, fix
+[GitHub App coverage](/web/guides/github-app-coverage) before editing routes.
+
+### Agent definition vs route binding
+
+An agent defines behavior.
+
+A route decides when that behavior runs.
+
+Do not create a new agent when the real problem is that the wrong Trigger,
+Assignment, or Automation points at it. Do not edit routing when the real
+problem is an agent slug, model, prompt, skill, rule, or context library.
+
+### Run state vs sandbox state
+
+A run is the unit of work.
+
+A sandbox is the runtime environment the work may use.
+
+Some failures are run failures. Some are preview/runtime failures. If a run is
+linked to a sandbox, inspect both [Observability](/web/observability) and
+[Sandboxes](/web/sandboxes) before changing prompts or routing.
+
+### Interactive vs unattended execution
+
+Use the [CLI](/platform/cli) when a human operator should supervise the work.
+
+Use [Headless Runs](/platform/headless-runs) or the [Hosted API](/platform/hosted-api)
+when another system should start work unattended.
+
+## A route from setup to runtime
+
+1. Account state makes the user able to use Mogplex.
+2. GitHub App coverage makes the repo owner eligible for webhook-backed work.
+3. Projects imports the repo and stores repo runtime settings.
+4. Agents define reusable behavior.
+5. Triggers, Assignments, or Automations bind that behavior to events or repos.
+6. Slack channel links can also bind a Slack channel to one repo.
+7. A run starts.
+8. A sandbox may launch or attach.
+9. Observability captures the runtime story.
+
+If the chain breaks, debug the earliest missing object first.
+
+## Read next
+
+<Cards>
+  <Card title="Quickstart" href="/quickstart" />
+  <Card title="Routing" href="/capabilities/routing" />
+  <Card title="Slack" href="/integrations/slack" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+  <Card title="Glossary" href="/reference/glossary" />
+</Cards>

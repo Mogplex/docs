@@ -1,0 +1,127 @@
+---
+title: Sandbox Setup Checklist
+description: Configure repo, branch, root directory, commands, ports, env, Vercel linkage, and preview expectations before debugging sandbox runs.
+---
+
+Use this checklist when a workspace, preview, or cloud run depends on a Mogplex
+sandbox.
+
+Most sandbox failures are configuration failures. Confirm the repo launch
+contract before changing agents, prompts, routes, or models.
+
+## Checklist
+
+| Check | Why it matters |
+| --- | --- |
+| GitHub App coverage | Hosted work needs installation-backed repo access, not only OAuth visibility |
+| Repo import state | Mogplex needs a repo record before it can launch workspace or API runs |
+| Root directory | Monorepos need the exact app/package path instead of repo root |
+| Install command | Dependency setup should match the package manager and workspace path |
+| Dev command | The preview process must start the actual app or service |
+| Dev port | The preview router needs the port the app listens on |
+| Environment variables | Missing secrets usually look like app boot or preview health failures |
+| Vercel linkage | User-billed preview behavior can depend on linked Vercel project state |
+| Branch intent | Decide whether the sandbox should work on default branch, an existing branch, or a new branch |
+| Timeout and idle behavior | Long-running previews need realistic timeout expectations |
+
+## First repo setup
+
+1. Confirm [Installations](/web/installations) shows the GitHub owner and repo.
+2. Open [Projects](/web/spaces) and sync repos if needed.
+3. Set `root_directory` for monorepos.
+4. Set install command, dev command, and dev port.
+5. Add required env vars or secrets.
+6. Link or confirm Vercel state when the repo relies on Vercel-backed preview
+   behavior.
+7. Launch one workspace manually before adding triggers or automations.
+
+If the manual workspace launch fails, fix the project settings before debugging
+routing.
+
+## Branch choices
+
+Pick branch behavior intentionally:
+
+| Pattern | Use it when |
+| --- | --- |
+| Default branch | You only need to inspect or test without preserving edits |
+| Existing branch | The work should continue an already-open change |
+| New working branch | The agent should isolate edits and push a branch for review |
+
+API runs can set `baseBranch`, `workingBranch`, and `createBranch`. The web app
+offers the same concept through the sandbox launch flow.
+
+## Monorepos
+
+For monorepos, write the launch contract down explicitly:
+
+- repo full name
+- root directory
+- package manager
+- install command
+- dev command
+- dev port
+- env var source
+- expected preview path
+
+Do not assume the repo root is correct just because dependency install starts.
+The app can still boot from the wrong workspace or expose the wrong port.
+
+## Broken preview path
+
+When a preview is unhealthy:
+
+1. open [Sandboxes](/web/sandboxes)
+2. find the sandbox by repo and branch
+3. check whether it is creating, running, paused, stopped, stale, or failed
+4. open health/runtime detail from the sandbox row when available
+5. use [Observability](/web/observability) only after a run or runtime event
+   exists
+
+If no sandbox exists, return to [Projects](/web/spaces), repo settings, and
+GitHub coverage.
+
+## What not to debug first
+
+Avoid changing these until the sandbox launch contract is known-good:
+
+- agent prompt
+- model
+- automation graph
+- trigger event
+- assignment type
+- CLI auth
+
+Those can affect work quality, but they do not fix a repo that cannot install,
+boot, expose the right port, or load secrets.
+
+## API and CLI checks
+
+Use the API to list sandboxes for one repo:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/sandboxes?repo_id=<repo-id>&limit=20"
+```
+
+Use the CLI when you want a table or JSON from a terminal:
+
+```bash
+mogplex sandboxes list
+mogplex sandboxes list --json
+mogplex sandboxes list --repo <repo-id> --status running
+```
+
+Sandbox lifecycle actions should be done in the web UI until the v1 lifecycle
+API is exposed.
+
+## Read next
+
+<Cards>
+  <Card title="Projects and Sandboxes" href="/platform/projects-and-sandboxes" />
+  <Card title="Projects" href="/web/spaces" />
+  <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="Vercel" href="/integrations/vercel" />
+  <Card title="API Sandboxes" href="/web/api/sandboxes" />
+</Cards>

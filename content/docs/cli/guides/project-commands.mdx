@@ -1,18 +1,28 @@
 ---
 title: Project Commands
-description: Use `AGENTS.md` and per-project permission files to make Mogplex behave like part of the repository.
+description: Use `AGENTS.md`, `agent.json`, custom slash commands, and per-project permission files to make Mogplex behave like part of the repository.
 ---
 
-Two repo-local layers shape how the CLI behaves inside a checked-out repo:
+Several repo-local layers shape how the CLI behaves inside a checked-out repo:
 
-- `AGENTS.md` at the repo root — durable instructions for any agent operating in this codebase.
-- `~/.mogplex/projects/<repo-slug>/permissions.json` — per-project permission overrides.
+- `AGENTS.md` and `AGENTS.override.md` — durable instructions for any agent
+  operating in this codebase
+- `agent.json` — structured project config for prompt suffix and related
+  project metadata
+- `.agents/commands/**/*.md` — project-scoped custom command templates for
+  builds that expose custom command loading
+- `~/.mogplex/projects/<repo-slug>/permissions.json` — per-project permission
+  overrides
 
-Both are optional; the CLI works without either. They make the experience dramatically better when the repo has stable conventions or wants different gates than your global default.
+All of these are optional. They make the experience better when the repo has
+stable conventions, repeatable commands, or different gates than your global
+default.
 
 ## `AGENTS.md`
 
-`AGENTS.md` is the repo-local instruction layer. Place it at the project root.
+`AGENTS.md` is the repo-local instruction layer. Place it at the project root,
+or add narrower files in subdirectories when a monorepo package needs different
+guidance.
 
 Good content includes:
 
@@ -24,7 +34,49 @@ Good content includes:
 
 Keep it durable. If guidance changes hourly, it belongs in the task prompt instead.
 
-`AGENTS.md` is read by the Mogplex orchestrator when it spawns agents into the repo — it's not parsed by the CLI itself, but it shapes every run that runs in this repo.
+The CLI runtime reads discovered `AGENTS.md` fragments into the assembled
+system prompt. It can also discover `$MOGPLEX_HOME/AGENTS.md` for user-level
+guidance and `AGENTS.override.md` when a directory needs an explicit override.
+
+For the full discovery model, see
+[Repo Instructions](/configure-and-extend/repo-instructions).
+
+## `agent.json`
+
+`agent.json` is a strict project-local JSON file. Use it sparingly for short
+structured context such as a prompt suffix.
+
+For behavior that has first-class controls, prefer the product surface that
+owns it:
+
+- model defaults in [Available Models](/web/models) or the CLI Model Picker
+- tool policy in [Permissions](/cli/concepts/permissions)
+- repeatable prompts in
+  [Custom Slash Commands](/configure-and-extend/custom-slash-commands)
+
+## Project custom commands
+
+Project commands live in:
+
+```text
+.agents/commands/**/*.md
+```
+
+They are the repo-local authoring format for reusable prompt templates.
+Example:
+
+```text
+.agents/commands/review-staged.md -> /review-staged
+.agents/commands/release/notes.md -> /release:notes
+```
+
+The legacy `.mogplex/commands/**/*.md` path is part of the loader's supported
+discovery model, but `.agents/commands` is the preferred project path.
+
+Before relying on a project command, confirm the running cockpit exposes it in
+`/help`. Some current builds still expose only the built-in registry.
+
+See [Custom Slash Commands](/configure-and-extend/custom-slash-commands).
 
 ## Per-project permissions
 
@@ -62,6 +114,7 @@ Without an argument, `/permissions` shows the resolved mode and rules and explai
 ## Recommended split
 
 - put long-lived repo rules in `AGENTS.md`
+- put repeatable prompt templates in `.agents/commands`
 - put per-repo permission overrides in `~/.mogplex/projects/<repo-slug>/permissions.json`
 - keep personal-only defaults in `~/.mogplex/permissions.json` (global)
 - use `/permissions <mode>` for one-off mode flips that don't deserve a config file
@@ -69,11 +122,14 @@ Without an argument, `/permissions` shows the resolved mode and rules and explai
 ## Anti-patterns
 
 - putting volatile task notes in `AGENTS.md`
+- putting secrets, tokens, or personal paths in project commands
 - relying on a per-project `permissions.json` to **restrict** something the global already allows (the merge can only add allows; deny rules need to be set explicitly per scope)
 - editing `permissions.json` while the cockpit is mid-run — wait until `/permissions` confirms the next state, then `/run` again
 
 ## See also
 
+- [Repo Instructions](/configure-and-extend/repo-instructions)
+- [Custom Slash Commands](/configure-and-extend/custom-slash-commands)
 - [Concepts → Permissions](/cli/concepts/permissions)
 - [Concepts → Approvals](/cli/concepts/approvals)
 - [Configuration and Flags](/cli/guides/configuration-and-flags)

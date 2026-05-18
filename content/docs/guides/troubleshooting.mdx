@@ -1,0 +1,196 @@
+---
+title: Troubleshooting
+description: Debug Mogplex setup, routing, model access, CLI auth, sandbox, API, and observability issues from the surface that owns the state.
+---
+
+Use this guide when something did not work and you need the shortest path to
+the owning surface.
+
+Start by deciding whether the failure happened before work started or after
+work started.
+
+## First split
+
+| Symptom | Most likely layer |
+| --- | --- |
+| Repo is missing or stale | account sync or Projects |
+| Repo is visible but GitHub events do not fire | GitHub App coverage |
+| Mention does not route | agent slug, default mention route, or route enabled state |
+| Slack mention replies but does not start repo work | Slack channel link, user mapping, repo-agent enabled state, or workspace limits |
+| Route exists but no run appears | route source, coverage, enabled state, or published automation |
+| Run appears but fails | runtime, model, tool, connection, sandbox, or prompt |
+| Preview is unhealthy | repo settings, Vercel linkage, sandbox state, or dev command |
+| Model is missing from a picker | model catalog, provider access, default model, or repo exclusion |
+| CLI signs in but state looks wrong | CLI auth, account state, local config, or synced hosted state |
+
+## Debug order
+
+1. Check [Settings](/web/settings) for identity, provider access, model
+   defaults, CLI tokens, connections, and GitHub account state.
+2. Check [Installations](/web/installations) for GitHub App coverage.
+3. Check [Projects](/web/spaces) for repo visibility, repo settings, and
+   sandbox launch state.
+4. Check [Agents](/web/agents) for slug, model, prompt, category, skills,
+   rules, and context.
+5. Check the route source: [Triggers](/web/triggers),
+   [Assignments](/web/assignments), or [Automations](/web/automations).
+6. Check [Slack](/integrations/slack) when Slack is the source surface.
+7. Check [Observability](/web/observability) only after a run exists.
+8. Check [Sandboxes](/web/sandboxes) when a preview/runtime is involved.
+
+## Repo is visible but events do not fire
+
+Visibility and triggerability are different.
+
+1. Open [Installations](/web/installations).
+2. Confirm the repo owner is covered by the Mogplex GitHub App.
+3. Confirm the route is on the same installation or repo that owns the event.
+4. Confirm the route is enabled, or the automation is published.
+5. If work starts, continue into [Observability](/web/observability).
+
+Do not tune the agent prompt until App-backed coverage is healthy.
+
+## Mention routing fails
+
+Check the exact comment text first.
+
+```text
+@mogplex
+@mogplex/triage
+```
+
+Rules:
+
+- bare `@mogplex` needs a default mention route
+- targeted `@mogplex/<slug>` needs an agent slug match
+- `@mogplex triage` is not targeted
+- PR or issue comments without `@mogplex` are normal comment events, not
+  mention events
+
+Read [GitHub Mention Routing](/web/guides/github-mention-routing) for the full
+model, or use [GitHub Routing Cookbook](/guides/github-routing-cookbook) for
+concrete route recipes.
+
+## Slack mention starts the wrong behavior
+
+Slack and GitHub mentions have different routing models.
+
+For Slack:
+
+- `@mogplex` in a linked channel starts a repo-agent run
+- `@mogplex` in an unlinked channel stays conversational
+- DMs stay conversational
+- thread replies continue an existing Slack-backed conversation
+
+If Slack replies conversationally when you expected repo work:
+
+1. open [Slack](/integrations/slack)
+2. confirm the workspace is installed
+3. confirm the channel is linked to the target repo
+4. confirm repo-agent runs are enabled
+5. confirm the Slack user is mapped and allowed
+6. check the monthly run limit
+7. if a run starts, continue into
+   [Observability Runbook](/guides/observability-runbook)
+
+## Model is missing
+
+Start with [Available Models](/web/models).
+
+Check:
+
+- whether the model is visible in the live catalog
+- whether the model is enabled for the account
+- whether provider access or bring-your-own-key state is required
+- whether the agent is pinned to a hidden legacy model
+- whether a repo or route excludes the model
+- whether the CLI has synced the expected hosted state
+
+Use [API Models](/web/api/models) only when you need the route behavior, not the
+user-facing picker explanation.
+
+Use [Model Selection and Cost](/guides/model-selection-and-cost) when the model
+exists but the route, agent, repo, or cost policy is unclear.
+
+## CLI state looks wrong
+
+Start with [CLI Authentication](/cli/guides/authentication) and
+[Configuration and Flags](/cli/guides/configuration-and-flags).
+
+Check:
+
+- the signed-in account shown by the CLI
+- local `~/.mogplex` auth and permission state
+- environment variables overriding expected config
+- whether hosted model defaults or MCP definitions are synced as expected
+- repo-local permission rules when tool approvals feel surprising
+
+Use the app [Settings](/web/settings) page to confirm the hosted account state
+that the CLI should inherit.
+
+## Sandbox or preview is unhealthy
+
+Start from [Projects](/web/spaces) if repo settings may be wrong.
+
+Start from [Sandboxes](/web/sandboxes) if a runtime already exists and you need
+to inspect, stop, delete, or open the exact instance.
+
+Check:
+
+- root directory
+- install command
+- dev command
+- dev port
+- environment mapping
+- linked Vercel team and project
+- sandbox timeout
+- active branch and preview URL
+
+Use [Observability](/web/observability) when you need the linked run, call,
+tool, cost, or error trail.
+
+Use [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) when launch
+settings are still uncertain.
+
+## API request fails
+
+Start with [API Authentication](/web/api/authentication) and
+[API Errors](/web/api/errors).
+
+Check:
+
+- whether the route accepts PAT auth or requires a browser session
+- whether the token has `read` or `write` scope
+- whether the request expects the v1 run API envelope or a product route shape
+- whether idempotency keys are being reused with a different body
+- whether the response error code is retryable
+
+Use [Working Requests](/web/api/working-requests) for known-good examples.
+Use [API Quickstart](/web/api/quickstart) for the shortest complete path from
+token to repo lookup, run start, event inspection, cancellation, and sandbox
+listing.
+
+## What to capture before escalating
+
+- repo owner/name and repo ID if available
+- GitHub owner coverage state from Installations
+- route source: CLI, Trigger, Assignment, Automation, API, or GitHub mention
+- Slack workspace and channel link state when Slack started the work
+- exact GitHub event or comment text
+- agent slug and model
+- run ID, sandbox ID, or API response body
+- first error message, not only the final retry
+- whether Observability has any matching record
+
+## Read next
+
+<Cards>
+  <Card title="How Mogplex Fits Together" href="/platform/how-mogplex-fits-together" />
+  <Card title="Support" href="/support" />
+  <Card title="Common Use Cases" href="/guides/common-use-cases" />
+  <Card title="GitHub Routing Cookbook" href="/guides/github-routing-cookbook" />
+  <Card title="Observability Runbook" href="/guides/observability-runbook" />
+  <Card title="Sandbox Setup Checklist" href="/guides/sandbox-setup-checklist" />
+  <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
+  <Card title="Glossary" href="/reference/glossary" />
+</Cards>

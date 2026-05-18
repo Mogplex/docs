@@ -1,0 +1,202 @@
+---
+title: Common Use Cases
+description: Pick the right Mogplex surface for common review, triage, CI, automation, sandbox, CLI, and API workflows.
+---
+
+Use this page when you know the job you want done, but not the Mogplex surface
+that should own it.
+
+The fastest path is usually the smallest surface that can express the job. Move
+up to a heavier surface only when the workflow needs more structure.
+
+## Review a pull request
+
+Start with [Assignments](/web/assignments) when one repo should always use the
+same review behavior.
+
+Use [Triggers](/web/triggers) when one GitHub App installation should wake an
+agent directly on `pr_opened` or `pr_comment`.
+
+Use [Automations](/web/automations) when review should branch into follow-up
+steps, such as:
+
+- review first, then edit only when findings are real
+- split review across multiple agents
+- keep draft changes separate until a workflow is published
+
+Read next: [GitHub Routing Cookbook](/guides/github-routing-cookbook).
+
+## Triage a new issue
+
+Use [Assignments](/web/assignments) when issue triage is standing
+responsibility for one repo.
+
+Use [Triggers](/web/triggers) when `issue_opened` or `issue_comment` should
+wake one triage agent for an installation.
+
+Use [Automations](/web/automations) when triage should classify the issue and
+then branch into follow-up agents, delays, or edits.
+
+The agent should usually use the `triage` role, not `review`, because the job is
+to classify, respond, or decide next steps rather than inspect a code diff.
+
+Read next: [Automation Agent Roles](/web/automations/agent-roles).
+
+## Route a GitHub mention
+
+Use [Triggers](/web/triggers) for the smallest mention route:
+
+```text
+@mogplex
+@mogplex/triage
+```
+
+Use [Automations](/web/automations) when a mention should start a workflow
+graph instead of waking one agent.
+
+Mention routing depends on exact syntax:
+
+- `@mogplex` is a bare mention
+- `@mogplex/<agent-slug>` is a targeted mention
+- `@mogplex triage` is not a targeted mention
+
+Read next: [GitHub Routing Cookbook](/guides/github-routing-cookbook).
+
+## Start work from Slack
+
+Use [Slack](/integrations/slack) when the request naturally starts in a team
+channel or DM.
+
+Choose the Slack shape based on context:
+
+- use DMs for conversational help
+- use an unlinked channel when Mogplex should answer in Slack without a repo
+  default
+- use a linked channel when `@mogplex` should start repo-agent work for one
+  repository
+
+If the channel is linked, configure repo-agent enabled state, optional allowed
+Slack user IDs, and optional monthly limits before sending broad team traffic
+through it.
+
+Read next: [Slack](/integrations/slack).
+
+## Investigate a CI failure
+
+Use [Assignments](/web/assignments) when one repo should always use the same CI
+failure investigator.
+
+Use [Triggers](/web/triggers) when the CI failure event should wake one agent
+from the GitHub App installation.
+
+Use [Automations](/web/automations) when the failure path should branch, such
+as review -> condition -> edit.
+
+After the route starts, use [Observability](/web/observability) to find the run,
+model calls, tool calls, pressure signals, and errors. Use
+[Observability Runbook](/guides/observability-runbook) when you need a full
+debug sequence.
+
+## Run Mogplex locally
+
+Use the [Mogplex CLI](/cli) when you want a repo-local cockpit with:
+
+- live timeline events
+- approvals and permission gates
+- diffs and drawers
+- model selection
+- MCP and memory context
+- token and cost visibility
+
+Install it from [CLI Installation](/cli/installation), then run:
+
+```bash
+mogplex
+```
+
+Use [Slash Commands](/cli/guides/slash-commands) once the cockpit is open.
+
+## Run Mogplex from CI or scripts
+
+Use [Headless Runs](/cli/automation/headless-runs) when a script, CI job, or
+dashboard should start a run without opening the interactive cockpit.
+
+Typical sequence:
+
+1. get a repo ID from the CLI or API
+2. start a run with `mogplex run --repo <repo-id> ...`
+3. tail events with `mogplex runs events <run-id> --follow`
+4. inspect the final status with `mogplex runs get <run-id>`
+
+Use [CI Integration](/cli/automation/ci-integration) for a GitHub Actions shape.
+
+## Create reusable agent behavior
+
+Use [Agents](/web/agents) when the reusable behavior should be shared across
+repos or routing surfaces.
+
+Create or fork an agent when you need durable:
+
+- name and description
+- category
+- model choice
+- system prompt
+- mention slug
+
+Use [Skills, Rules, and Context](/web/agents/skills-rules-context) when the
+agent needs reusable procedures, shared instructions, or background context.
+
+Read next: [Agent Authoring](/configure-and-extend/agent-authoring).
+
+## Launch or inspect sandbox-backed work
+
+Start with [Projects](/web/spaces) when the repo is the unit of work.
+
+Use [Vercel](/integrations/vercel) when sandbox or preview behavior depends on
+a user-billed Vercel project, repository linkage, or environment synchronization.
+
+Use [Sandboxes](/web/sandboxes) when you need to inspect live, pending, pinned,
+or stale sandbox state.
+
+Read next: [Sandbox Setup Checklist](/guides/sandbox-setup-checklist).
+
+## Debug a route that did not fire
+
+Check in this order:
+
+1. [Settings](/web/settings) for GitHub identity and account state
+2. [Installations](/web/installations) for GitHub App coverage
+3. [Projects](/web/spaces) for repo import state
+4. the route owner: [Triggers](/web/triggers), [Assignments](/web/assignments),
+   or [Automations](/web/automations)
+5. [Observability](/web/observability), but only after a run actually exists
+
+If the repo is only visible through OAuth, hosted GitHub routing will not be
+healthy yet. Fix App coverage first.
+
+## Use the hosted API
+
+Use the [API Reference](/web/api) when another system needs to list repos,
+start runs, inspect run events, read model metadata, or fetch runtime state.
+
+Use [API Authentication](/web/api/authentication) before wiring clients. Use
+[API Errors](/web/api/errors) when you need response shape and status behavior.
+Use [API Quickstart](/web/api/quickstart) when you want the shortest complete
+token-to-run path.
+
+## Quick map
+
+| Job | Start here |
+| --- | --- |
+| First credible setup | [Quickstart](/quickstart) |
+| One event wakes one agent | [Triggers](/web/triggers) |
+| One repo owns standing work | [Assignments](/web/assignments) |
+| One event starts a graph | [Automations](/web/automations) |
+| Local repo work | [Mogplex CLI](/cli) |
+| Scripted or CI work | [Headless Runs](/cli/automation/headless-runs) |
+| Missing model | [Available Models](/web/models) |
+| Model or cost policy | [Model Selection and Cost](/guides/model-selection-and-cost) |
+| Sandbox launch setup | [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) |
+| Routing or coverage problem | [GitHub App Coverage](/web/guides/github-app-coverage) |
+| Slack-started repo work | [Slack](/integrations/slack) |
+| Failed, stuck, or expensive run | [Observability Runbook](/guides/observability-runbook) |

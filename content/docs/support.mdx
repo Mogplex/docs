@@ -1,0 +1,82 @@
+---
+title: Support
+description: Find the right Mogplex troubleshooting path for setup, routing, models, CLI auth, sandboxes, integrations, and docs issues.
+---
+
+Use this page when something is not working and you need the fastest path to
+the surface that owns the state.
+
+Mogplex issues usually become easier to debug once you separate account setup,
+repo coverage, routing, execution, and local CLI state.
+
+## Start with the symptom
+
+| Symptom | Start here |
+| --- | --- |
+| Repo is visible but GitHub events do not start work | [GitHub](/integrations/github) and [Installations](/web/installations) |
+| A model is missing from a picker or CLI run | [Available Models](/web/models) and [Model Selection and Cost](/guides/model-selection-and-cost) |
+| Hosted run cannot call an external service | [Connections and MCP](/configure-and-extend/connections-and-mcp), [Settings](/web/settings#connections), and [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides) |
+| Slack mention does not start repo work | [Slack](/integrations/slack), [Settings](/web/settings#slack), and [Observability Runbook](/guides/observability-runbook) |
+| Sandbox or preview launch is failing | [Sandbox Setup Checklist](/guides/sandbox-setup-checklist), [Vercel](/integrations/vercel), [Projects](/web/spaces), and [Sandboxes](/web/sandboxes) |
+| CLI signs in but does not inherit expected hosted state | [Settings](/web/settings), [CLI Authentication](/cli/guides/authentication), and [Configuration and Flags](/cli/guides/configuration-and-flags) |
+| A slash command does not behave as expected | [Slash Commands](/cli/commands), [Slash Commands guide](/cli/guides/slash-commands), and [Custom Slash Commands](/configure-and-extend/custom-slash-commands) |
+| You need the API error shape or status code | [API Quickstart](/web/api/quickstart) and [API Errors](/web/api/errors) |
+| You need to know what is safe to share | [Security and Data Handling](/reference/security-and-data-handling) |
+| A doc link or claim looks wrong | [Docs source](https://github.com/webrenew/mogplex-docs) |
+
+For a longer decision tree, use [Troubleshooting](/guides/troubleshooting).
+
+## First checks
+
+Before changing routing or agent configuration, check these in order:
+
+1. [Settings](/web/settings): GitHub identity, App coverage, provider keys,
+   CLI tokens, and shared connections.
+2. [Installations](/web/installations): whether the repo owner has App-backed
+   coverage.
+3. [Projects](/web/spaces): whether the repo is imported once, covered, and
+   configured for the right runtime.
+4. [Available Models](/web/models): whether the expected model is enabled and
+   available for the account.
+5. [Observability](/web/observability): whether the failing run, model call,
+   tool call, or sandbox event exists.
+
+If there is no relevant Observability record, debug the source surface first:
+GitHub, Projects, Triggers, Assignments, Automations, CLI, or API.
+
+## What to capture
+
+When you ask someone else to help diagnose a Mogplex issue, include:
+
+- the repo owner/name
+- whether the repo is visible in Projects
+- whether the repo owner is covered in Installations
+- the surface that started the work, such as CLI, Trigger, Assignment,
+  Automation, API, Slack, or GitHub mention
+- the run ID, sandbox ID, or API request details when available
+- the model selected and whether it appears in Available Models
+- the exact GitHub comment, mention, event, or CLI command that should have
+  started work
+- the first error message, status, or failed API response, not only the last
+  retry
+
+## Docs issues
+
+The docs source lives in
+[webrenew/mogplex-docs](https://github.com/webrenew/mogplex-docs). If a page is
+stale, missing a route, or points at the wrong product surface, use the page's
+GitHub link or the repository itself as the source path for a docs fix.
+
+## Read next
+
+<Cards>
+  <Card title="Quickstart" href="/quickstart" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+  <Card title="GitHub Routing Cookbook" href="/guides/github-routing-cookbook" />
+  <Card title="Observability Runbook" href="/guides/observability-runbook" />
+  <Card title="API Quickstart" href="/web/api/quickstart" />
+  <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
+  <Card title="How Mogplex Fits Together" href="/platform/how-mogplex-fits-together" />
+  <Card title="Platform" href="/platform" />
+  <Card title="Integrations" href="/integrations" />
+</Cards>

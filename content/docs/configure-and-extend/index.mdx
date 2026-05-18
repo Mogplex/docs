@@ -1,0 +1,106 @@
+---
+title: Configure & Extend
+description: Configure account state, models, billing, repo instructions, custom commands, connections, MCP, permissions, approvals, slash commands, and project rules.
+---
+
+Use this section when Mogplex is visible but not yet behaving the way the repo,
+team, or local workflow needs.
+
+<Cards>
+  <Card
+    title="Settings"
+    href="/web/settings"
+    description="GitHub identity, App coverage, Personal Vercel, connections, provider keys, CLI tokens, models, and shared preferences."
+  />
+  <Card
+    title="Available Models"
+    href="/web/models"
+    description="Live model catalog, enabled models, defaults, provider access, CLI sync, and repo-level exclusions."
+  />
+  <Card
+    title="Agent Authoring"
+    href="/configure-and-extend/agent-authoring"
+    description="Design durable agents with clear jobs, slugs, prompts, models, skills, rules, context, and routing expectations."
+  />
+  <Card
+    title="Repo Instructions"
+    href="/configure-and-extend/repo-instructions"
+    description="Use AGENTS.md, AGENTS.override.md, and agent.json to give Mogplex durable repo-local context."
+  />
+  <Card
+    title="Custom Slash Commands"
+    href="/configure-and-extend/custom-slash-commands"
+    description="Create project or user scoped prompt templates that become reusable CLI composer commands."
+  />
+  <Card
+    title="Connections and MCP"
+    href="/configure-and-extend/connections-and-mcp"
+    description="Configure REST and MCP tools, understand scope resolution, and sync cloud MCP servers into the CLI."
+  />
+  <Card
+    title="Plans & Billing"
+    href="/plans-and-billing"
+    description="Coming soon: plan tiers, account billing, included usage, limits, invoices, and entitlements."
+  />
+  <Card
+    title="Security and Data Handling"
+    href="/reference/security-and-data-handling"
+    description="Identity, tokens, provider keys, connection secrets, webhooks, event data, sandboxes, and safe support artifacts."
+  />
+  <Card
+    title="Installations"
+    href="/web/installations"
+    description="GitHub App coverage, repo eligibility, triggerability, and sync or rebinding behavior."
+  />
+  <Card
+    title="Skills"
+    href="/extend/skills"
+    description="Agent-host skills that guide users through Mogplex login, slash commands, and repo-local configuration."
+  />
+  <Card
+    title="MCP"
+    href="/extend/mcp-server"
+    description="The planned outbound Mogplex MCP server path for external MCP-aware agent hosts."
+  />
+  <Card
+    title="Permissions"
+    href="/cli/concepts/permissions"
+    description="Local permission modes and layered project rules for the CLI cockpit."
+  />
+  <Card
+    title="Approvals"
+    href="/cli/concepts/approvals"
+    description="How gated tool calls enter the approval queue and how allow, ask, and deny behavior resolves."
+  />
+  <Card
+    title="Slash Commands"
+    href="/cli/commands"
+    description="Every slash command available from the Mogplex CLI composer."
+  />
+</Cards>
+
+## Common configuration paths
+
+- Model or provider issue: start with [Available Models](/web/models), then
+  check [Model Selection and Cost](/guides/model-selection-and-cost) and
+  [Settings](/web/settings).
+- Durable worker behavior is hard to reuse: start with
+  [Agent Authoring](/configure-and-extend/agent-authoring), then check
+  [Agents](/web/agents).
+- Repo-local context is being repeated in prompts: start with
+  [Repo Instructions](/configure-and-extend/repo-instructions), then factor
+  repeatable composer prompts into
+  [Custom Slash Commands](/configure-and-extend/custom-slash-commands).
+- Agent tools are missing or too broad: start with
+  [Connections and MCP](/configure-and-extend/connections-and-mcp), then check
+  [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides).
+- Repo is visible but cannot trigger hosted work: start with
+  [GitHub](/integrations/github) and [Installations](/web/installations).
+- Sandbox launch depends on a user-billed project: start with
+  [Vercel](/integrations/vercel), then confirm repo settings in
+  [Projects](/web/spaces).
+- CLI asks for permission unexpectedly: start with
+  [Permissions](/cli/concepts/permissions) and
+  [Approvals](/cli/concepts/approvals).
+- Another agent host needs to guide a user through Mogplex: start with
+  [Skills](/extend/skills).
