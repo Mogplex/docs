@@ -38,8 +38,10 @@ $AGENTS_HOME/commands/**/*.md
 $MOGPLEX_HOME/commands/**/*.md
 ```
 
-`$MOGPLEX_HOME` defaults to `~/.mogplex`. The `.agents/commands` path is the
-preferred project path. `.mogplex/commands` still works as a legacy alias.
+`$AGENTS_HOME` is optional. When it is set, Mogplex checks it before
+`$MOGPLEX_HOME` for user-scoped commands. `$MOGPLEX_HOME` defaults to
+`~/.mogplex`. The `.agents/commands` path is the preferred project path.
+`.mogplex/commands` still works as a legacy alias.
 
 Nested directories become namespaced commands:
 
