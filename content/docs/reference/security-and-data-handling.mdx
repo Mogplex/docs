@@ -1,6 +1,6 @@
 ---
 title: Security and Data Handling
-description: Understand how Mogplex handles identity, tokens, provider keys, connection secrets, webhooks, API events, sandboxes, and support data.
+description: Understand how Mogplex handles identity, tokens, managed model access, connection secrets, webhooks, API events, sandboxes, and support data.
 ---
 
 This page is the practical trust reference for Mogplex.
@@ -15,8 +15,8 @@ Mogplex crosses several systems:
 
 - GitHub OAuth and the Mogplex GitHub App for identity, repo discovery, and
   webhook-backed routing
-- Vercel OAuth or platform sandbox access for preview runtimes
-- provider keys for hosted model execution
+- managed sandbox access for preview runtimes
+- managed model access for hosted execution
 - Slack OAuth and webhooks for Slack conversations and repo-agent starts
 - REST and MCP connections for tools agents can call
 - personal access tokens for CLI, scripts, and the public v1 API
@@ -44,25 +44,13 @@ per key before route handlers proceed.
 Use [API Authentication](/web/api/authentication) for request examples and
 scope behavior.
 
-## Provider Keys
+## Managed Model Access
 
-Provider keys in Settings are for hosted Mogplex execution, not local shell
-environment variables.
+Hosted model execution is billed and authorized through Mogplex account access.
 
-The Settings key surface currently covers:
-
-- AI Gateway
-- OpenAI
-- Anthropic
-- OpenRouter
-
-These keys are stored as secrets and used when hosted work needs provider
-access. The UI shows whether a key exists, when it was added, and whether a
-verification check passed. It does not display the raw key after save.
-
-Local CLI provider env vars remain local runtime state. Do not assume setting a
-local `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` updates hosted Mogplex provider
-state.
+Users do not need external model credentials for hosted runs. If a model cannot
+be used, debug the account plan, model catalog, and entitlement state instead
+of rotating local shell credentials.
 
 ## Connections And MCP Secrets
 
@@ -108,7 +96,7 @@ or oversized payloads are capped so event data is useful without becoming a raw
 secret dump.
 
 Team audit payloads also redact fields whose names look like prompts, tokens,
-API keys, credentials, passwords, provider keys, or secrets.
+API keys, credentials, passwords, or secrets.
 
 Even with those controls, support requests should include identifiers and the
 first error string, not raw credentials, full env dumps, or full private prompts.
@@ -124,7 +112,8 @@ Before starting sandbox work, confirm:
 - the repo and branch are correct
 - root directory, install command, dev command, and port are correct
 - the environment source is intentional
-- the linked Vercel project or platform sandbox entitlement is expected
+- managed sandbox access is available for the account
+- optional linked Vercel project metadata is intentional when used
 - Slack or GitHub routing is starting work under the user you intend
 
 Use [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) before treating a
@@ -145,7 +134,6 @@ Good support artifacts:
 
 Avoid sharing:
 
-- provider API keys
 - `mog_...` tokens
 - Slack account-link URLs
 - decrypted MCP server config
@@ -160,7 +148,6 @@ Rotate or revoke the smallest credential that matches the risk:
 - Revoke a Mogplex PAT when API or CLI access is exposed.
 - Reconnect GitHub or Slack when OAuth state is wrong or the workspace owner
   changes.
-- Rotate provider keys when hosted model credentials were exposed.
 - Recreate a connection when an external REST or MCP credential was exposed.
 - Stop or delete a sandbox when runtime state may contain sensitive files.
 

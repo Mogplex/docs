@@ -36,7 +36,7 @@ Every request below uses the same bearer header:
 ## 1. Verify the account
 
 Start with account state. This tells you whether the token works and whether
-GitHub, platform AI, sandbox, and Vercel state look ready.
+GitHub, managed model access, and managed sandbox access look ready.
 
 ```bash
 curl -sS \
@@ -206,7 +206,7 @@ resume, or delete belong in the web UI until the lifecycle routes are exposed.
 | `409 IDEMPOTENCY_CONFLICT` | Same idempotency key was reused with a different body |
 | `429 RATE_LIMITED` | Respect `Retry-After` and reduce request or run-start rate |
 | No repo appears | Fix GitHub App coverage or repo import before API work |
-| No model is usable | Check [Available Models](/web/models) and provider keys |
+| No model is usable | Check [Available Models](/web/models) and plan-backed model access |
 
 ## Read next
 

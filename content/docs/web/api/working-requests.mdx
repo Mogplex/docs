@@ -53,15 +53,14 @@ Representative response:
     "github_state": "app_installed_with_synced_repos",
     "github_installation_count": 2,
     "github_covered_repo_count": 8,
-    "platform_access": {
-      "allowPlatformAi": true,
-      "allowPlatformSandbox": false
+    "managed_access": {
+      "allowModels": true,
+      "allowSandboxes": false
     },
     "vercel": {
       "platformState": "ready",
-      "personalState": "linked",
       "linkedProjectState": "repo",
-      "statusLabel": "Platform ready"
+      "statusLabel": "Project metadata ready"
     }
   }
 }
@@ -71,8 +70,8 @@ Use this call to answer:
 
 - is the caller authenticated?
 - is GitHub only OAuth-connected, install-pending, or fully App-covered?
-- does the account have platform AI or sandbox access?
-- is Personal Vercel linked and already attached to a repo or project?
+- does the account have managed model and sandbox access?
+- is optional Vercel project metadata already attached to a repo or project?
 
 ## 2. Read or update shared defaults with `/api/settings`
 

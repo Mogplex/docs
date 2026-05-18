@@ -40,10 +40,10 @@ behavior, or why something ran the way it did, the answer usually starts here.
   cron, and triage work.
 - **Observability** tracks runs, pressure, failures, model calls, tool usage,
   and sandbox-linked activity.
-- **Settings** manages GitHub identity, App coverage, connections, provider
-  keys, CLI tokens, models, preferences, and synced MCP definitions.
+- **Settings** manages GitHub identity, App coverage, connections, access
+  tokens, models, preferences, billing access, and synced MCP definitions.
 - **Available Models** explains the live model catalog, enabled-state rules,
-  default-model behavior, provider access, CLI sync, and repo-level exclusions.
+  default-model behavior, plan access, CLI sync, and repo-level exclusions.
 
 ## The clean mental model
 
@@ -144,7 +144,7 @@ For the full redirect map, use [Legacy Routes](/web/guides/legacy-routes).
   webhook coverage are separate concerns. Projects can show synced repos before
   they are fully triggerable.
 - **Where do I set up models and external tools?** Use
-  [Settings](/web/settings) for provider keys and connections, and
+  [Settings](/web/settings) for account access and connections, and
   [Available Models](/web/models) for model availability, defaults, and enabled
   state. Agent behavior belongs in [Agents](/web/agents).
 - **Where do I manually stop or inspect previews across repos?** Use

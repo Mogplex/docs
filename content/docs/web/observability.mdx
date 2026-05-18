@@ -97,8 +97,8 @@ can include:
 
 - a GitHub deep link when the source metadata maps back to a PR, issue, or
   related event
-- sandbox billing information, linked Vercel project or team, sandbox record
-  ID, preview URL, and runtime ID
+- managed sandbox access details, optional linked Vercel project metadata,
+  sandbox record ID, preview URL, and runtime ID
 - a shortcut to open sandbox health directly
 - runtime command ID when the call came from the CLI path
 - the error string, if the call failed
@@ -115,7 +115,7 @@ this call come from?”
 ### A sandbox-backed run looks unhealthy
 
 1. Open the relevant call row.
-2. Inspect sandbox billing and preview metadata.
+2. Inspect managed sandbox access and preview metadata.
 3. Jump straight to sandbox health from the row instead of debugging the model
    call in isolation.
 

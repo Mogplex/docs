@@ -85,7 +85,8 @@ exec zsh -l
 mogplex
 ```
 
-The first launch opens the in-app login screen. Sign in with your Mogplex account or store a provider key locally — Mogplex never requires environment variables for normal use.
+The first launch opens the in-app login screen. Sign in with your Mogplex
+account. Mogplex never requires environment variables for normal use.
 
 For the full first-run flow, continue with [Quickstart](/cli/quickstart).
 
@@ -98,7 +99,8 @@ Re-run the installer. It detects the existing install and replaces the binary in
 - `mogplex: command not found` — the install succeeded but your shell has not picked up the updated `PATH`. Rehash or open a new shell.
 - The installer downloads but fails before extraction — confirm your machine has the right extractor (`tar` for `.tar.gz`, `unzip` or `ditto` for `.zip`).
 - You pinned `MOGPLEX_BASE_URL` and the script exits immediately — the installer rejects non-HTTPS hosts.
-- Login succeeds but prompts fail — your account probably lacks model access. Add a provider key in [Web Settings](/web/settings).
+- Login succeeds but prompts fail — your account probably lacks model access.
+  Check [Available Models](/web/models) and [Plans & Billing](/plans-and-billing).
 
 ## Uninstall
 

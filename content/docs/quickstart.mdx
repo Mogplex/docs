@@ -16,7 +16,8 @@ needs before it can do useful work:
 
 - GitHub identity
 - GitHub App coverage for the user or org that owns the repo
-- provider keys or platform model access
+- plan-backed model access
+- managed sandbox access when the repo needs previews or workspaces
 - CLI access tokens if you plan to use the terminal cockpit
 - Slack workspace and channel links if work should start from Slack
 - shared connections and MCP definitions, if the repo needs external tools
@@ -32,9 +33,8 @@ Go to [Projects](/web/spaces), sync repos, and open the target repo.
 
 That repo surface is where hosted work starts. From there, check that the repo
 appears once, belongs to the expected owner, and has the coverage state you
-expect. If the repo needs sandbox-backed previews through a user-billed
-project, configure the [Vercel integration](/integrations/vercel) before
-debugging workspace launch.
+expect. If the repo needs sandbox-backed previews, confirm the account plan has
+managed sandbox access before debugging workspace launch.
 
 ## 3. Check agents and models
 

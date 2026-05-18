@@ -10,12 +10,12 @@ team, or local workflow needs.
   <Card
     title="Settings"
     href="/web/settings"
-    description="GitHub identity, App coverage, Personal Vercel, connections, provider keys, CLI tokens, models, and shared preferences."
+    description="GitHub identity, App coverage, billing access, connections, access tokens, models, and shared preferences."
   />
   <Card
     title="Available Models"
     href="/web/models"
-    description="Live model catalog, enabled models, defaults, provider access, CLI sync, and repo-level exclusions."
+    description="Live model catalog, enabled models, defaults, plan access, CLI sync, and repo-level exclusions."
   />
   <Card
     title="Agent Authoring"
@@ -45,7 +45,7 @@ team, or local workflow needs.
   <Card
     title="Security and Data Handling"
     href="/reference/security-and-data-handling"
-    description="Identity, tokens, provider keys, connection secrets, webhooks, event data, sandboxes, and safe support artifacts."
+    description="Identity, tokens, managed model access, connection secrets, webhooks, event data, sandboxes, and safe support artifacts."
   />
   <Card
     title="Installations"
@@ -81,7 +81,7 @@ team, or local workflow needs.
 
 ## Common configuration paths
 
-- Model or provider issue: start with [Available Models](/web/models), then
+- Model or account-access issue: start with [Available Models](/web/models), then
   check [Model Selection and Cost](/guides/model-selection-and-cost) and
   [Settings](/web/settings).
 - Durable worker behavior is hard to reuse: start with
@@ -96,8 +96,8 @@ team, or local workflow needs.
   [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides).
 - Repo is visible but cannot trigger hosted work: start with
   [GitHub](/integrations/github) and [Installations](/web/installations).
-- Sandbox launch depends on a user-billed project: start with
-  [Vercel](/integrations/vercel), then confirm repo settings in
+- Sandbox launch reports missing access: start with
+  [Plans & Billing](/plans-and-billing), then confirm repo settings in
   [Projects](/web/spaces).
 - CLI asks for permission unexpectedly: start with
   [Permissions](/cli/concepts/permissions) and
