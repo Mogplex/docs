@@ -7,10 +7,11 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  --bg-canvas: #0a0a0c;
-  --bg-surface: #111114;
-  --bg-sidebar: #0d0d10;
+  --bg-canvas: hsl(0 0% 2%);
+  --bg-surface: hsl(0 0% 2%);
+  --bg-sidebar: hsl(0 0% 8%);
   --bg-elevated: #16161a;
+  --bg-hover: rgba(255, 255, 255, 0.04);
 
   --border-subtle: rgba(255, 255, 255, 0.05);
   --border-default: rgba(255, 255, 255, 0.08);
@@ -19,11 +20,34 @@
   --text-primary: rgba(255, 255, 255, 0.92);
   --text-body: rgba(255, 255, 255, 0.74);
   --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-tertiary: rgba(255, 255, 255, 0.38);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --text-logo: rgba(255, 255, 255, 0.96);
 
   --accent: #af71d2;
   --accent-soft: rgba(175, 113, 210, 0.12);
   --accent-underline: rgba(175, 113, 210, 0.4);
+}
+
+.light {
+  --bg-canvas: #f6f5f1;
+  --bg-surface: #ffffff;
+  --bg-sidebar: #efede7;
+  --bg-elevated: #faf9f5;
+  --bg-hover: rgba(23, 23, 23, 0.05);
+
+  --border-subtle: rgba(23, 23, 23, 0.08);
+  --border-default: rgba(23, 23, 23, 0.12);
+  --border-strong: rgba(23, 23, 23, 0.18);
+
+  --text-primary: rgba(23, 23, 23, 0.92);
+  --text-body: rgba(23, 23, 23, 0.78);
+  --text-secondary: rgba(23, 23, 23, 0.7);
+  --text-tertiary: rgba(23, 23, 23, 0.64);
+  --text-logo: rgba(23, 23, 23, 0.96);
+
+  --accent: #7d3fa2;
+  --accent-soft: rgba(125, 63, 162, 0.11);
+  --accent-underline: rgba(125, 63, 162, 0.42);
 }
 
 :root,
@@ -67,10 +91,6 @@ html > body[data-scroll-locked] {
   position: relative;
   z-index: 1;
   background-color: var(--bg-canvas);
-  background-image:
-    linear-gradient(var(--border-subtle) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
-  background-size: 40px 40px;
   color: var(--text-body);
 }
 
@@ -88,10 +108,6 @@ html > body[data-scroll-locked] {
 #nd-page h5,
 #nd-page h6 {
   color: var(--text-primary);
-}
-
-#nd-page > p {
-  color: var(--text-body);
 }
 
 #nd-page > .border-b {
@@ -118,12 +134,13 @@ html > body[data-scroll-locked] {
 #nd-sidebar button:hover,
 #nd-sidebar-mobile a:not([data-active='true']):hover,
 #nd-sidebar-mobile button:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-hover);
   color: var(--text-body);
 }
 
 #nd-sidebar a[data-active='true'],
 #nd-sidebar-mobile a[data-active='true'] {
+  position: relative;
   background: var(--accent-soft) !important;
   color: var(--text-primary) !important;
 }
