@@ -22,7 +22,6 @@ type Model = {
 
 type Snapshot = {
   fetched_at: string;
-  count: number;
   models: Model[];
 };
 

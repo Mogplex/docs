@@ -90,7 +90,6 @@ async function main() {
 
   const snapshot = {
     fetched_at: new Date().toISOString(),
-    count: rows.length,
     models: rows,
   };
 
