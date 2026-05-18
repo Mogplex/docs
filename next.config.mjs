@@ -14,6 +14,13 @@ const config = {
   turbopack: {
     root: __dirname,
   },
+  async rewrites() {
+    // Agent-friendly: `curl https://docs/<slug>.md` returns raw markdown.
+    return [
+      { source: '/index.md', destination: '/llms.mdx/docs/content.md' },
+      { source: '/:path*.md', destination: '/llms.mdx/docs/:path*/content.md' },
+    ];
+  },
 };
 
 export default withMDX(config);

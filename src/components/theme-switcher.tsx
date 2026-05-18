@@ -59,7 +59,7 @@ export function ThemeSwitcher(): React.JSX.Element {
       aria-label="Theme selection"
     >
       <motion.div
-        className="absolute left-1 top-1 h-6 rounded-sm bg-fd-background shadow-sm"
+        className="absolute left-1 top-1 h-6 rounded-sm bg-fd-background"
         initial={false}
         animate={{
           x: indicatorConfig.x,
