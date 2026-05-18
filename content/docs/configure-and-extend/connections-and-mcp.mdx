@@ -1,0 +1,140 @@
+---
+title: Connections and MCP
+description: Configure REST and MCP connections, understand scope resolution, sync cloud MCP servers to the CLI, and avoid confusing inbound tools with the Mogplex MCP preview.
+---
+
+Connections are how Mogplex agents reach external systems.
+
+They are separate from provider model keys, GitHub App coverage, Slack channel
+links, and the preview path where other MCP clients call into Mogplex.
+
+## Direction matters
+
+There are three MCP-related surfaces with different directionality:
+
+| Surface | Direction | Use it for |
+| --- | --- | --- |
+| Connections | Mogplex calls external REST APIs or MCP servers | Give agents tools such as Linear, Supabase, Notion, or Sentry. |
+| [MCP Servers API](/web/api/mcp-servers) | CLI or scripts read your configured external MCP servers | Sync cloud MCP definitions into local agent hosts. |
+| [Mogplex MCP server](/extend/mcp-server) | External MCP clients call Mogplex | Preview design path for exposing Mogplex as an MCP server. |
+
+When a hosted run cannot call an external tool, debug Connections. When another
+agent host needs to call Mogplex, start with [Skills](/extend/skills) today and
+the [Mogplex MCP server preview](/extend/mcp-server) for the future path.
+
+## Connection types
+
+Mogplex supports two connection categories:
+
+| Type | What you provide | What agents get |
+| --- | --- | --- |
+| REST API | Base URL plus optional auth | A typed external HTTP tool surface. |
+| MCP Server | MCP URL or command plus auth material | Tools exposed by the MCP server. |
+
+Manual auth modes include none, API key, bearer token, basic auth, and OAuth.
+Connection credentials are stored server-side and resolved only when the
+connection is tested, listed for CLI sync, or used by a run.
+
+## Quick-add presets
+
+Settings includes MCP presets for common tool providers:
+
+| Preset | Typical use |
+| --- | --- |
+| Zapier | User-specific actions across connected apps. |
+| Notion | Workspace search, pages, databases, and comments. |
+| Supabase | Database, auth, storage, and edge functions. |
+| Browserbase | Cloud browser automation and scraping. |
+| Sentry | Error tracking, performance, and session replay. |
+| Sanity CMS | Structured content, media, and releases. |
+| Linear | Issues, projects, cycles, and team workflows. |
+
+Some presets use direct credentials. Some use OAuth, including managed auth
+where Mogplex brokers the provider flow.
+
+Use presets first when one exists. Use manual Add Connection for advanced MCPs
+or REST APIs that do not have a preset yet.
+
+## Scope resolution
+
+Connections can be global or project-scoped.
+
+| Scope | Behavior |
+| --- | --- |
+| Global | Available to every repo unless that repo excludes it. |
+| Project | Available only to one repo. |
+| Exclusion | Removes one global connection from one repo without deleting it. |
+
+For a repo, Mogplex resolves runnable connections by starting with enabled
+global connections, removing excluded globals, then adding enabled project
+connections.
+
+Read [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides)
+for the full operating model.
+
+## MCP limits
+
+Mogplex caps enabled MCP server connections at five per resolved scope.
+
+The cap protects runs from receiving an oversized or noisy tool surface. If a
+repo reaches the cap, decide whether to:
+
+- disable a connection
+- exclude a global MCP from that repo
+- move a repo-only tool to project scope
+- replace overlapping MCPs with one better-scoped server
+
+Do not add another broad MCP just because a tool call failed. First confirm the
+right server is in the resolved set for that repo.
+
+## CLI sync
+
+When the CLI is signed in with a Mogplex token, it can fetch your cloud MCP
+catalog from:
+
+```text
+GET /api/v1/mogplex/mcp/servers
+```
+
+The CLI stores the fetched catalog in:
+
+```text
+~/.mogplex/mcp-servers.remote.json
+```
+
+On startup, the CLI can use the remote list, the cache, or no cloud MCP list if
+there is no token and no cache. A network or auth failure can fall back to the
+cache so existing local work is not blocked by a transient catalog fetch issue.
+
+Use `/mcp` in the CLI to inspect MCP state during a session.
+
+## Security notes
+
+- Treat MCP server config responses like `.env` files. They can include
+  decrypted headers, env vars, or OAuth access tokens.
+- Do not paste `/api/v1/mogplex/mcp/servers` output into issues, PRs, or chat
+  logs.
+- Prefer project-scoped connections when credentials only make sense for one
+  repo.
+- Exclude global MCPs from repos where the tool surface would be unsafe or
+  distracting.
+- Reconnect OAuth-backed presets from Settings when authorization expires.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Tool missing in a hosted run | Confirm the connection is enabled and included in the repo's resolved set. |
+| Tool works globally but not in one repo | Check for a project exclusion or a project-specific connection cap. |
+| CLI does not show cloud MCP servers | Confirm CLI token login, then inspect `/mcp` and the remote cache file. |
+| OAuth preset stopped working | Reconnect it from Settings and retest before changing prompts. |
+| MCP response leaks secrets in logs | Rotate the exposed credential and stop logging MCP config output. |
+
+## Read next
+
+<Cards>
+  <Card title="Settings" href="/web/settings" />
+  <Card title="Connection Scope and Overrides" href="/web/guides/connection-scope-and-overrides" />
+  <Card title="MCP Servers API" href="/web/api/mcp-servers" />
+  <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
+</Cards>

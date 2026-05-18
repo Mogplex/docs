@@ -2,15 +2,20 @@
   "title": "Web App",
   "pages": [
     "index",
+    "---Platform---",
     "spaces",
     "sandboxes",
+    "---Capabilities---",
     "agents",
     "automations",
     "triggers",
     "assignments",
     "observability",
+    "---Configure---",
     "settings",
+    "models",
     "installations",
+    "---Learn and build---",
     "guides",
     "api"
   ]

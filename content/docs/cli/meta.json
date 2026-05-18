@@ -1,4 +1,18 @@
 {
   "title": "CLI",
-  "pages": ["index", "installation", "quickstart", "concepts", "reference", "commands", "guides", "automation", "skills"]
+  "pages": [
+    "index",
+    "---Start here---",
+    "installation",
+    "quickstart",
+    "---Learn---",
+    "concepts",
+    "guides",
+    "skills",
+    "---Automation---",
+    "automation",
+    "---Reference---",
+    "reference",
+    "commands"
+  ]
 }

@@ -1,0 +1,146 @@
+---
+title: Slack
+description: Install Mogplex in Slack, link channels to repos, control repo-agent runs, and understand DM, thread, and attachment behavior.
+---
+
+Slack lets a team talk to Mogplex without leaving the workspace where the work
+was requested.
+
+The integration has two modes:
+
+- **Conversational mode** for DMs and existing Slack threads
+- **Repo-agent mode** for linked channels where an `@mogplex` mention starts a
+  run against a specific repository
+
+Use this page when Slack is installed but the response, repo context, or run
+policy is not doing what you expect.
+
+## What Slack Can Do
+
+| Slack surface | Behavior |
+| --- | --- |
+| Direct message | Mogplex replies in Slack and keeps conversation context for that DM thread. |
+| Thread reply in a bound conversation | Mogplex continues the existing Slack-backed conversation. |
+| `@mogplex` in an unlinked channel | Mogplex replies conversationally, without repo-agent context. |
+| `@mogplex` in a linked channel | Mogplex starts a repo-agent run for the linked repo. |
+
+The linked-channel behavior is intentionally different from general chat. Once
+a channel is linked to a repo, a real user input after `@mogplex` is treated as
+a request to start repository work.
+
+## Setup Order
+
+1. Open [Settings](/web/settings) and go to Connections.
+2. Install Mogplex to Slack, or add another workspace if one already exists.
+3. Expand the installed workspace.
+4. Link the Slack channel to the Mogplex repo that should own repo-agent runs.
+5. Enable repo-agent runs for that workspace.
+6. Optionally restrict the Slack user IDs allowed to start repo-agent runs.
+7. Optionally set a monthly repo-agent run limit for the workspace.
+8. Test from Slack with a real instruction after `@mogplex`.
+
+For private channels, invite the Mogplex Slack app to the channel before trying
+to link or route from it.
+
+## Channel Links
+
+A channel link maps one Slack channel to one Mogplex repo.
+
+When a user posts this in a linked channel:
+
+```text
+@mogplex inspect the failing checkout flow and open a minimal fix
+```
+
+Mogplex starts a repo-agent run against the linked repo, posts a run link back
+to the Slack thread, and exposes a Slack-side cancel control while the run is
+active.
+
+Use channel links when the channel has a stable repository meaning, such as:
+
+- one channel per product repo
+- one channel per customer-facing service
+- one channel for release, CI, or incident follow-up on a single codebase
+
+Do not link a broad discussion channel unless every `@mogplex` request there
+should default to the same repo.
+
+## Repo-Agent Controls
+
+Each Slack workspace has its own repo-agent controls.
+
+| Control | Use it for |
+| --- | --- |
+| Repo agent runs | Disable all Slack-started repo-agent runs without disconnecting Slack chat. |
+| Allowed Slack user IDs | Restrict who can start repo-agent runs from the workspace. |
+| Monthly limit | Cap how many repo-agent runs Slack can start in that workspace each month. |
+
+These controls apply to Slack-started repo-agent runs. They do not replace
+Mogplex account auth, GitHub App coverage, repo import, or model access.
+
+## User Mapping
+
+Mogplex needs to know which Mogplex user a Slack user represents before it can
+act.
+
+Resolution happens in this order:
+
+1. use an explicit Slack-to-Mogplex link if one exists
+2. attempt to match the Slack user's email to a Mogplex profile
+3. post an account-link notice if no Mogplex user can be resolved
+
+If Slack posts a link prompt instead of running work, complete that account link
+first. Do not debug agent routing until the Slack user is mapped.
+
+## Attachments
+
+Slack image attachments can be passed into the run.
+
+Supported image types are:
+
+- PNG
+- JPEG
+- WebP
+- GIF
+
+Mogplex currently accepts up to four Slack image attachments per request, with a
+5 MB ceiling per image. Extra, unsupported, external, or unavailable files are
+dropped and reported to the agent as attachment notices.
+
+For repo-agent runs, accepted images are materialized into the sandbox under a
+Mogplex-owned ignored path so the agent can inspect them without committing the
+files.
+
+## Debug Slack Routing
+
+| Symptom | Check |
+| --- | --- |
+| Slack install button fails | The app must have Slack OAuth env configured in the deployed Mogplex app. |
+| Workspace appears but channels do not | Invite the bot to the channel, then reload the channel list. |
+| Mention replies conversationally instead of starting a run | The channel is not linked to a repo, or the event was not an `app_mention`. |
+| Repo-agent request is denied | Check repo-agent enabled state, allowed Slack user IDs, and monthly limit. |
+| Slack asks the user to link their account | Complete the Slack account link before starting work. |
+| Run starts but fails later | Use [Observability](/web/observability) and the run link posted in Slack. |
+
+## Security Notes
+
+Slack install and webhook paths are guarded separately:
+
+- OAuth install state is signed and nonce-checked.
+- Slack webhooks are verified with the Slack signing secret.
+- Bot tokens are stored server-side and resolved only when Slack work needs
+  them.
+- Repo-agent runs still depend on the Mogplex user's repo access, model access,
+  and workspace configuration.
+
+Slack is a convenient entry point, not a bypass around Mogplex ownership and
+execution rules.
+
+## Read Next
+
+<Cards>
+  <Card title="Settings" href="/web/settings" />
+  <Card title="GitHub" href="/integrations/github" />
+  <Card title="Observability Runbook" href="/guides/observability-runbook" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+</Cards>

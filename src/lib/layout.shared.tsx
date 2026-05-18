@@ -20,7 +20,28 @@ export function baseOptions(): BaseLayoutProps {
         </span>
       ),
     },
-    // Disable the default Fumadocs theme switch since we render our own in the sidebar footer
+    links: [
+      {
+        text: 'Platform',
+        url: '/platform',
+        active: 'nested-url',
+      },
+      {
+        text: 'Capabilities',
+        url: '/capabilities',
+        active: 'nested-url',
+      },
+      {
+        text: 'Guides',
+        url: '/guides',
+        active: 'nested-url',
+      },
+      {
+        text: 'Reference',
+        url: '/reference',
+        active: 'nested-url',
+      },
+    ],
     themeSwitch: {
       enabled: false,
     },

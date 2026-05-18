@@ -1,0 +1,23 @@
+{
+  "title": "Guides",
+  "pages": [
+    "index",
+    "common-use-cases",
+    "how-to-work-with-mogplex",
+    "github-routing-cookbook",
+    "sandbox-setup-checklist",
+    "model-selection-and-cost",
+    "observability-runbook",
+    "troubleshooting",
+    "[Project Workflow](/web/guides/project-workflow)",
+    "[Choose the Right Routing Surface](/web/guides/choose-routing-surface)",
+    "[Connection Scope and Overrides](/web/guides/connection-scope-and-overrides)",
+    "[GitHub App Coverage](/web/guides/github-app-coverage)",
+    "[GitHub Mention Routing](/web/guides/github-mention-routing)",
+    "[CLI Authentication](/cli/guides/authentication)",
+    "[Configuration and Flags](/cli/guides/configuration-and-flags)",
+    "[Slash Commands](/cli/guides/slash-commands)",
+    "[Project Commands](/cli/guides/project-commands)",
+    "[Legacy Routes](/web/guides/legacy-routes)"
+  ]
+}

@@ -1,0 +1,95 @@
+---
+title: Vercel
+description: Configure Personal Vercel, repo-linked projects, sandbox billing, environment sync, and preview troubleshooting for Mogplex.
+---
+
+Vercel is optional for some Mogplex accounts and required for others.
+
+Use it when sandbox-backed workspace sessions should run against your own
+Vercel project instead of Mogplex-managed platform sandbox billing, or when a
+repo needs Vercel-linked project settings for previews and environment sync.
+
+## Where Vercel is configured
+
+Vercel setup is split across account and repo state:
+
+- [Settings](/web/settings#personal-vercel) links Personal Vercel for the
+  account.
+- [Projects](/web/spaces) owns repo-specific Vercel team, project, root
+  directory, env mapping, install command, dev command, port, and timeout
+  settings.
+- [Sandboxes](/web/sandboxes) shows live and pending runtime state after a
+  sandbox exists.
+- [Observability](/web/observability) shows the call, job, sandbox, model, and
+  cost trail after work starts.
+
+## Billing modes
+
+Repo settings can use either Mogplex-managed sandbox billing or a linked Vercel
+project, depending on what the account supports.
+
+If platform sandbox billing is not enabled for the account, Mogplex can require
+Personal Vercel before sandbox-backed workspace work starts.
+
+That does not mean every routing setup needs Vercel first. You can still
+configure GitHub coverage, repo import, agents, triggers, assignments, and
+automations before finishing the sandbox path.
+
+## Repo-linked project settings
+
+Use [Projects](/web/spaces) when one repo needs Vercel-specific runtime
+configuration:
+
+- Vercel team and project mapping
+- root directory for monorepos
+- install command
+- dev command
+- dev port
+- sandbox timeout override
+- environment mapping mode
+- manual environment variables in `.env`-style `KEY=value` format
+
+This matters most for monorepos and preview apps where the default repo root is
+not the app Mogplex should run.
+
+## Environment sync
+
+Repo settings control how sandbox environment variables are assembled.
+
+Use manual repo variables when Mogplex needs values that are not sourced from a
+Vercel project. Use Vercel-linked sync when the repo should inherit environment
+state from the selected Vercel project, with repo settings acting as the
+Mogplex-side control point.
+
+If a preview boots but behaves like the wrong app or misses expected env vars,
+check the repo root, env mapping mode, Vercel project mapping, and manual repo
+vars together.
+
+## Preview and sandbox troubleshooting
+
+Start from the surface that owns the failure:
+
+- Repo configuration problem: [Projects](/web/spaces)
+- Runtime already exists but looks stuck: [Sandboxes](/web/sandboxes)
+- Need the call or job trail behind the runtime: [Observability](/web/observability)
+- Account-level Vercel connection missing: [Settings](/web/settings#personal-vercel)
+
+Common failure modes:
+
+- **Sandbox launch asks for Personal Vercel**: the account or repo is on a
+  user-billed sandbox path and Personal Vercel is not linked yet.
+- **Preview opens the wrong app**: set the repo root directory, install
+  command, dev command, and dev port explicitly.
+- **Env values are missing**: inspect env mapping mode, linked Vercel project
+  state, and manual repo variables in Projects.
+- **Runtime exists but workspace open lands wrong**: open the workspace from
+  [Sandboxes](/web/sandboxes) so it binds to the exact sandbox instance.
+
+## Read next
+
+<Cards>
+  <Card title="Settings" href="/web/settings#personal-vercel" />
+  <Card title="Projects" href="/web/spaces" />
+  <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="Observability" href="/web/observability" />
+</Cards>

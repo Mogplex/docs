@@ -1,129 +1,305 @@
 ---
-title: Get started
-description: Start with the right Mogplex surface, follow the first-day setup path, and get to a working repo quickly.
+title: Welcome to Mogplex
+description: Choose the right Mogplex starting point, platform area, capability, configuration path, guide, or reference page.
 ---
 
-Mogplex is easiest to understand as one product with two working surfaces:
+import { Callout } from 'fumadocs-ui/components/callout';
 
-- the **web app** is the shared control plane for GitHub coverage, repo setup,
-  reusable agents, routing, settings, and runtime inspection
-- the **CLI** is the terminal-native command center for supervising AI coding
-  runs locally — agents, runs, MCP, memory, diffs, approvals, cost, and model
-  routing on one screen
+Mogplex is an agent workbench for software teams. These docs are organized by
+how the product is used: platform areas, capabilities, configuration,
+integrations, guides, and reference.
 
-You do not need to understand the whole product before you get value from it.
+The web app, CLI, hosted API, and extension paths are still documented in full,
+but they are not the main decision tree. Start from the job you are trying to
+finish, then drill into the product surface that owns it.
 
-The first useful question is simpler:
+<Callout title="Documentation index">
+  Fetch the complete docs index at [`/llms.txt`](/llms.txt). Use
+  [`/llms-full.txt`](/llms-full.txt) when you need the full text of every docs
+  page for an agent or external reader.
+</Callout>
 
-**Where does this piece of work start?**
+## Start here
 
 <Cards>
   <Card
-    title="CLI"
-    href="/cli"
-    description="Terminal cockpit for runs, agents, approvals, diffs, cost, and model routing — with attach mode for in-flight runs."
+    title="Quickstart"
+    href="/quickstart"
+    description="Connect GitHub, sync a repo, choose a routing surface, run locally, and inspect the first run."
   />
   <Card
-    title="Web app"
-    href="/web"
-    description="Projects, sandboxes, agents, automations, triggers, observability, settings, installations, and the hosted API."
+    title="How Mogplex Fits Together"
+    href="/platform/how-mogplex-fits-together"
+    description="Understand the object model from account state and GitHub coverage to repos, routes, runs, sandboxes, and observability."
   />
   <Card
-    title="Extend"
-    href="/extend"
-    description="Reach Mogplex from outside Mogplex — Skills today, MCP server in preview."
+    title="Common Use Cases"
+    href="/guides/common-use-cases"
+    description="Pick the right Mogplex surface for review, triage, CI, mentions, local work, headless runs, sandboxes, and API usage."
+  />
+  <Card
+    title="GitHub Routing Cookbook"
+    href="/guides/github-routing-cookbook"
+    description="Use concrete recipes for mentions, PR review, issue triage, CI failure response, scheduled work, and direct run starts."
+  />
+  <Card
+    title="Troubleshooting"
+    href="/guides/troubleshooting"
+    description="Debug setup, routing, models, CLI auth, sandboxes, API, and observability from the owning surface."
+  />
+  <Card
+    title="Observability Runbook"
+    href="/guides/observability-runbook"
+    description="Trace failed, stuck, expensive, or noisy work from source surface to run events, tool calls, sandboxes, and API state."
+  />
+  <Card
+    title="How to Work With Mogplex"
+    href="/guides/how-to-work-with-mogplex"
+    description="Write clearer requests for CLI runs, GitHub mentions, assignments, automations, and headless jobs."
+  />
+  <Card
+    title="Available Models"
+    href="/web/models"
+    description="Understand the live model catalog, enabled models, defaults, provider access, CLI sync, and repo-level exclusions."
+  />
+  <Card
+    title="Model Selection and Cost"
+    href="/guides/model-selection-and-cost"
+    description="Choose models across settings, agents, automations, CLI runs, repo exclusions, and cost observability."
+  />
+  <Card
+    title="Plans & Billing"
+    href="/plans-and-billing"
+    description="Coming soon: plan tiers, billing setup, included usage, limits, invoices, and account entitlements."
+  />
+  <Card
+    title="Support"
+    href="/support"
+    description="Find the right troubleshooting path for setup, routing, models, CLI auth, sandboxes, integrations, and docs issues."
   />
 </Cards>
 
-In practice, most users do this:
+## Product map
 
-1. set up shared account state once in the web app
-2. do repo-in-place work in the CLI
-3. return to the web app when they need routing, inspection, or repair actions
+<Cards>
+  <Card
+    title="Platform"
+    href="/platform"
+    description="Understand the app, CLI, headless runs, projects, sandboxes, API, and object model as one connected platform."
+  />
+  <Card
+    title="Capabilities"
+    href="/capabilities"
+    description="Agents, automations, triggers, assignments, observability, and reusable agent context."
+  />
+  <Card
+    title="Configure & Extend"
+    href="/configure-and-extend"
+    description="Settings, models, billing, GitHub App coverage, skills, MCP, permissions, approvals, and slash commands."
+  />
+  <Card
+    title="Integrations"
+    href="/integrations"
+    description="Connect Mogplex to GitHub, Vercel, Slack, CI, the hosted API, MCP clients, and local agent hosts."
+  />
+  <Card
+    title="Guides"
+    href="/guides"
+    description="Operational walkthroughs for setup, routing, GitHub coverage, CLI configuration, and legacy routes."
+  />
+  <Card
+    title="Reference"
+    href="/reference"
+    description="API reference, CLI reference, slash commands, keybindings, cost reporting, and route details."
+  />
+</Cards>
 
-## Start in the web app when...
+## Core capabilities
 
-- Mogplex still needs to connect GitHub, install the GitHub App, or sync repos.
-- You need reusable agents, hosted connections, model access, or shared MCP
-  definitions.
-- The work should run from GitHub events, repo assignments, schedules, or a
-  publishable workflow.
-- You are debugging why routing, coverage, or hosted execution looks wrong.
+<Cards>
+  <Card
+    title="Projects"
+    href="/web/spaces"
+    description="Import repos, organize workspaces, launch sandboxes, and open the repo surface where hosted work begins."
+  />
+  <Card
+    title="Agents"
+    href="/capabilities/agents"
+    description="Define reusable agents with names, slugs, prompts, models, categories, skills, rules, and context."
+  />
+  <Card
+    title="Agent Authoring"
+    href="/configure-and-extend/agent-authoring"
+    description="Design durable worker behavior before binding it to Triggers, Assignments, Automations, mentions, or API runs."
+  />
+  <Card
+    title="Routing"
+    href="/capabilities/routing"
+    description="Choose between Triggers, Assignments, and Automations instead of overbuilding the first route."
+  />
+  <Card
+    title="Review and Triage"
+    href="/capabilities/review-and-triage"
+    description="Set up PR review, issue triage, CI failure investigation, GitHub mentions, and explicit follow-up edits."
+  />
+  <Card
+    title="Sandboxes"
+    href="/platform/projects-and-sandboxes"
+    description="Inspect live and pending preview runtimes across repos, open pinned workspaces, and clean up stale sandboxes."
+  />
+  <Card
+    title="Sandbox Setup Checklist"
+    href="/guides/sandbox-setup-checklist"
+    description="Configure repo launch settings, root directory, commands, ports, env, branch intent, and preview expectations."
+  />
+  <Card
+    title="Observability"
+    href="/capabilities/observability"
+    description="Trace run health, pressure, sandbox time, model calls, tool calls, tokens, and estimated cost."
+  />
+  <Card
+    title="Automations"
+    href="/web/automations"
+    description="Build multi-step GitHub-triggered workflows with branching, parallel agents, delays, drafts, and publishing."
+  />
+</Cards>
 
-## Start in the CLI when...
+## Configure and extend
 
-- The repo is already checked out locally.
-- You want to watch a run end-to-end without leaving the terminal.
-- You need to approve or reject tool calls as they happen.
-- You want to attach to an in-flight run that started elsewhere
-  (`mogplex --attach <runId>`).
+<Cards>
+  <Card
+    title="Settings"
+    href="/web/settings"
+    description="Manage GitHub identity, App coverage, provider keys, CLI tokens, models, shared preferences, and connections."
+  />
+  <Card
+    title="Available Models"
+    href="/web/models"
+    description="Understand the live model catalog, enabled models, defaults, provider access, CLI sync, and repo-level exclusions."
+  />
+  <Card
+    title="Installations"
+    href="/web/installations"
+    description="Understand GitHub App coverage, repo eligibility, and why visibility is different from triggerability."
+  />
+  <Card
+    title="Skills"
+    href="/cli/skills"
+    description="Install and use Mogplex skills that guide users through slash commands, login, and repo-local configuration."
+  />
+  <Card
+    title="Repo Instructions"
+    href="/configure-and-extend/repo-instructions"
+    description="Use AGENTS.md, AGENTS.override.md, and agent.json to give Mogplex durable repo-local context."
+  />
+  <Card
+    title="Custom Slash Commands"
+    href="/configure-and-extend/custom-slash-commands"
+    description="Create project or user scoped prompt templates that become reusable CLI composer commands."
+  />
+  <Card
+    title="Connections and MCP"
+    href="/configure-and-extend/connections-and-mcp"
+    description="Configure REST and MCP tools, understand repo scope resolution, and sync cloud MCP servers into the CLI."
+  />
+  <Card
+    title="MCP"
+    href="/extend/mcp-server"
+    description="Understand the planned outbound Mogplex MCP server path for external MCP-aware agent hosts."
+  />
+</Cards>
 
-## Fast decision guide
+## Connect your stack
 
-- “I need Mogplex to see my repos and respond to GitHub events.”
-  Start with [Web App](/web), especially [Settings](/web/settings),
-  [Installations](/web/installations), and [Projects](/web/spaces).
-- “I already have the repo open locally and want to drive Mogplex from the terminal.”
-  Start with [CLI](/cli) and run `mogplex`.
-- “I need one GitHub event to wake one agent.”
-  Start with [Triggers](/web/triggers).
-- “I need standing work owned by one repo, like PR review or cron.”
-  Start with [Assignments](/web/assignments).
-- “I need branching, delays, parallel work, or a draft/publish workflow.”
-  Start with [Automations](/web/automations).
+<Cards>
+  <Card
+    title="GitHub App coverage"
+    href="/web/guides/github-app-coverage"
+    description="Confirm the right owner has the App installed, synced, and eligible for webhook-backed work."
+  />
+  <Card
+    title="GitHub mention routing"
+    href="/web/guides/github-mention-routing"
+    description="Route bare and targeted `@mogplex` mentions through Triggers or Automations without ambiguity."
+  />
+  <Card
+    title="Slack"
+    href="/integrations/slack"
+    description="Install Mogplex in Slack, link channels to repos, and control Slack-started repo-agent runs."
+  />
+  <Card
+    title="CI integration"
+    href="/cli/automation/ci-integration"
+    description="Run Mogplex from GitHub Actions or another CI system and tail structured run events."
+  />
+  <Card
+    title="Hosted API"
+    href="/web/api/quickstart"
+    description="Authenticate, list repos, start a run, inspect events, cancel work, and list sandboxes from scripts."
+  />
+  <Card
+    title="Troubleshooting"
+    href="/guides/troubleshooting"
+    description="Find the owning surface when setup, routing, runtime, sandbox, API, or CLI state looks wrong."
+  />
+</Cards>
+
+## Reference paths
+
+<Cards>
+  <Card
+    title="CLI quickstart"
+    href="/cli/quickstart"
+    description="Install the CLI, sign in, start a first run, and learn the cockpit commands that matter first."
+  />
+  <Card
+    title="Slash commands"
+    href="/cli/commands"
+    description="Browse every `/...` command available in the CLI composer."
+  />
+  <Card
+    title="CLI reference"
+    href="/cli/reference"
+    description="Learn panels, drawers, keybindings, cost and usage, and run export behavior."
+  />
+  <Card
+    title="API reference"
+    href="/web/api"
+    description="Start with auth, errors, models, runs, repos, sandboxes, MCP, working requests, and route families."
+  />
+  <Card
+    title="Security and Data Handling"
+    href="/reference/security-and-data-handling"
+    description="Understand tokens, secrets, webhooks, run events, sandboxes, and safe support artifacts."
+  />
+</Cards>
 
 ## The shortest reliable first-day path
 
-If you want one setup order that works for most accounts and repos, use this:
-
 1. Open the [web app](/web) and connect GitHub in [Settings](/web/settings).
-2. Confirm the correct user or org has Mogplex GitHub App coverage in
+2. Confirm the right user or org has Mogplex GitHub App coverage in
    [Installations](/web/installations).
 3. Sync repos and open the target repo in [Projects](/web/spaces).
 4. Check or create the reusable agents you want in [Agents](/web/agents).
 5. Choose the smallest routing surface that fits the job:
-   - [Triggers](/web/triggers) for `one event -> one agent`
-   - [Assignments](/web/assignments) for standing repo-owned work
-   - [Automations](/web/automations) for multi-step workflows
-6. Install the [CLI](/cli) and run a first local task in the repo.
+   [Triggers](/web/triggers), [Assignments](/web/assignments), or
+   [Automations](/web/automations).
+6. Install the [CLI](/cli/installation), run `mogplex`, and start a local task
+   in the repo.
 7. Use [Observability](/web/observability) once work is actually running.
 
-## The fastest end-to-end proof
+## What working should mean
 
-If you only want to prove Mogplex works before you invest in deeper routing
-setup, install the CLI and start a run:
-
-```bash
-curl -fsSL https://www.mogplex.com/install.sh | sh
-mogplex
-```
-
-The CLI opens the in-app login screen on first run. Sign in with Mogplex or
-store a provider key locally; environment variables exist as escape hatches
-only and are not required for normal use.
-
-That first proof is credible when:
-
-- `mogplex` opens the cockpit and the Header shows `transport: nominal`
-- `/run summarize this repository` produces agents in the Agents panel and
-  events in the Timeline
-- the same account appears correctly in [Web Settings](/web/settings)
-
-## What “working” should mean after the first hour
-
-By the end of an initial pass, you should be able to say yes to these:
+After the first hour, these should all be true:
 
 - Mogplex can see the repos you expect.
-- The repo owner has GitHub App coverage, not just OAuth visibility.
+- The repo owner has GitHub App coverage, not only OAuth visibility.
 - At least one reusable agent is configured the way you expect.
 - One local CLI run completes successfully.
-- You know whether this job belongs in Triggers, Assignments, or Automations.
+- You know whether the next job belongs in Triggers, Assignments, or
+  Automations.
 
-If one of those is still false, the best next pages are usually:
-
-- [Web App Overview](/web) if the issue is setup, routing, or hosted state
-- [CLI Overview](/cli) if the issue is local execution or repo-aware behavior
-- [GitHub Mention Routing](/web/guides/github-mention-routing) if GitHub
-  comment routing is not behaving the way you expect
-- [Choose the Right Routing Surface](/web/guides/choose-routing-surface) if the
-  job still does not obviously belong in Triggers, Assignments, or Automations
+If one is still false, start with the [Quickstart](/quickstart),
+[Settings](/web/settings), [Installations](/web/installations),
+[Mogplex App](/web), or [Mogplex CLI](/cli), depending on where the setup
+breaks.

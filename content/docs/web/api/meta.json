@@ -2,6 +2,7 @@
   "title": "API",
   "pages": [
     "index",
+    "quickstart",
     "authentication",
     "errors",
     "models",

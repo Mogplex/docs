@@ -1,0 +1,76 @@
+---
+title: Platform
+description: Understand the Mogplex app, CLI, headless run surface, projects, sandboxes, and hosted API as one connected platform.
+---
+
+Mogplex has several product surfaces, but they share one platform: account
+state, GitHub coverage, reusable agents, model access, run history, sandbox
+state, and API-backed execution.
+
+Start here when you need to understand where work should happen.
+
+<Cards>
+  <Card
+    title="How Mogplex Fits Together"
+    href="/platform/how-mogplex-fits-together"
+    description="Object model from account state to GitHub coverage, repos, agents, routing, runs, sandboxes, and observability."
+  />
+  <Card
+    title="Mogplex App"
+    href="/platform/app"
+    description="Hosted control plane for account setup, GitHub coverage, repos, reusable agents, routing, sandboxes, and inspection."
+  />
+  <Card
+    title="Mogplex CLI"
+    href="/platform/cli"
+    description="Terminal cockpit for repo-local work, live timelines, approvals, diffs, MCP, memory, models, and cost."
+  />
+  <Card
+    title="Headless Runs"
+    href="/platform/headless-runs"
+    description="Script and CI entry points for starting runs and tailing structured events without the interactive cockpit."
+  />
+  <Card
+    title="Projects and Sandboxes"
+    href="/platform/projects-and-sandboxes"
+    description="Repo import, workspace launch, repo settings, preview runtimes, pinned workspaces, and stale sandbox cleanup."
+  />
+  <Card
+    title="Sandbox Setup Checklist"
+    href="/guides/sandbox-setup-checklist"
+    description="Confirm root directory, commands, ports, env, branch intent, Vercel linkage, and preview expectations before debugging runs."
+  />
+  <Card
+    title="Hosted API"
+    href="/platform/hosted-api"
+    description="Use the API behind projects, repos, agents, assignments, automations, sandboxes, settings, and runtime inspection."
+  />
+  <Card
+    title="API Quickstart"
+    href="/web/api/quickstart"
+    description="Authenticate, list repos, start a run, inspect events, cancel work, and list sandboxes from scripts."
+  />
+</Cards>
+
+## How the platform fits together
+
+- The app owns shared account setup, GitHub App coverage, routing, hosted
+  state, and inspection.
+- The CLI owns repo-local supervision: agents, timeline, approvals, diffs,
+  model choice, cost, export, and attach mode.
+- Headless runs use the same platform API when the job starts from CI, scripts,
+  dashboards, or scheduled automation.
+- Projects and sandboxes connect repo identity to execution state.
+
+For the object model behind those surfaces, read
+[How Mogplex Fits Together](/platform/how-mogplex-fits-together).
+
+## Read next
+
+<Cards>
+  <Card title="Quickstart" href="/quickstart" />
+  <Card title="Capabilities" href="/capabilities" />
+  <Card title="API Quickstart" href="/web/api/quickstart" />
+  <Card title="Configure & Extend" href="/configure-and-extend" />
+  <Card title="Reference" href="/reference" />
+</Cards>

@@ -1,0 +1,97 @@
+---
+title: Observability
+description: Inspect Mogplex run health, pressure, model calls, tool calls, tokens, cost, sandbox linkage, and runtime errors.
+---
+
+Observability is how you understand work after it starts.
+
+Use it for runtime questions, not setup questions.
+
+## What it answers
+
+- did the work run?
+- is work pending, deferred, suppressed, running, failed, repaired, or
+  complete?
+- which surface started it: CLI, cloud, automation, or live activity?
+- which model calls happened?
+- what tools were called?
+- how many tokens were used?
+- what was the estimated cost?
+- did the run touch a sandbox?
+- what error was captured?
+
+## Read summary before detail
+
+Start with the summary cards to understand the shape of the problem:
+
+- run counts and success rate
+- stale pending work
+- suppressed and deferred starts
+- start failures
+- token usage
+- estimated cost
+- sandbox time
+
+Then open Activity rows for the event timeline, tool calls, raw metadata,
+sandbox linkage, GitHub links, and error strings.
+
+## Surface badges
+
+| Badge | Meaning |
+| --- | --- |
+| Live | The call is still pending or streaming |
+| CLI | The call came from the local CLI runtime path |
+| Cloud | The call ran outside a job-backed automation |
+| Automation | The call is attached to an automation or job run |
+
+This is the fastest way to tell whether a failure or spend spike came from
+local work, hosted work, or automation.
+
+## When not to start here
+
+Do not start in Observability when no work has actually queued or started.
+
+If a route did not fire, check the source:
+
+- [Settings](/web/settings)
+- [Installations](/web/installations)
+- [Projects](/web/spaces)
+- [Triggers](/web/triggers)
+- [Assignments](/web/assignments)
+- [Automations](/web/automations)
+- [CLI](/platform/cli)
+
+Observability can explain runtime behavior. It cannot prove why a route that
+never emitted a run did not route.
+
+## Common workflows
+
+### A run failed
+
+1. Filter Activity by failed status.
+2. Open the row for the failing call.
+3. Read the captured error and event timeline.
+4. Inspect tool calls before changing routing or agent prompts.
+
+### Spend jumped
+
+1. Read token and cost summary cards.
+2. Filter by surface.
+3. Open high-token or high-cost calls.
+4. Compare model, task, tool usage, and sandbox linkage.
+
+### A sandbox preview is unhealthy
+
+1. Start from [Sandboxes](/web/sandboxes) if you know the runtime.
+2. Jump into Observability with the sandbox context selected.
+3. Open the linked call or job row and inspect metadata.
+
+## Read next
+
+<Cards>
+  <Card title="Observability Page" href="/web/observability" />
+  <Card title="Observability Runbook" href="/guides/observability-runbook" />
+  <Card title="Projects and Sandboxes" href="/platform/projects-and-sandboxes" />
+  <Card title="Support" href="/support" />
+  <Card title="API Observability Routes" href="/web/api/route-families" />
+</Cards>

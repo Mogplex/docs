@@ -1,0 +1,173 @@
+---
+title: Agent Authoring
+description: Design durable Mogplex agents with clear jobs, slugs, prompts, models, skills, rules, context, and routing expectations.
+---
+
+An agent is a reusable worker, not a one-off task ticket.
+
+Use this page when you are creating or editing agents that will be bound to
+Triggers, Assignments, Automations, GitHub mentions, CLI workflows, or API
+started work.
+
+## Start with the contract
+
+Before writing a long system prompt, define the agent contract:
+
+| Field | Question to answer |
+| --- | --- |
+| Job | What durable kind of work does this agent own? |
+| Scope | Which repos, routes, or event types should use it? |
+| Inputs | What context should it expect from GitHub, CLI, API, or automation state? |
+| Outputs | Should it comment, summarize, review, edit, open a branch, or ask for help? |
+| Authority | What may it change without extra human instruction? |
+| Model | Does the job need stronger reasoning, lower cost, or long context? |
+| Slug | How will humans target it with `@mogplex/<slug>`? |
+| Skills, rules, context | What should be reusable instead of copied into the prompt? |
+
+If the contract is unclear, routing will be unclear too.
+
+## Good agent shapes
+
+Good agents are narrow enough to evaluate:
+
+- PR reviewer
+- issue triage assistant
+- CI failure investigator
+- docs maintainer
+- frontend implementation agent
+- release checklist runner
+- migration planner
+
+Weak agents are broad and hard to route:
+
+- "general engineer"
+- "do everything"
+- "repo expert"
+- "AI assistant"
+
+Broad agents are still useful for manual CLI work, but they make hosted
+routing harder to debug.
+
+## Slugs
+
+Slugs are routing identifiers for targeted GitHub mentions.
+
+```text
+@mogplex/triage
+@mogplex/review
+@mogplex/docs
+```
+
+Use slugs that are:
+
+- short
+- lowercase
+- stable
+- job-shaped
+- unambiguous to a teammate reading a GitHub comment
+
+Avoid encoding model names, temporary projects, or people in slugs. Those
+change more often than the agent's job.
+
+## Prompt structure
+
+Use a compact structure:
+
+```text
+You are the <job> agent for <scope>.
+
+Primary goal:
+- ...
+
+Inputs you may receive:
+- ...
+
+How to work:
+- ...
+
+When to ask for help:
+- ...
+
+Output expectations:
+- ...
+```
+
+Keep routing instructions out of the prompt when the route itself can own them.
+For example, an Automation should own graph steps and conditions. The agent
+prompt should own behavior inside its node.
+
+## Skills, rules, and context
+
+Use [Skills, Rules, and Context](/web/agents/skills-rules-context) to avoid
+prompt bloat:
+
+| Reusable layer | Use it for |
+| --- | --- |
+| Skills | Procedures or capabilities the agent can invoke on demand |
+| Rules | Team or repo policies the agent should follow consistently |
+| Context | Background knowledge that should be available across runs |
+
+If you paste the same paragraph into multiple agents, it probably belongs in a
+rule, skill, or context entry.
+
+## Model choice
+
+Set the model on the agent when the job has a durable model requirement.
+
+Examples:
+
+- use a stronger model for security review or difficult implementation
+- use a lower-cost model for high-volume triage
+- use a long-context model for large codebase reading
+
+For one-off differences inside a workflow, prefer an Automation node override
+instead of creating another nearly identical agent.
+
+Read [Model Selection and Cost](/guides/model-selection-and-cost) before
+changing a high-volume route.
+
+## Forking presets
+
+Fork or customize a preset when:
+
+- the built-in job is close but your repo needs different output
+- an Assignment should own a durable copy of the behavior
+- the model, prompt, slug, rules, or context need to become account-owned
+
+Do not fork just to handle one temporary instruction. Put temporary detail in
+the prompt for that run, assignment, or automation node.
+
+## Routing fit
+
+| Route | Agent authoring implication |
+| --- | --- |
+| Trigger | The agent should handle one event cleanly with minimal orchestration |
+| Assignment | The agent should be durable for one repo and one standing work type |
+| Automation | The agent should own one node role, not the whole graph |
+| Mention | The slug and response behavior must be obvious to humans |
+| CLI | The agent can be broader because a human is supervising the run |
+| API run | The prompt and request body must provide the missing route context |
+
+## Review checklist
+
+Before saving a durable agent:
+
+- the name explains the job
+- the slug matches the targeted mention you expect
+- the description helps a teammate pick it from a list
+- the model is deliberate
+- the prompt says what to do and when to stop
+- the output expectation is explicit
+- shared rules are not duplicated in the prompt
+- routing-specific behavior is owned by the route when possible
+- one small test run succeeds before connecting a high-volume route
+
+## Read next
+
+<Cards>
+  <Card title="Agents" href="/capabilities/agents" />
+  <Card title="Agents Overview" href="/web/agents" />
+  <Card title="Roster and Slugs" href="/web/agents/roster-and-slugs" />
+  <Card title="Skills, Rules, and Context" href="/web/agents/skills-rules-context" />
+  <Card title="Model Selection and Cost" href="/guides/model-selection-and-cost" />
+</Cards>

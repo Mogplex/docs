@@ -1,0 +1,255 @@
+---
+title: How to Work With Mogplex
+description: Write clearer Mogplex requests for CLI runs, GitHub mentions, assignments, automations, and headless jobs.
+---
+
+Good Mogplex requests are operationally specific. They name the target, the
+desired outcome, the limits, and the proof you expect back.
+
+This matters because the same request can travel through different surfaces:
+the CLI composer, a GitHub mention, a Trigger, an Assignment, an Automation, or
+a headless run.
+
+## Give the agent a real job
+
+Start with the outcome, not the implementation detail:
+
+```text
+Find why the checkout flow fails after billing redirect. Reproduce the failing
+path first, then patch the smallest code path that owns the redirect.
+```
+
+That is stronger than:
+
+```text
+Fix checkout.
+```
+
+The useful version tells Mogplex what to inspect, what order to follow, and what
+kind of fix is acceptable.
+
+## Include the operating boundaries
+
+Add boundaries when they matter:
+
+- whether code edits are allowed
+- whether the agent should only diagnose
+- whether tests, lint, typecheck, or build should run
+- whether the agent should open a PR
+- whether the route should stay on the current branch or create a new one
+- whether a GitHub reply should be posted or only local changes should be made
+
+Examples:
+
+```text
+Diagnose only. Do not edit code. Find why the trigger did not start for this
+repo and report the exact missing state.
+```
+
+```text
+Fix the failing PR check on this branch. Run lint and typecheck before pushing.
+Do not change unrelated files.
+```
+
+## Name the source of truth
+
+Mogplex works best when the request says where truth lives.
+
+Good sources of truth include:
+
+- a GitHub PR, issue, or review thread
+- a failing CI job
+- a local command output
+- a route in the web app
+- a CLI panel or slash command
+- an API endpoint
+- a design or screenshot
+
+Example:
+
+```text
+Use the latest unresolved PR review comments as scope. Fix only the true
+correctness issues and leave style-only suggestions alone.
+```
+
+## Use exact mention syntax
+
+GitHub mention routing is exact:
+
+```text
+@mogplex
+@mogplex/triage
+@mogplex/frontend-review
+```
+
+Use a bare `@mogplex` when the default mention route should decide what to do.
+Use `@mogplex/<agent-slug>` when you want a specific agent route.
+
+This is not the same as:
+
+```text
+@mogplex triage this
+```
+
+That is still a bare mention with text after it, not a targeted route.
+
+Read next: [GitHub Mention Routing](/web/guides/github-mention-routing).
+
+## Choose request shape by surface
+
+### CLI
+
+Use the CLI for repo-local work where you want to supervise approvals, diffs,
+model choice, cost, and timeline events.
+
+```text
+/run reproduce the failing activation flow, identify the owning route, patch it,
+then run the focused test.
+```
+
+Use slash commands when the task is about cockpit state:
+
+- `/model` for model choice
+- `/permissions` for permission mode
+- `/diff` for patch inspection
+- `/cost` for token and cost detail
+- `/export` for a portable run artifact
+
+Read next: [Slash Commands](/cli/guides/slash-commands).
+
+### Trigger
+
+Use a short request when the event already contains most of the context.
+
+```text
+@mogplex/ci-fixer investigate this failure and propose the smallest fix.
+```
+
+If the agent should mutate code, say that explicitly. If it should only report,
+say that explicitly.
+
+### Assignment
+
+Assignments should encode stable repo responsibility, so prompts should describe
+the durable operating rule.
+
+```text
+For this repo, review opened PRs for correctness regressions, missing tests,
+and security-sensitive changes. Do not comment on formatting-only issues.
+```
+
+When the work changes often, prefer a one-off Trigger or Automation instead of
+overloading the assignment.
+
+### Automation
+
+Automations should separate decisions from mutations.
+
+A good workflow request names the entry event, the role of each agent, and the
+condition for moving to the next step:
+
+```text
+On PR opened, review for correctness issues. If real issues are found, branch to
+an edit agent that patches them and opens a follow-up PR. Otherwise end after
+the review summary.
+```
+
+Read next: [Automation Agent Roles](/web/automations/agent-roles).
+
+### Headless run
+
+For `mogplex run`, put the whole job in the prompt and make the terminal
+success condition clear:
+
+```bash
+mogplex run --repo "$REPO_ID" --create-branch \
+  "Run the focused failing test, patch the root cause, rerun the focused test,
+  and summarize the changed files."
+```
+
+Read next: [Headless Runs](/cli/automation/headless-runs).
+
+## Ask for evidence
+
+A good request says what proof should come back:
+
+- command output
+- screenshot
+- test name and result
+- route or file path inspected
+- PR number
+- run ID
+- API status code
+- observed model or token state
+
+Example:
+
+```text
+After the fix, tell me the exact command you ran and whether it passed.
+```
+
+## Keep reusable knowledge out of one-off prompts
+
+If an instruction should apply repeatedly, put it in the right reusable layer:
+
+- [Agents](/web/agents) for durable agent identity, prompt, slug, and model
+- [Repo Instructions](/configure-and-extend/repo-instructions) for local repo
+  conventions, commands, and verification rules
+- [Custom Slash Commands](/configure-and-extend/custom-slash-commands) for
+  reusable CLI prompt templates
+- [Skills, Rules, and Context](/web/agents/skills-rules-context) for shared
+  procedures, policy, and background knowledge
+- [Assignments](/web/assignments) for repo-owned standing work
+- [Automations](/web/automations) for repeatable workflow graphs
+
+One-off prompts are best for the current run. Durable behavior belongs in the
+product surface that owns it.
+
+## Useful request templates
+
+### Diagnose only
+
+```text
+Diagnose only. Do not edit code. Reproduce the reported behavior, identify the
+owning code path or configuration state, and brief me with confirmed findings.
+```
+
+### Patch and verify
+
+```text
+Patch the smallest code path that owns this behavior. Run the focused check
+first, then the relevant lint/type/build check. Summarize changed files and
+validation.
+```
+
+### Review
+
+```text
+Review this PR for correctness bugs, regressions, missing tests, and risky
+edge cases. Put findings first with file and line references. Keep style-only
+comments out unless they hide a real defect.
+```
+
+### Route a GitHub mention
+
+```text
+@mogplex/triage classify this issue, identify the likely owner, and suggest the
+next concrete step. Do not edit code.
+```
+
+### Create a repeatable workflow
+
+```text
+Build an automation for PR-opened events: review first, branch to an edit agent
+only when there are confirmed issues, then stop after a summary if no edit is
+needed.
+```
+
+## Read next
+
+<Cards>
+  <Card title="Common Use Cases" href="/guides/common-use-cases" />
+  <Card title="Choose the Right Routing Surface" href="/web/guides/choose-routing-surface" />
+  <Card title="GitHub Mention Routing" href="/web/guides/github-mention-routing" />
+  <Card title="Slash Commands" href="/cli/guides/slash-commands" />
+</Cards>

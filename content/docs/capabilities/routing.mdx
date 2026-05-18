@@ -1,0 +1,90 @@
+---
+title: Routing
+description: Choose between Triggers, Assignments, Automations, GitHub mentions, headless runs, and local CLI execution.
+---
+
+Routing is how Mogplex decides what should run, where it should run, and which
+agent should own the work.
+
+The most reliable rule is: start with the smallest surface that can express the
+job.
+
+## Routing surfaces
+
+| Surface | Use it when |
+| --- | --- |
+| [Triggers](/web/triggers) | One GitHub event should wake one agent for one installation |
+| [Assignments](/web/assignments) | One repo owns standing work such as PR review, triage, CI failure response, or cron |
+| [Automations](/web/automations) | One event should start a workflow graph with branches, delays, joins, parallel agents, drafts, or publishing |
+| [GitHub mentions](/web/guides/github-mention-routing) | A PR or issue comment should wake Mogplex with `@mogplex` or `@mogplex/<slug>` |
+| [Slack](/integrations/slack) | A Slack DM or channel mention should reply conversationally or start repo-agent work from a linked channel |
+| [Headless Runs](/platform/headless-runs) | A script, CI job, or dashboard should start work directly |
+| [Mogplex CLI](/platform/cli) | A human should supervise a local run interactively |
+
+## Decision path
+
+1. If a human is actively operating inside a repo, use the CLI.
+2. If another system should start work directly, use a headless run or the API.
+3. If Slack should start the work, decide whether the message is conversational
+   or should route through a linked channel into one repo.
+4. If GitHub should start the work, decide whether the durable unit is the
+   installation, the repo, or a workflow graph.
+5. Use Triggers for installation-scoped event routing.
+6. Use Assignments for repo-owned standing work.
+7. Use Automations when the route needs graph behavior.
+
+The detailed picker is [Choose the Right Routing Surface](/web/guides/choose-routing-surface).
+
+## Mention routing
+
+Mention routing is exact:
+
+```text
+@mogplex
+@mogplex/triage
+```
+
+`@mogplex triage` is not a targeted mention. It is a bare mention with text
+after it.
+
+Bare mentions need a default mention route. Targeted mentions need an agent
+slug match.
+
+Slack mention routing is channel-scoped instead. A linked channel makes
+`@mogplex` start repo-agent work for the linked repo; an unlinked channel stays
+conversational. See [Slack](/integrations/slack).
+
+## Setup before routing
+
+Most routing failures are setup failures. Check these before changing the
+route:
+
+1. GitHub identity and account state in [Settings](/web/settings)
+2. GitHub App coverage in [Installations](/web/installations)
+3. repo import state in [Projects](/web/spaces)
+4. agent slug and model state in [Agents](/web/agents)
+5. route enabled or published state on the source surface
+
+Only use [Observability](/web/observability) after a run exists. If no run
+exists, debug the route source first.
+
+## Common upgrades
+
+- Trigger -> Assignment: the route should belong to one repo, not the whole
+  installation.
+- Trigger -> Automation: one event needs branching, delays, or multiple agents.
+- Assignment -> Automation: standing repo work needs multi-step control.
+- Automation -> Trigger: the workflow graph only wakes one agent and has no
+  useful draft or publish lifecycle.
+
+## Read next
+
+<Cards>
+  <Card title="GitHub Routing Cookbook" href="/guides/github-routing-cookbook" />
+  <Card title="Choose the Right Routing Surface" href="/web/guides/choose-routing-surface" />
+  <Card title="GitHub Mention Routing" href="/web/guides/github-mention-routing" />
+  <Card title="Slack" href="/integrations/slack" />
+  <Card title="Triggers" href="/web/triggers" />
+  <Card title="Assignments" href="/web/assignments" />
+  <Card title="Automations" href="/web/automations" />
+</Cards>

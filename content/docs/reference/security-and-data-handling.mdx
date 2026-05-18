@@ -1,0 +1,176 @@
+---
+title: Security and Data Handling
+description: Understand how Mogplex handles identity, tokens, provider keys, connection secrets, webhooks, API events, sandboxes, and support data.
+---
+
+This page is the practical trust reference for Mogplex.
+
+Use it when you need to know which credential is involved, where sensitive
+state lives, what appears in logs or API responses, and what to capture safely
+when debugging.
+
+## The Main Trust Boundaries
+
+Mogplex crosses several systems:
+
+- GitHub OAuth and the Mogplex GitHub App for identity, repo discovery, and
+  webhook-backed routing
+- Vercel OAuth or platform sandbox access for preview runtimes
+- provider keys for hosted model execution
+- Slack OAuth and webhooks for Slack conversations and repo-agent starts
+- REST and MCP connections for tools agents can call
+- personal access tokens for CLI, scripts, and the public v1 API
+- sandboxes for executing repo work
+
+When debugging, identify which boundary failed before rotating credentials or
+changing agent prompts.
+
+## Authentication And Tokens
+
+Mogplex personal access tokens use the `mog_...` prefix. The token value is
+shown once when created and is stored server-side as a SHA-256 hash.
+
+Current public API scopes are:
+
+| Scope | Allows |
+| --- | --- |
+| `read` | List and detail endpoints such as repos, runs, sandboxes, and MCP servers. |
+| `write` | Mutations such as starting or cancelling runs. |
+
+API tokens can be revoked from Settings. Expired, revoked, malformed, or
+unknown tokens resolve as unauthenticated. Valid tokens are also rate-limited
+per key before route handlers proceed.
+
+Use [API Authentication](/web/api/authentication) for request examples and
+scope behavior.
+
+## Provider Keys
+
+Provider keys in Settings are for hosted Mogplex execution, not local shell
+environment variables.
+
+The Settings key surface currently covers:
+
+- AI Gateway
+- OpenAI
+- Anthropic
+- OpenRouter
+
+These keys are stored as secrets and used when hosted work needs provider
+access. The UI shows whether a key exists, when it was added, and whether a
+verification check passed. It does not display the raw key after save.
+
+Local CLI provider env vars remain local runtime state. Do not assume setting a
+local `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` updates hosted Mogplex provider
+state.
+
+## Connections And MCP Secrets
+
+Connections are external tools Mogplex can call.
+
+Connection credentials are encrypted server-side before storage. MCP server
+secrets and provider-backed connection tokens are resolved only when the
+connection or MCP sync path needs them.
+
+Two details matter operationally:
+
+- A healthy connection in Settings can still be excluded from a specific repo.
+- `GET /api/v1/mogplex/mcp/servers` returns resolved MCP config for a PAT
+  caller, which can include decrypted headers or env values.
+
+Treat MCP server responses like a `.env` file. Do not paste them into issues,
+chat logs, CI output, or screenshots.
+
+Read [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides)
+and [MCP Servers API](/web/api/mcp-servers) for the exact behavior.
+
+## Webhooks
+
+GitHub and Slack use separate webhook verification paths.
+
+| Source | Verification |
+| --- | --- |
+| GitHub | HMAC signature against the configured GitHub webhook secret. |
+| Slack | Slack request signature plus timestamp/body checks. |
+
+Slack install state is also signed, nonce-checked, and time-limited during the
+OAuth callback. Slack account-link URLs are bearer links, so treat the raw link
+as sensitive until it expires or is consumed.
+
+## Event And Audit Data
+
+Mogplex stores runtime events so users can inspect what happened after a run
+starts.
+
+Run-event payloads are sanitized before returning through the public events
+API. Sensitive keys are redacted, long strings are truncated, and deeply nested
+or oversized payloads are capped so event data is useful without becoming a raw
+secret dump.
+
+Team audit payloads also redact fields whose names look like prompts, tokens,
+API keys, credentials, passwords, provider keys, or secrets.
+
+Even with those controls, support requests should include identifiers and the
+first error string, not raw credentials, full env dumps, or full private prompts.
+
+## Sandboxes
+
+Sandboxes run repository work in an isolated runtime, but they are still allowed
+to interact with the repo, configured environment, connected tools, and model
+provider selected for the run.
+
+Before starting sandbox work, confirm:
+
+- the repo and branch are correct
+- root directory, install command, dev command, and port are correct
+- the environment source is intentional
+- the linked Vercel project or platform sandbox entitlement is expected
+- Slack or GitHub routing is starting work under the user you intend
+
+Use [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) before treating a
+sandbox failure as a model or agent bug.
+
+## What To Share Safely
+
+Good support artifacts:
+
+- repo owner/name and Mogplex repo ID
+- run ID, sandbox ID, automation ID, or API request ID
+- GitHub App installation owner and coverage state
+- Slack workspace name and channel link state
+- first error message and timestamp
+- model id and provider name
+- whether the request came from CLI, API, Slack, GitHub, Trigger, Assignment,
+  or Automation
+
+Avoid sharing:
+
+- provider API keys
+- `mog_...` tokens
+- Slack account-link URLs
+- decrypted MCP server config
+- `.env` files
+- OAuth tokens
+- full private prompts or proprietary code excerpts unless needed and approved
+
+## Rotation Checklist
+
+Rotate or revoke the smallest credential that matches the risk:
+
+- Revoke a Mogplex PAT when API or CLI access is exposed.
+- Reconnect GitHub or Slack when OAuth state is wrong or the workspace owner
+  changes.
+- Rotate provider keys when hosted model credentials were exposed.
+- Recreate a connection when an external REST or MCP credential was exposed.
+- Stop or delete a sandbox when runtime state may contain sensitive files.
+
+Then re-test the exact owning surface before changing agent prompts or routing.
+
+## Read Next
+
+<Cards>
+  <Card title="API Authentication" href="/web/api/authentication" />
+  <Card title="Settings" href="/web/settings" />
+  <Card title="Slack" href="/integrations/slack" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+</Cards>

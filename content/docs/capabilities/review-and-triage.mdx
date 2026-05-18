@@ -1,0 +1,93 @@
+---
+title: Review and Triage
+description: Configure Mogplex for pull request review, issue triage, CI failure investigation, GitHub mentions, and follow-up edits.
+---
+
+Review and triage are the most common hosted Mogplex workflows.
+
+They share setup, but they should not use the same agent role by default.
+
+## Pick the right job shape
+
+| Job | Best starting surface |
+| --- | --- |
+| Every PR in one repo should be reviewed | [Assignments](/web/assignments) |
+| Every PR event in one installation should wake a reviewer | [Triggers](/web/triggers) |
+| Review should branch into an edit step only when findings are real | [Automations](/web/automations) |
+| New issues need labeling, reproduction guidance, or routing | [Assignments](/web/assignments) or [Triggers](/web/triggers) |
+| A human wants to ask from a PR or issue thread | [GitHub mention routing](/web/guides/github-mention-routing) |
+| CI failure should be investigated and optionally fixed | [Assignments](/web/assignments), [Triggers](/web/triggers), or [Automations](/web/automations) |
+
+## Agent roles
+
+Use `review` when the agent should inspect code changes and produce findings.
+
+Use `triage` when the agent should understand a thread or event, classify it,
+respond, label, or decide the next step.
+
+Use `edit` when the graph has already decided code should be changed.
+
+That split keeps mutation explicit. A reviewer can report findings, while a
+follow-up edit node can apply changes only after the workflow decides it should.
+
+## Common patterns
+
+### Standing PR review
+
+Use an [Assignment](/web/assignments) when one repo should always use the same
+review behavior. This keeps the repo as the durable unit of responsibility.
+
+### Lightweight event review
+
+Use a [Trigger](/web/triggers) when a GitHub event should wake one review agent
+without a workflow graph.
+
+### Review then fix
+
+Use an [Automation](/web/automations) when the route should:
+
+- review first
+- branch on whether findings are real
+- edit only on the fix branch
+- keep draft changes separate until the workflow is published
+
+### Issue triage
+
+Use a `triage` agent for new issues and issue comments. The agent should
+classify, summarize, request missing information, route, or answer. It should
+not be forced into code-review behavior unless the issue explicitly carries a
+diff or reproduction branch.
+
+### GitHub mentions
+
+Use exact mention syntax:
+
+```text
+@mogplex summarize the failing check
+@mogplex/triage label this and suggest next steps
+@mogplex/reviewer review this diff with extra attention to auth
+```
+
+For targeted mentions, the part after `/` must match an agent slug.
+
+## After work starts
+
+Use [Observability](/web/observability) to answer:
+
+- did the job run?
+- did it fail, defer, suppress, or queue?
+- what model and tools were used?
+- what did it cost?
+- which sandbox or GitHub object was involved?
+
+If no run exists, go back to [Routing](/capabilities/routing) and check setup
+before inspecting runtime detail.
+
+## Read next
+
+<Cards>
+  <Card title="Automation Agent Roles" href="/web/automations/agent-roles" />
+  <Card title="Common Use Cases" href="/guides/common-use-cases" />
+  <Card title="Routing" href="/capabilities/routing" />
+  <Card title="Observability" href="/capabilities/observability" />
+</Cards>

@@ -1,11 +1,12 @@
 ---
 title: Configuration and Flags
-description: The CLI's single flag (`--attach`), the env-var escape hatches, and where local state lives on disk.
+description: Understand CLI launcher flags, environment-variable escape hatches, config.toml layers, and where Mogplex stores local state.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-The CLI is configured **in-app**. There is one CLI flag and a small set of environment variables that exist as escape hatches.
+The CLI is configured primarily in-app, with a small launcher flag surface,
+environment-variable escape hatches, and advanced `config.toml` layers.
 
 <Callout>
   Env vars are not required for normal use. They exist for CI, attach
@@ -14,7 +15,7 @@ The CLI is configured **in-app**. There is one CLI flag and a small set of envir
   the in-app login and `/permissions` instead.
 </Callout>
 
-## CLI flags
+## Launcher flags
 
 | Flag | What it does |
 | --- | --- |
@@ -22,7 +23,8 @@ The CLI is configured **in-app**. There is one CLI flag and a small set of envir
 | `--logout` | Clear the stored Mogplex token before launching. Combine with `--attach` if needed. |
 | `--events=jsonl` | Read events from stdin in JSONL format (used with stdio transport). |
 
-That's it. Everything else is in-app — slash commands, drawers, the login screen.
+Most day-to-day control still happens in-app through slash commands, drawers,
+the login screen, model picker, and permissions picker.
 
 ## Environment variables
 
@@ -49,12 +51,35 @@ See [Concepts → Transports](/cli/concepts/transports) for the selection rules.
 | `MOGPLEX_HOME` | Override the home directory location (default `~/.mogplex/`). |
 | `CODEX_HOME` | Deprecated fallback; use `MOGPLEX_HOME` instead. |
 
+## `config.toml`
+
+Mogplex can read two TOML config layers:
+
+| Path | Scope |
+| --- | --- |
+| `$MOGPLEX_HOME/config.toml` | User-level advanced defaults. |
+| `./.mogplex/config.toml` | Project-level advanced defaults. |
+
+The runtime loader merges built-in defaults, user config, project config,
+environment-derived values, and launcher overrides. In normal interactive use,
+prefer the visible cockpit controls first:
+
+- `/login` and the login screen for account and provider credentials
+- `/permissions` for permission mode
+- `/model` for current model selection
+- `/mcp` for MCP inspection and sync actions
+
+Use `config.toml` when you need persistent advanced defaults that are not
+better owned by the current session UI.
+
 ## Local state on disk
 
 | Path | Contents |
 | --- | --- |
 | `~/.mogplex/auth.json` | Mogplex token and provider credentials (mode `0600`). |
+| `~/.mogplex/config.toml` | User-level advanced config. |
 | `~/.mogplex/permissions.json` | Global permission mode and rules. |
+| `./.mogplex/config.toml` | Project-level advanced config. |
 | `~/.mogplex/projects/<repo-slug>/permissions.json` | Per-project permission overrides. |
 | `~/.mogplex/logs/<session-id>.jsonl` | Structured session logs (secrets redacted). |
 | `~/.mogplex/bin/mogplex` | The CLI binary (default install location). |
@@ -67,21 +92,16 @@ Permissions are managed by editing the JSON files above or by using `/permission
 
 ## Configuring MCP
 
-MCP servers are configured in [Web Settings](/web/settings) when you're signed in to Mogplex (synced down on launch). The CLI's MCP drawer surfaces what's configured but does not edit it directly.
+MCP servers are configured in [Web Settings](/web/settings) and synced to the
+CLI when you are signed in to Mogplex. The CLI's MCP drawer surfaces what is
+configured and supports sync or reauth actions.
 
-## Why the CLI doesn't read `config.toml`
-
-Earlier Mogplex CLI builds used `~/.mogplex/config.toml` for CLI-only options like `model_provider`, `sandbox_mode`, profiles, and `slash_commands`. The current cockpit replaces that surface with:
-
-- **In-app login** for `model_provider` and credentials.
-- **`/permissions <mode>`** + the permissions JSON files for sandbox and approval policy.
-- **`/model`** for runtime model selection.
-- **The slash command registry** (built-in) for the composer surface.
-
-If you have an old `config.toml` from a previous install, it is ignored by the current CLI.
+Read [Connections and MCP](/configure-and-extend/connections-and-mcp) for the
+full connection model.
 
 ## See also
 
 - [Authentication](/cli/guides/authentication)
 - [Concepts → Transports](/cli/concepts/transports)
 - [Concepts → Permissions](/cli/concepts/permissions)
+- [Connections and MCP](/configure-and-extend/connections-and-mcp)

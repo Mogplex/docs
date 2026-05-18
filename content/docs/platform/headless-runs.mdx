@@ -1,0 +1,84 @@
+---
+title: Headless Runs
+description: Start Mogplex work from scripts, CI, dashboards, or automation without opening the interactive CLI.
+---
+
+Headless runs are for non-interactive execution.
+
+Use this surface when another system should start Mogplex work, tail the event
+stream, and make a decision from the final status.
+
+## Good fits
+
+- GitHub Actions or another CI system starts a fix or investigation run
+- an internal dashboard launches a repo task
+- a scheduled script starts maintenance work
+- a tool starts a run and streams events into its own logs
+- an operator wants repeatable JSON output instead of the TUI
+
+If a human should actively supervise tool approvals, diffs, or model changes,
+use the [interactive CLI](/platform/cli) instead.
+
+## Core lifecycle
+
+The headless path mirrors the hosted run lifecycle:
+
+1. start a run with a repo and task
+2. capture the run ID
+3. tail run events, optionally as JSON
+4. inspect the final run status
+5. cancel or retry only when the status supports it
+
+The CLI wraps the v1 runs API and adds CI-friendly behavior such as JSON output,
+idempotency keys, event following, and exit-code-mapped errors.
+
+## Typical command shape
+
+```bash
+export MOGPLEX_API_KEY="mog_..."
+
+RUN_ID=$(
+  mogplex run --repo "$MOGPLEX_REPO" --create-branch --json \
+    "Investigate the failing test and propose the smallest fix." \
+  | jq -r '.runId'
+)
+
+mogplex runs events "$RUN_ID" --follow --timeout 900
+mogplex runs get "$RUN_ID" --json
+```
+
+For the exact flags, output fields, idempotency behavior, and event format, use
+[CLI Automation: Headless Runs](/cli/automation/headless-runs).
+
+## Requirements
+
+- a Mogplex API key with the right scope
+- a repo ID from Mogplex, not only an owner/name string
+- a clear task prompt suitable for unattended execution
+- timeout and final-status handling in the calling script
+
+Use read-only tokens for dashboards that should inspect runs but never start or
+cancel them.
+
+## Where to inspect results
+
+Use [Observability](/web/observability) after the run starts if you need:
+
+- model calls and token usage
+- tool calls and errors
+- sandbox linkage
+- pressure or queue signals
+- cost and duration
+
+Use the API pages when another system needs to consume the same run data:
+[Runs API](/web/api/runs), [API Errors](/web/api/errors), and
+[Working Requests](/web/api/working-requests).
+
+## Read next
+
+<Cards>
+  <Card title="Headless Runs Reference" href="/cli/automation/headless-runs" />
+  <Card title="CI Integration" href="/cli/automation/ci-integration" />
+  <Card title="Runs API" href="/web/api/runs" />
+  <Card title="Observability" href="/capabilities/observability" />
+</Cards>

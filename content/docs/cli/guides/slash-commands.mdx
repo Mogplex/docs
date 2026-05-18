@@ -102,8 +102,32 @@ Or `/exit`, or double-tap `Ctrl+C` (single press is a soft-interrupt — see [Re
 - **Using `q` with a drawer open** — `q` only quits when no drawer is open. While a drawer is open it's reserved for the drawer.
 - **Pressing Ctrl+C once and walking away** — that's a soft-interrupt, not a quit. Press it twice within 1500ms to exit.
 
+## Add your own commands
+
+Custom commands are markdown prompt templates from project or user scope. The
+authoring format exists in the CLI runtime, but the running cockpit's active
+registry is still whatever `/help` shows.
+
+Use project commands for repo workflows:
+
+```text
+.agents/commands/review-staged.md
+.agents/commands/release/notes.md
+```
+
+Use user commands for personal workflow shortcuts:
+
+```text
+$MOGPLEX_HOME/commands/debug-failing-test.md
+```
+
+See [Custom Slash Commands](/configure-and-extend/custom-slash-commands) for
+frontmatter, arguments, aliases, template variables, precedence rules, and the
+current registry limitation.
+
 ## See also
 
 - [Commands](/cli/commands) — full slash command reference
+- [Custom Slash Commands](/configure-and-extend/custom-slash-commands)
 - [Reference → Keybindings](/cli/reference/keybindings)
 - [Reference → Drawers](/cli/reference/drawers)

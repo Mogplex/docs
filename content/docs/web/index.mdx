@@ -18,6 +18,7 @@ behavior, or why something ran the way it did, the answer usually starts here.
   <Card title="Assignments" href="/web/assignments" />
   <Card title="Observability" href="/web/observability" />
   <Card title="Settings" href="/web/settings" />
+  <Card title="Available Models" href="/web/models" />
   <Card title="Installations" href="/web/installations" />
   <Card title="Guides" href="/web/guides" />
   <Card title="API" href="/web/api" />
@@ -41,6 +42,8 @@ behavior, or why something ran the way it did, the answer usually starts here.
   and sandbox-linked activity.
 - **Settings** manages GitHub identity, App coverage, connections, provider
   keys, CLI tokens, models, preferences, and synced MCP definitions.
+- **Available Models** explains the live model catalog, enabled-state rules,
+  default-model behavior, provider access, CLI sync, and repo-level exclusions.
 
 ## The clean mental model
 
@@ -57,6 +60,8 @@ That framing helps you choose the right page faster:
 
 - use [Settings](/web/settings) and [Installations](/web/installations) when
   Mogplex cannot yet do the work
+- use [Available Models](/web/models) when a picker, agent, flow, or CLI run
+  cannot use the model you expect
 - use [Projects](/web/spaces), [Triggers](/web/triggers),
   [Assignments](/web/assignments), or [Automations](/web/automations) when you
   are deciding what should run
@@ -139,7 +144,9 @@ For the full redirect map, use [Legacy Routes](/web/guides/legacy-routes).
   webhook coverage are separate concerns. Projects can show synced repos before
   they are fully triggerable.
 - **Where do I set up models and external tools?** Use
-  [Settings](/web/settings). Agent behavior belongs in [Agents](/web/agents).
+  [Settings](/web/settings) for provider keys and connections, and
+  [Available Models](/web/models) for model availability, defaults, and enabled
+  state. Agent behavior belongs in [Agents](/web/agents).
 - **Where do I manually stop or inspect previews across repos?** Use
   [Sandboxes](/web/sandboxes).
 - **Where do I start for mention-driven workflows?** Use

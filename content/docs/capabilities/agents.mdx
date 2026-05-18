@@ -1,0 +1,89 @@
+---
+title: Agents
+description: Define reusable Mogplex agents with names, slugs, prompts, models, categories, skills, rules, and context.
+---
+
+Agents are reusable workers.
+
+Define them once in the app, then bind them to Triggers, Assignments,
+Automations, CLI work, or mention routing.
+
+## What an agent defines
+
+| Part | Why it matters |
+| --- | --- |
+| Name and description | Human-readable identity in pickers and lists |
+| Slug | Durable mention handle for `@mogplex/<slug>` routing |
+| Category | Roster organization and hygiene |
+| Model | The default model for that agent, constrained by the account catalog |
+| System prompt | The core behavior the agent should follow |
+| Skills | Reusable procedures, tools, prompts, and workflows |
+| Rules | Shared instruction blocks and policy constraints |
+| Context | Reusable memory and background knowledge |
+
+The roster can include built-in presets, owned custom agents, and forks of
+presets you have customized.
+
+## When to create or fork an agent
+
+Create or fork an agent when the behavior should be reused across more than one
+run, repo, or route.
+
+Good examples:
+
+- PR reviewer
+- issue triage assistant
+- CI failure investigator
+- frontend implementation agent
+- docs maintainer
+- release checklist runner
+
+If the behavior only changes one step inside one workflow, use an Automation
+node override instead of creating a separate agent.
+
+## Slugs and mentions
+
+For GitHub mentions, the slug is the routing identity.
+
+```text
+@mogplex
+@mogplex/triage
+@mogplex/frontend-review
+```
+
+Bare `@mogplex` routes only to the default mention route. Targeted
+`@mogplex/<slug>` mentions route to the agent slug configured on the trigger or
+automation entry path.
+
+Keep slugs short, lowercase, and obvious from the job.
+
+## Model hygiene
+
+Agent models are constrained by the live account model catalog.
+
+If an agent was created before a model was hidden, disabled, or renamed, the
+agent can still exist on that older model. When you edit long-lived agents,
+check [Available Models](/web/models) and move them to a visible enabled model
+when appropriate.
+
+## How agents connect to routing
+
+- [Triggers](/web/triggers) wake one agent from one GitHub event.
+- [Assignments](/web/assignments) bind one repo, one agent, and one standing
+  work type.
+- [Automations](/web/automations) orchestrate one or more agent nodes in a
+  workflow graph.
+- [Headless Runs](/platform/headless-runs) can start work from scripts and CI.
+- [Mogplex CLI](/platform/cli) can supervise local runs with model, approval,
+  diff, memory, and MCP controls.
+
+## Read next
+
+<Cards>
+  <Card title="Agent Authoring" href="/configure-and-extend/agent-authoring" />
+  <Card title="Agents Overview" href="/web/agents" />
+  <Card title="Roster and Slugs" href="/web/agents/roster-and-slugs" />
+  <Card title="Skills, Rules, and Context" href="/web/agents/skills-rules-context" />
+  <Card title="Model Selection and Cost" href="/guides/model-selection-and-cost" />
+  <Card title="Routing" href="/capabilities/routing" />
+</Cards>

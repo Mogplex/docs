@@ -1,0 +1,125 @@
+---
+title: Model Selection and Cost
+description: Choose models deliberately across settings, agents, automations, CLI runs, repo exclusions, and cost observability.
+---
+
+Use this guide when the question is not "which models exist?" but "which model
+should this work use, and how do I keep spend understandable?"
+
+The live catalog lives in [Available Models](/web/models). This page is the
+operating model for choosing and reviewing those models across Mogplex.
+
+## Start from the job
+
+Pick the smallest capable model for the workflow, then move up only when the
+work proves it needs more reasoning, context, or tool reliability.
+
+| Job | Good starting point | Watch for |
+| --- | --- | --- |
+| Fast issue triage | Lower-cost model with solid instruction following | Long threads, many linked files, or ambiguous product context |
+| PR review | Strong code reasoning model | Large diffs, multi-package changes, security-sensitive code |
+| Code edit | Strong implementation model | Repo size, test setup, tool-call reliability, branch handling |
+| Documentation pass | Balanced writing and code-reading model | Claims that need source verification in sibling repos |
+| CI failure investigation | Strong reasoning model with good tool use | Flaky tests, remote logs, environment-specific failures |
+| Recurring automation | Predictable low-to-mid cost model | Repeated failures that create hidden retries or requeues |
+
+Model choice is a routing policy decision. A cheap model on a high-volume route
+can still spend more than an expensive model on a narrow route.
+
+## Know the control points
+
+Model configuration appears in several places:
+
+| Surface | What it controls |
+| --- | --- |
+| [Settings -> Models](/web/models) | Enabled models, disabled models, and the default model for new work |
+| [Settings -> API Keys](/web/settings) | Provider access for hosted work when platform AI is not enough |
+| [Agents](/web/agents) | The default model for that reusable agent |
+| [Automations](/web/automations) | Node-level model overrides inside one workflow draft |
+| [Repo settings](/web/spaces) | Repo-specific exclusions from the globally enabled model set |
+| [CLI Model Picker](/cli/reference/drawers) | Active model for the local cockpit run |
+| [API Models](/web/api/models) | Catalog, enabled state, and CLI-formatted model export |
+
+The account default affects new work. It does not rewrite every saved agent,
+automation node, assignment, or repo rule.
+
+## Recommended workflow
+
+1. Open [Available Models](/web/models) and make sure the account has at least
+   one enabled model.
+2. Set a default model that is safe for ordinary new work.
+3. Give specialized agents explicit models when the job needs it.
+4. Use automation node overrides only when one node differs from the base
+   agent on purpose.
+5. Add repo-specific exclusions when a codebase should not use a model family,
+   provider, or cost profile.
+6. Review [Observability](/web/observability) and [Cost & Usage](/cli/reference/cost-and-usage)
+   after real runs, not just after setup.
+
+## When to override the default
+
+Override the account default when:
+
+- the agent has a durable job such as security review, CI repair, or release
+  work
+- the automation node has a different role than the reusable agent usually has
+- a repo has policy or cost restrictions
+- the route is high-volume and needs a lower-cost baseline
+- the CLI run is a one-off task where the operator knows the tradeoff
+
+Do not override just because a model is newer. The route should explain why the
+model is needed.
+
+## Cost visibility
+
+Use these surfaces together:
+
+- [Observability](/web/observability) for hosted runs, automation runs,
+  pressure, tokens, estimated cost, model calls, and tool calls
+- [Cost & Usage](/cli/reference/cost-and-usage) for local cockpit totals,
+  threshold warnings, and per-run breakdowns
+- [API Models](/web/api/models) for pricing metadata when present in the model
+  catalog
+
+If spend jumps, do not start by changing every model. First identify the route,
+agent, repo, and surface that generated the calls.
+
+## Safe cost controls
+
+Use these controls before broad disabling:
+
+| Control | Use it when |
+| --- | --- |
+| Disable one model | The model should not be selectable for new work |
+| Repo exclusion | One repo should not use a model that remains valid elsewhere |
+| Agent model change | One durable worker should use a different model |
+| Automation node override | One step in one graph needs a different model |
+| CLI `/model` | A human operator wants to switch the current local run |
+| Approval rule for `change_model` | Model changes should require operator consent |
+
+Avoid using a global disable as a substitute for repo policy. It can break
+unrelated agents that are correctly using the model.
+
+## Hidden or stale model references
+
+Long-lived agents and automations can still reference older model ids.
+
+When you edit those definitions:
+
+1. open the model field
+2. move the definition to a visible enabled model
+3. save the agent or automation draft
+4. run one small test before changing a high-volume route
+
+If the CLI is signed in but does not show the expected model list, confirm the
+web account has enabled models and that the CLI is using account-backed login.
+
+## Read next
+
+<Cards>
+  <Card title="Available Models" href="/web/models" />
+  <Card title="API Models" href="/web/api/models" />
+  <Card title="Observability" href="/capabilities/observability" />
+  <Card title="Cost & Usage" href="/cli/reference/cost-and-usage" />
+  <Card title="Agent Authoring" href="/configure-and-extend/agent-authoring" />
+</Cards>

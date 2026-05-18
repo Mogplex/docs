@@ -1,0 +1,218 @@
+---
+title: Custom Slash Commands
+description: Understand the Mogplex slash-command authoring format, project command paths, template syntax, and the current cockpit registry limitation.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Custom slash commands are the repo-local authoring format for repeatable
+Mogplex CLI prompts.
+
+Use this page when you are preparing reusable prompt templates or reading files
+created by `/init`.
+
+<Callout type="warn">
+  Check `/help` in the running cockpit before relying on a custom command in
+  production. The markdown loader and authoring format exist in the CLI
+  runtime packages, and `/init` scaffolds `.agents/commands/review.md`, but
+  the current cockpit command input still exposes the built-in registry in
+  some builds.
+</Callout>
+
+## Where commands live
+
+The slash-command loader is designed to read commands from project and user
+scopes.
+
+Project scope:
+
+```text
+<project>/.agents/commands/**/*.md
+<project>/.mogplex/commands/**/*.md
+```
+
+User scope:
+
+```text
+$AGENTS_HOME/commands/**/*.md
+$MOGPLEX_HOME/commands/**/*.md
+```
+
+`$MOGPLEX_HOME` defaults to `~/.mogplex`. The `.agents/commands` path is the
+preferred project path. `.mogplex/commands` still works as a legacy alias.
+
+Nested directories become namespaced commands:
+
+```text
+.agents/commands/release/notes.md  -> /release:notes
+.agents/commands/deploy.md         -> /deploy
+```
+
+## Precedence
+
+If the same command name appears in more than one scope, Mogplex keeps the
+highest-precedence version:
+
+1. project command
+2. user command
+3. builtin command
+
+Within project scope, `.agents/commands` wins over `.mogplex/commands`.
+Shadowed commands produce diagnostics, but they do not stop the registry from
+loading.
+
+## Minimal command
+
+Create `.agents/commands/review-staged.md`:
+
+```md
+Review the staged git diff for correctness bugs, missing tests, and style
+inconsistencies with this repo. Keep the result concise and cite files.
+```
+
+When custom command loading is enabled in your build, the command is invoked as:
+
+```text
+/review-staged
+```
+
+A bare markdown file is valid for the loader. The filename becomes the command
+name.
+
+## Frontmatter
+
+Add YAML frontmatter when the command needs metadata:
+
+```md
+---
+description: Review one PR for correctness and test coverage
+aliases:
+  - pr-review
+arguments:
+  - name: pr
+    kind: positional
+    required: true
+    description: Pull request number
+model: anthropic/claude-sonnet-4-6
+allowed-tools:
+  - shell
+  - read_file
+available-during-task: false
+---
+
+Review pull request #$1. Focus on:
+
+- correctness bugs
+- missing tests
+- security-sensitive changes
+- behavior that contradicts repo conventions
+```
+
+Supported frontmatter fields:
+
+| Field | Purpose |
+| --- | --- |
+| `name` | Override the command name from the filename. |
+| `description` | Short text shown in command help. |
+| `aliases` | Additional names that invoke the same command. |
+| `arguments` | Positional, named, or rest argument declarations. |
+| `model` | Model override for the generated turn. |
+| `allowed-tools` | Tool allow-list for that turn. |
+| `available-during-task` | Whether the command can run while a task is active. |
+
+## Arguments and templates
+
+Command bodies support prompt-template placeholders:
+
+| Placeholder | Expands to |
+| --- | --- |
+| `$ARGUMENTS` | All positional arguments joined by spaces. |
+| `$1`, `$2` | Positional argument by index. |
+| `${NAME}` | Named argument value. |
+| `$NAME` | Named argument shorthand for uppercase identifiers. |
+
+Example:
+
+```md
+---
+description: Draft release notes for a tag
+arguments:
+  - name: tag
+    kind: positional
+    required: true
+  - name: audience
+    kind: named
+    required: false
+    default: users
+---
+
+Draft release notes for $1. Write for ${audience}. Include breaking changes,
+fixes, and upgrade notes from git history.
+```
+
+Invocation:
+
+```text
+/release-notes v1.4.0 --audience=maintainers
+```
+
+## Config aliases and disabled commands
+
+The config schema supports slash-command aliases, disabled commands, and extra
+directories:
+
+```toml
+[slash_commands]
+disabled = ["logout"]
+extra_dirs = ["/opt/company/mogplex-commands"]
+
+[slash_commands.aliases]
+r = "review"
+ship = "deploy"
+```
+
+Use command-file aliases when the alias should travel with the repo. Use config
+aliases only when the target build wires the slash-command loader into the
+running cockpit.
+
+## Good command shapes
+
+Good custom commands are:
+
+- short enough to inspect quickly
+- specific to one repeatable workflow
+- argument-driven instead of hardcoded to one issue or branch
+- safe to run from a teammate's checkout
+- free of secrets and personal-only paths
+
+Examples:
+
+- `/review-staged`
+- `/write-pr-summary`
+- `/release:notes`
+- `/debug-failing-test`
+- `/triage-issue`
+
+Avoid turning every one-off instruction into a command. If the prompt changes
+each time, keep it in chat.
+
+## Verify the active registry
+
+The source of truth for the active cockpit is still `/help`:
+
+```text
+/help
+```
+
+If a command does not appear there, the running build is not exposing it. Check
+the path, YAML frontmatter, command name, shadowing, and whether your build has
+custom command loading wired into the cockpit input.
+
+## Read next
+
+<Cards>
+  <Card title="Repo Instructions" href="/configure-and-extend/repo-instructions" />
+  <Card title="Slash Commands Guide" href="/cli/guides/slash-commands" />
+  <Card title="Slash Commands Reference" href="/cli/commands" />
+  <Card title="Project Commands" href="/cli/guides/project-commands" />
+</Cards>

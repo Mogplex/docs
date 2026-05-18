@@ -1,0 +1,69 @@
+---
+title: Mogplex App
+description: Use the Mogplex app as the hosted control plane for setup, routing, repo work, reusable agents, sandboxes, and inspection.
+---
+
+The Mogplex app is the hosted control plane.
+
+Use it when the question is about shared account state, GitHub coverage, repo
+visibility, reusable agents, hosted routing, sandbox state, models, settings,
+or runtime inspection.
+
+The app is not just the browser version of the CLI. It owns the shared state
+that other surfaces consume.
+
+## What the app owns
+
+| Area | What it controls |
+| --- | --- |
+| [Settings](/web/settings) | GitHub identity, App coverage, provider keys, CLI tokens, connections, model defaults, and preferences |
+| [Projects](/web/spaces) | Repo import, workspace launch, repo settings, sandbox startup, monorepo entries, assignments, and cron setup |
+| [Agents](/web/agents) | Reusable agents, preset forks, categories, slugs, model choice, skills, rules, and context |
+| [Triggers](/web/triggers) | One GitHub event routed directly to one agent |
+| [Assignments](/web/assignments) | Repo-owned standing work such as review, triage, CI failure response, and scheduled jobs |
+| [Automations](/web/automations) | Multi-step GitHub-triggered workflows with branches, delays, parallel work, drafts, and publishing |
+| [Sandboxes](/web/sandboxes) | Running and pending preview runtimes across repos |
+| [Observability](/web/observability) | Run health, pressure, model calls, tool calls, tokens, sandbox linkage, and cost |
+
+## Start here when
+
+- a repo is missing, duplicated, hidden, or not triggerable
+- a GitHub event does not start work
+- an agent slug, model, prompt, rule, skill, or context library needs to be
+  changed centrally
+- a sandbox preview is starting, failing, stale, or attached to the wrong repo
+- you need to understand what actually ran and what it cost
+
+## Healthy first setup
+
+For a new account or new repo, use the app in this order:
+
+1. Connect GitHub and provider state in [Settings](/web/settings).
+2. Confirm App-backed repo coverage in [Installations](/web/installations).
+3. Sync and open the target repo in [Projects](/web/spaces).
+4. Check reusable behavior in [Agents](/web/agents).
+5. Choose the smallest routing surface that fits the work.
+6. Inspect the first run in [Observability](/web/observability).
+
+That order prevents the common failure mode where a team starts debugging
+automation logic before the repo is actually covered by the GitHub App.
+
+## App vs CLI
+
+Use the app for shared setup and hosted state.
+
+Use the [CLI](/platform/cli) when you are sitting in a repo and need live
+control over a run: timeline, agents, approvals, diffs, MCP, memory, model
+choice, cost, and export.
+
+The two surfaces are intentionally connected. For example, the CLI can inherit
+account-backed model defaults and remote MCP definitions from hosted state.
+
+## Read next
+
+<Cards>
+  <Card title="Projects and Sandboxes" href="/platform/projects-and-sandboxes" />
+  <Card title="Agents" href="/capabilities/agents" />
+  <Card title="Routing" href="/capabilities/routing" />
+  <Card title="Observability" href="/capabilities/observability" />
+</Cards>

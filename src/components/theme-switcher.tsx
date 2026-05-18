@@ -54,6 +54,7 @@ export function ThemeSwitcher(): React.JSX.Element {
   return (
     <div
       className="relative flex min-w-max rounded-lg border border-fd-border bg-fd-muted p-1"
+      data-theme-toggle=""
       role="radiogroup"
       aria-label="Theme selection"
     >

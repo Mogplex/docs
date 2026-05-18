@@ -1,0 +1,241 @@
+---
+title: Glossary
+description: Definitions for Mogplex product terms such as agents, runs, projects, installations, triggers, assignments, automations, sandboxes, and observability.
+---
+
+Use this page when a Mogplex page names a product object and you need the
+short version before reading the full guide or reference page.
+
+## Account state
+
+Shared state attached to the signed-in Mogplex account.
+
+Account state includes GitHub identity, GitHub App coverage, Slack installs,
+provider keys, CLI tokens, model access, shared connections, and MCP
+definitions. Start with [Settings](/web/settings) when account state looks
+wrong.
+
+## Agent
+
+A reusable worker definition.
+
+Agents have a name, description, category, model choice, prompt, and sometimes
+a mention slug. Agents can be built-in presets, owned custom agents, or forks of
+presets you have customized.
+
+Read next: [Agents](/web/agents).
+
+## Agent slug
+
+The durable handle used for targeted GitHub mention routing.
+
+Example:
+
+```text
+@mogplex/triage
+```
+
+The slug is not the same as the display name. If a route depends on targeted
+mentions, use the slug in the GitHub comment.
+
+Read next: [Roster and Slugs](/web/agents/roster-and-slugs).
+
+## Assignment
+
+A repo-owned standing work rule.
+
+Assignments bind one repo, one agent, and one assignment type, such as PR
+review, issue triage, CI failure, cron, or cron refactor. Use Assignments when
+the repo is the durable unit of responsibility.
+
+Read next: [Assignments](/web/assignments).
+
+## Automation
+
+A workflow graph for GitHub-triggered work.
+
+Automations start from one GitHub event, then move through nodes such as agent
+steps, conditions, parallel splits, joins, and delays. Draft edits do not
+become live routing until the automation is published.
+
+Read next: [Automations](/web/automations).
+
+## Connection
+
+A configured external service or credential path that an agent or hosted run can
+use.
+
+Connection behavior can depend on account state, repo state, and route-specific
+overrides. If a run cannot call an external service, start with
+[Settings](/web/settings), [Connections and MCP](/configure-and-extend/connections-and-mcp),
+and [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides).
+
+## Custom slash command
+
+A markdown prompt template that becomes a named command in the CLI composer.
+
+Commands can be project-scoped under `.agents/commands`, user-scoped under the
+Mogplex home commands directory, or built in. Project commands override user
+commands, and user commands override builtins.
+
+Read next: [Custom Slash Commands](/configure-and-extend/custom-slash-commands).
+
+## GitHub App coverage
+
+The state that lets Mogplex receive webhook-backed GitHub events for a user or
+organization.
+
+OAuth visibility can make repos visible in the app, but GitHub App coverage is
+what makes hosted routing healthy for Triggers and Automations. If a repo is
+visible but events do not start work, check App coverage first.
+
+Read next: [GitHub App Coverage](/web/guides/github-app-coverage).
+
+## Headless run
+
+A run started from scripts, CI, or shell commands instead of the interactive
+CLI cockpit.
+
+Headless runs use `mogplex run` and `mogplex runs ...` commands and wrap the
+hosted runs API.
+
+Read next: [Headless Runs](/cli/automation/headless-runs).
+
+## Installation
+
+A GitHub App installation for a GitHub user or organization.
+
+Installations are the coverage layer for webhook-backed work. Triggers and
+Automations are installation-scoped. Assignments are repo-scoped but still
+depend on the repo being imported and covered correctly.
+
+Read next: [Installations](/web/installations).
+
+## MCP
+
+Model Context Protocol configuration for connecting agents and clients to
+external tools.
+
+Mogplex currently documents MCP through the extension path and API surface:
+inbound configuration, configured MCP server definitions, and the planned
+outbound Mogplex MCP server path.
+
+Read next: [Connections and MCP](/configure-and-extend/connections-and-mcp),
+[MCP](/extend/mcp-server), and [MCP Servers API](/web/api/mcp-servers).
+
+## Model catalog
+
+The model list available to an account and exposed to agents, model pickers,
+the CLI, and API surfaces.
+
+Use [Available Models](/web/models) for user-facing model availability. Use
+[API Models](/web/api/models) for API behavior.
+
+## Observability
+
+The runtime inspection surface for runs, model calls, tool calls, sandbox
+activity, token usage, estimated cost, pressure, and errors.
+
+Use Observability after a route or run actually starts. If no run exists, debug
+the source surface first.
+
+Read next: [Observability](/web/observability).
+
+## Project
+
+The web-app surface where imported repos become workspaces for hosted work.
+
+Projects are where repo setup, sync state, sandbox launch, and hosted work
+entrypoints come together. The docs also link this area as
+[Projects](/web/spaces), matching the current route.
+
+Read next: [Projects](/web/spaces).
+
+## Repo visibility
+
+Whether Mogplex can see a repo through account sync.
+
+Visibility is not the same as triggerability. A repo can be visible through
+OAuth but still unable to start hosted GitHub-event work until the owning user
+or organization has GitHub App coverage.
+
+Read next: [GitHub](/integrations/github).
+
+## Repo instructions
+
+Durable local guidance stored in `AGENTS.md`, `AGENTS.override.md`, and
+occasionally `agent.json`.
+
+Use repo instructions for project purpose, commands, conventions, and
+verification rules that should shape many runs. Keep one-off task detail in the
+current prompt.
+
+Read next: [Repo Instructions](/configure-and-extend/repo-instructions).
+
+## Run
+
+One execution of Mogplex work.
+
+Runs can start from the CLI, headless commands, the hosted API, Triggers,
+Assignments, Automations, Slack, or GitHub events. Use run IDs when inspecting
+status, tailing events, exporting local state, or asking someone else to debug
+a failure.
+
+Read next: [API Runs](/web/api/runs) and [CLI Export](/cli/reference/export).
+
+## Sandbox
+
+An isolated runtime or preview workspace associated with hosted work.
+
+Use Sandboxes to inspect live and pending preview runtimes, pinned workspaces,
+and stale sandbox cleanup paths. Use Vercel docs when sandbox behavior depends
+on repo-linked projects, billing, or environment sync.
+
+Read next: [Sandboxes](/web/sandboxes) and [Vercel](/integrations/vercel).
+
+## Slack channel link
+
+A mapping from one Slack channel to one Mogplex repo.
+
+When a channel is linked, a real instruction after `@mogplex` starts a
+repo-agent run for that repo. Unlinked channels and DMs stay conversational.
+
+Read next: [Slack](/integrations/slack).
+
+## Skill
+
+A reusable capability or workflow package that helps shape agent behavior.
+
+In Mogplex docs, skills appear in two related contexts:
+
+- product-side reusable behavior under [Skills, Rules, and Context](/web/agents/skills-rules-context)
+- local agent-host skills under [CLI Skills](/cli/skills)
+
+## Trigger
+
+The lightest hosted routing surface.
+
+Triggers bind one GitHub App installation, one event type, and one agent. Use
+Triggers when the route is simply one event to one agent.
+
+Read next: [Triggers](/web/triggers).
+
+## Triggerability
+
+Whether a visible repo can actually start hosted GitHub-event work.
+
+Triggerability requires the right GitHub App coverage. If a repo appears in
+Projects but Triggers or Automations do not fire, debug triggerability before
+changing the agent.
+
+Read next: [Coverage and Triggerability](/web/installations/coverage-and-triggerability).
+
+## Working request
+
+The API and runtime shape used to represent work that should be started,
+tracked, or inspected.
+
+Use the hosted API pages when another system needs to create or inspect work
+programmatically.
+
+Read next: [Working Requests API](/web/api/working-requests).
