@@ -20,12 +20,13 @@ export function getPageImage(page: InferPageType<typeof source>) {
 }
 
 export function getPageMarkdownUrl(page: InferPageType<typeof source>) {
+  // Static route still pre-renders at /llms.mdx/docs/<slug>/content.md.
   const segments = [...page.slugs, 'content.md'];
 
-  return {
-    segments,
-    url: `${docsContentRoute}/${segments.join('/')}`,
-  };
+  // Agent-friendly URL (via next.config rewrite): /<slug>.md or /index.md for root.
+  const url = page.slugs.length === 0 ? '/index.md' : `/${page.slugs.join('/')}.md`;
+
+  return { segments, url };
 }
 
 export async function getLLMText(page: InferPageType<typeof source>) {

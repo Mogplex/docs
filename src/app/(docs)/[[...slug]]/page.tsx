@@ -22,17 +22,23 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
   const MDX = page.data.body;
   const markdownUrl = getPageMarkdownUrl(page).url;
 
+  const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`;
+
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage
+      toc={page.data.toc}
+      full={page.data.full}
+      tableOfContent={{
+        footer: (
+          <div className="flex flex-row flex-wrap gap-2 items-center pt-4 mt-4 border-t border-[var(--border-subtle)]">
+            <MarkdownCopyButton markdownUrl={markdownUrl} />
+            <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={githubUrl} />
+          </div>
+        ),
+      }}
+    >
       <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-      <div className="flex flex-row gap-2 items-center border-b pb-6">
-        <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
-          markdownUrl={markdownUrl}
-          githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
-        />
-      </div>
+      <DocsDescription className="mb-6">{page.data.description}</DocsDescription>
       <DocsBody>
         <MDX
           components={getMDXComponents({
@@ -41,9 +47,7 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
           })}
         />
       </DocsBody>
-      <EditOnGitHub
-        href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
-      />
+      <EditOnGitHub href={githubUrl} />
     </DocsPage>
   );
 }
@@ -60,6 +64,11 @@ export async function generateMetadata(props: PageProps<'/[[...slug]]'>): Promis
   return {
     title: page.data.title,
     description: page.data.description,
+    alternates: {
+      types: {
+        'text/markdown': getPageMarkdownUrl(page).url,
+      },
+    },
     openGraph: {
       images: getPageImage(page).url,
     },
