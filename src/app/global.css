@@ -271,7 +271,7 @@ html > body[data-scroll-locked] {
 }
 
 #nd-page [data-card='true'] {
-  border-radius: 0.5rem;
+  border-radius: 0;
 }
 
 #nd-docs-layout .shadow-sm,
