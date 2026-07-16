@@ -134,7 +134,7 @@ function DashboardMenu() {
 
 export function DocsHeader() {
   const pathname = usePathname();
-  const { slots } = useDocsLayout();
+  const { isNavTransparent, slots } = useDocsLayout();
   const SidebarTrigger = slots.sidebar.trigger;
   const SearchTrigger = slots.searchTrigger && slots.searchTrigger.sm;
   const FullSearchTrigger = slots.searchTrigger && slots.searchTrigger.full;
@@ -161,7 +161,7 @@ export function DocsHeader() {
   }, [open, setOpen]);
 
   return (
-    <header className="docs-header">
+    <header className="docs-header" data-transparent={isNavTransparent || undefined}>
       <div className="docs-header-inner">
         <Link className="docs-header-brand" href="/" aria-label="Mogplex documentation home">
           <MogplexWordmark />
