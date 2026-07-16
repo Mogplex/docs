@@ -13,7 +13,12 @@ export function ThemeSwitcher() {
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   if (!mounted) {
-    return <span className="docs-icon-button docs-theme-placeholder" aria-hidden="true" />;
+    return (
+      <span
+        className="docs-icon-button docs-theme-switcher docs-theme-placeholder"
+        aria-hidden="true"
+      />
+    );
   }
 
   const isDark = resolvedTheme === 'dark';
@@ -22,7 +27,7 @@ export function ThemeSwitcher() {
   return (
     <button
       type="button"
-      className="docs-icon-button"
+      className="docs-icon-button docs-theme-switcher"
       onClick={() => setTheme(nextTheme)}
       aria-label={`Switch to ${nextTheme} theme`}
       title={`Switch to ${nextTheme} theme`}
