@@ -8,7 +8,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { docsNavItems, MogplexWordmark } from '@/lib/layout.shared';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 
+const docsSectionPickerItems = [{ label: 'Overview', href: '/' }, ...docsNavItems] as const;
+
 function isActivePath(pathname: string, href: string) {
+  if (href === '/') return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -68,7 +71,7 @@ function DocsSectionPicker({ pathname }: { pathname: string }) {
         aria-label="Documentation sections"
         hidden={!open}
       >
-        {docsNavItems.map((item) => {
+        {docsSectionPickerItems.map((item) => {
           const active = isActivePath(pathname, item.href);
 
           return (
