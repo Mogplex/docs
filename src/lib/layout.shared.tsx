@@ -9,6 +9,15 @@ export const docsNavItems = [
   { label: 'Reference', href: '/reference' },
 ] as const;
 
+export const docsSectionItems = [{ label: 'Overview', href: '/' }, ...docsNavItems] as const;
+
+export const docsSearchLinks: [string, string][] = [
+  ['Overview', '/'],
+  ['Quickstart', '/quickstart'],
+  ...docsNavItems.map(({ label, href }) => [label, href] as [string, string]),
+  ['Support', '/support'],
+];
+
 export function MogplexWordmark({ className }: { className?: string }) {
   return (
     <span className={className} aria-label="Mogplex">
