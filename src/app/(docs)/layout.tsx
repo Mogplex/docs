@@ -6,7 +6,7 @@ import Link from 'next/link';
 import type { CSSProperties } from 'react';
 
 const shellStyle = {
-  '--fd-header-height': '64px',
+  '--fd-header-height': 'var(--docs-header-height)',
   '--fd-toc-popover-height': '0px',
   gridTemplate: `"header header header header header" var(--fd-header-height)
     "sidebar sidebar toc-popover toc toc" var(--fd-toc-popover-height)
