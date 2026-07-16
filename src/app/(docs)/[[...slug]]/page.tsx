@@ -6,7 +6,6 @@ import {
   DocsTitle,
   EditOnGitHub,
   MarkdownCopyButton,
-  ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
@@ -28,18 +27,26 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
     <DocsPage
       toc={page.data.toc}
       full={page.data.full}
+      className="docs-article"
+      breadcrumb={{
+        includeRoot: true,
+        includePage: true,
+        className: 'docs-breadcrumb',
+      }}
+      tableOfContentPopover={{ enabled: false }}
       tableOfContent={{
+        container: { className: 'docs-toc' },
+        list: { className: 'docs-toc-list' },
         footer: (
-          <div className="flex flex-row flex-wrap gap-2 items-center pt-4 mt-4 border-t border-[var(--border-subtle)]">
+          <div className="docs-toc-actions">
             <MarkdownCopyButton markdownUrl={markdownUrl} />
-            <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={githubUrl} />
           </div>
         ),
       }}
     >
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription className="mb-6">{page.data.description}</DocsDescription>
-      <DocsBody>
+      <DocsTitle className="docs-title">{page.data.title}</DocsTitle>
+      <DocsDescription className="docs-lead">{page.data.description}</DocsDescription>
+      <DocsBody className="docs-body">
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths

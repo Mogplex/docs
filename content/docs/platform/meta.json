@@ -1,5 +1,6 @@
 {
   "title": "Platform",
+  "root": true,
   "pages": [
     "index",
     "how-mogplex-fits-together",
