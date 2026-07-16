@@ -5,10 +5,8 @@ import { ChevronDown, Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useDocsLayout } from 'fumadocs-ui/layouts/docs';
 import { useEffect, useId, useRef, useState } from 'react';
-import { docsNavItems, MogplexWordmark } from '@/lib/layout.shared';
+import { docsSectionItems, MogplexWordmark } from '@/lib/layout.shared';
 import { ThemeSwitcher } from '@/components/theme-switcher';
-
-const docsSectionPickerItems = [{ label: 'Overview', href: '/' }, ...docsNavItems] as const;
 
 function isActivePath(pathname: string, href: string) {
   if (href === '/') return pathname === href;
@@ -71,7 +69,7 @@ function DocsSectionPicker({ pathname }: { pathname: string }) {
         aria-label="Documentation sections"
         hidden={!open}
       >
-        {docsSectionPickerItems.map((item) => {
+        {docsSectionItems.map((item) => {
           const active = isActivePath(pathname, item.href);
 
           return (

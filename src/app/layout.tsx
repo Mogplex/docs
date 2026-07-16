@@ -3,6 +3,7 @@ import './global.css';
 import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
+import { docsSearchLinks } from '@/lib/layout.shared';
 import { appName } from '@/lib/shared';
 
 const inter = Inter({
@@ -43,6 +44,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
     >
       <body className="flex flex-col min-h-screen font-sans">
         <RootProvider
+          search={{ links: docsSearchLinks }}
           theme={{
             defaultTheme: 'system',
             attribute: 'class',
