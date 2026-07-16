@@ -1,5 +1,6 @@
 {
   "title": "Web App",
+  "root": true,
   "pages": [
     "index",
     "---Platform---",

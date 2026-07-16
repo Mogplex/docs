@@ -1,5 +1,6 @@
 {
   "title": "CLI",
+  "root": true,
   "pages": [
     "index",
     "---Start here---",

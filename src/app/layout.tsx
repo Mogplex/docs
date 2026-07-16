@@ -1,9 +1,15 @@
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
-import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import { appName } from '@/lib/shared';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 function resolveMetadataBase() {
   const candidate =
@@ -32,13 +38,13 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={`${inter.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
     >
       <body className="flex flex-col min-h-screen font-sans">
         <RootProvider
           theme={{
-            defaultTheme: 'dark',
+            defaultTheme: 'system',
             attribute: 'class',
             enableSystem: true,
             disableTransitionOnChange: true,
