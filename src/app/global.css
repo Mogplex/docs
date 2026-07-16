@@ -562,7 +562,7 @@ html > body[data-scroll-locked] {
   max-width: 42rem !important;
   min-height: calc(100dvh - var(--docs-header-height));
   margin-inline: auto;
-  padding: 40px 24px 120px !important;
+  padding: 40px 24px 48px !important;
   gap: 0 !important;
   border: 0 !important;
   background: var(--bg-surface);
@@ -980,6 +980,66 @@ html > body[data-scroll-locked] {
   color: var(--text-secondary);
 }
 
+.docs-site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
+  margin-top: 64px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border-default);
+  color: var(--text-tertiary);
+}
+
+.docs-site-footer-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.docs-site-footer-brand {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 32px;
+  color: var(--text-primary);
+}
+
+.docs-site-footer-brand .mogplex-wordmark {
+  width: 82px;
+  height: 16px;
+}
+
+.docs-site-footer p {
+  max-width: 27ch;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.docs-site-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 18px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.docs-site-footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--text-secondary);
+  transition: color 150ms ease;
+}
+
+.docs-site-footer-nav a:hover {
+  color: var(--text-primary);
+}
+
 #nd-docs-layout .shadow-sm,
 #nd-docs-layout .shadow-md,
 #nd-docs-layout .shadow-lg {
@@ -1110,7 +1170,7 @@ html > body[data-scroll-locked] {
   }
 
   #nd-page {
-    padding: 28px 24px 100px !important;
+    padding: 28px 24px 40px !important;
   }
 
   :root,
@@ -1152,6 +1212,29 @@ html > body[data-scroll-locked] {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
+  }
+
+  .docs-site-footer,
+  .docs-site-footer-identity {
+    align-items: flex-start;
+  }
+
+  .docs-site-footer {
+    flex-direction: column;
+    margin-top: 48px;
+  }
+
+  .docs-site-footer-identity {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .docs-site-footer-nav {
+    justify-content: flex-start;
+  }
+
+  .docs-site-footer-nav a {
+    min-height: 44px;
   }
 }
 
