@@ -150,6 +150,10 @@ html > body[data-scroll-locked] {
   height: var(--docs-header-height);
   padding: 0 24px;
   border: 0;
+  background: var(--bg-surface);
+}
+
+.docs-header[data-transparent='true'] {
   background: transparent;
 }
 
