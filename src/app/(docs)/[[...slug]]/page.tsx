@@ -9,6 +9,7 @@ import {
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
+import { DocsSiteFooter } from '@/components/docs-site-footer';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { gitConfig } from '@/lib/shared';
@@ -34,6 +35,7 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
         className: 'docs-breadcrumb',
       }}
       tableOfContentPopover={{ enabled: false }}
+      footer={{ children: <DocsSiteFooter /> }}
       tableOfContent={{
         container: { className: 'docs-toc' },
         list: { className: 'docs-toc-list' },
