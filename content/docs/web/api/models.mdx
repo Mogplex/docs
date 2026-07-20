@@ -3,12 +3,21 @@ title: Models
 description: Use /api/models to inspect the visible model catalog, list enabled models, export CLI model options, and update per-user model enablement.
 ---
 
+import { Callout } from 'fumadocs-ui/components/callout';
+
 `/api/models` is the standalone model route in Mogplex.
 
 Use it when you need model availability, enabled state, or CLI picker data.
 
 If you want the user-facing guide instead of the route contract, start with
 [Available Models](/web/models).
+
+<Callout type="info">
+  Local automation clients and the Mogplex MCP server use
+  `GET /api/v1/mogplex/models`. That PAT-authenticated route returns only the
+  enabled, visible models the current user can actually reach. The
+  `mogplex_list_models` MCP tool wraps it directly.
+</Callout>
 
 Do **not** use `/api/settings` for that broader job. `/api/settings` only
 returns or updates the selected `default_model` preference after Mogplex has

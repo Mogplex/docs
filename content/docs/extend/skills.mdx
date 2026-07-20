@@ -3,7 +3,9 @@ title: Skills
 description: Anthropic Agent Skills that teach Claude Code, the Claude Agent SDK, Cursor, opencode, and other skill-aware hosts how to drive a user's Mogplex workspace through the `mogplex` CLI. Available today.
 ---
 
-Skills are the currently-shipping path for letting an external agent reach a user's Mogplex capabilities. They are the drop-in substitute for the [MCP server](/extend/mcp-server) until that ships.
+Skills teach an external agent how to guide a user through Mogplex CLI
+workflows. For direct programmatic access to Mogplex, install the live
+[MCP server](/extend/mcp-server) instead.
 
 <Callout>
 The canonical skill files and the per-skill reference pages live under [CLI → Skills](/cli/skills). This page is the entry point from the Extend section — it describes the shape of the set and the trade-offs versus MCP. Go to [/cli/skills](/cli/skills) for the individual skills.
@@ -17,9 +19,11 @@ The canonical skill files and the per-skill reference pages live under [CLI → 
 | [`mogplex-slash`](/cli/skills/mogplex-slash) | Recommends the right slash command for a user's intent. |
 | [`mogplex-auth`](/cli/skills/mogplex-auth) | Walks the user through the in-app login flow and credential troubleshooting. |
 
-The current Mogplex CLI is interactive-only — these are **guidance skills** that teach an agent to advise the user on cockpit workflows. They do not drive the TUI. When the [MCP server](/extend/mcp-server) ships, that path will give external agents direct programmatic access to Mogplex capabilities without going through the cockpit.
+These are **guidance skills** that teach an agent to advise the user on cockpit
+workflows. They do not drive the TUI. The [MCP server](/extend/mcp-server) gives
+external agents direct programmatic access without going through the cockpit.
 
-## Why this is the right path today
+## Why use skills
 
 - **No pasted tokens.** The cockpit's in-app login flow owns the credential and writes it to `~/.mogplex/auth.json` — see the [Authentication guide](/cli/guides/authentication) for precedence rules and file contents. The external agent never sees raw auth material.
 - **Works in every skill-aware host.** The skill format is portable: Claude Code, Claude Agent SDK, and any host that reads `SKILL.md`-style files. Cursor project rules work too by copying the skill body.
@@ -28,18 +32,20 @@ The current Mogplex CLI is interactive-only — these are **guidance skills** th
 
 ## Skills vs MCP server at a glance
 
-| | Skills (today) | MCP server (preview) |
+| | Skills | MCP server |
 | --- | --- | --- |
-| Status | **Available** | Preview design; not live |
+| Status | Available | Available |
 | Protocol | Skill file (guidance) | MCP Streamable HTTP |
 | Auth | In-app login → `~/.mogplex/auth.json` | OAuth 2.1 + PKCE (DCR) |
 | Token pasted in config? | No | No |
 | Execution path | Agent advises user; user drives the cockpit | External agent calls MCP tool directly |
-| Streaming progress | n/a — user watches the cockpit | MCP `notifications/progress` |
+| Progress | User watches the cockpit | Agent reads run and automation logs on demand |
 | Host requirement | Skill-aware (Claude Code, Agent SDK, Cursor rules) | Remote-MCP-aware with OAuth |
 | Host reach today | High | Claude Code ≥ latest, Cursor, a few others |
 
-When the MCP server ships, it becomes the right path for hosts that need programmatic access without involving the user. Skills will continue to be useful for hosts that don't speak remote MCP and for situations where the user is the right one to drive the cockpit.
+Use MCP when a host needs programmatic access without involving the user. Use
+skills when the host does not speak remote MCP or the user is the right person
+to drive the cockpit.
 
 ## Install
 
@@ -72,5 +78,5 @@ See [CLI → Skills](/cli/skills) for Agent SDK integration, Cursor instructions
 ## See also
 
 - [CLI → Skills](/cli/skills) — canonical reference for every skill
-- [MCP server (preview)](/extend/mcp-server) — what Skills are a substitute for
+- [MCP server](/extend/mcp-server) — direct programmatic access to Mogplex
 - [Extend overview](/extend) — the decision between Skills and MCP

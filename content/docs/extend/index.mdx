@@ -1,6 +1,6 @@
 ---
 title: Extend
-description: Reach Mogplex capabilities from outside Mogplex — local agents (Claude Code, Cursor, opencode, Claude Agent SDK) driving a user's workspace, skills, memories, and agents through the CLI today or the Mogplex MCP server when it ships.
+description: Reach Mogplex from local agents through the OAuth-enabled MCP server, the headless CLI, REST API, or portable guidance skills.
 ---
 
 Mogplex is usable from two surfaces that ship today: the [web app](/web) and the [CLI](/cli). This section covers the third direction: letting *other* agents reach Mogplex.
@@ -9,26 +9,28 @@ The core question is: your teammate is in Claude Code, Cursor, or a custom Claud
 
 <Cards>
   <Card
-    title="Skills (available today)"
-    href="/extend/skills"
-    description="Anthropic Agent Skills that teach any skill-aware host how to drive a Mogplex workspace through the `mogplex` CLI. Ships today; the MCP-ready substitute."
+    title="MCP server"
+    href="/extend/mcp-server"
+    description="Connect a local agent to Mogplex over remote Streamable HTTP with OAuth 2.1 + PKCE."
   />
   <Card
-    title="MCP server (preview)"
-    href="/extend/mcp-server"
-    description="The Mogplex MCP server — remote Streamable HTTP, OAuth 2.1 + PKCE, no token pasting. Planned; not yet generally available."
+    title="Skills"
+    href="/extend/skills"
+    description="Teach a skill-aware host how to guide users through the Mogplex CLI."
   />
 </Cards>
 
-## Which path is right today
+## Which path is right
 
 | If the user's agent host… | Use |
 | --- | --- |
 | Is skill-aware (Claude Code, Agent SDK, Cursor project rules) | [Skills](/extend/skills) |
-| Supports remote MCP with OAuth, and the Mogplex MCP server is live | [MCP server](/extend/mcp-server) |
+| Supports remote MCP with OAuth and should operate Mogplex directly | [MCP server](/extend/mcp-server) |
 | Needs scripted, headless access to Mogplex | Use the [CLI's automation surface](/cli/automation) (`mogplex run`, `mogplex runs events --follow`) or the [v1 REST API](/web/api) directly. Both ship today. |
 
-Skills are the recommended path until the MCP server is generally available. They teach a skill-aware agent to guide the user through the Mogplex cockpit (slash commands, login flow, repo-local config) without ever needing the user to paste a token.
+The MCP server is the direct programmatic path. Skills remain useful when the
+host should guide a person through the cockpit rather than call Mogplex tools
+itself.
 
 ## How this section relates to the rest of the docs
 

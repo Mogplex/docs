@@ -1,42 +1,69 @@
 ---
 title: MCP server
-description: POST /api/v1/mogplex/mcp is a JSON-RPC 2.0 endpoint that exposes the v1 REST surface as MCP tools. Use it when your agent host speaks MCP and you'd rather not maintain a REST client.
+description: POST /api/v1/mogplex/mcp is the OAuth-enabled Streamable HTTP endpoint for repo, sandbox, automation, model, log, and agent-run tools.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-`POST /api/v1/mogplex/mcp`
+`POST https://www.mogplex.com/api/v1/mogplex/mcp`
 
-The Mogplex Cloud API is also reachable as an [MCP](https://modelcontextprotocol.io/)
-server over JSON-RPC 2.0. Each tool mirrors a v1 REST endpoint, so a host that
-understands MCP gets the full surface without writing a REST client.
+The Mogplex Cloud API is exposed as an MCP server over JSON-RPC 2.0. The MCP
+tools call the same user-scoped service layer as the v1 REST API, so Mogplex
+continues to own sandbox launch, automation validation, execution, and logs.
 
 <Callout type="info">
-  Looking for the list of MCP servers you've configured in Mogplex (Linear,
-  Supabase, etc.)? That's a different endpoint — see
+  Looking for the external MCP servers configured inside Mogplex, such as
+  Linear or Supabase? That is a different endpoint: see
   [GET /api/v1/mogplex/mcp/servers](/web/api/mcp-servers).
 </Callout>
 
-## Connecting
+## Connect with OAuth
 
-| Header              | Value                                |
-| ------------------- | ------------------------------------ |
-| `Authorization`     | `Bearer mog_...` (your PAT)          |
-| `Content-Type`      | `application/json`                   |
-| `Accept`            | `application/json`                   |
+OAuth 2.1 authorization code with PKCE is the preferred path for local agents:
 
-The server responds with `mcp-protocol-version: 2025-11-25` and a JSON-RPC 2.0
-body. Scopes still apply: tools that wrap mutating endpoints require the
-`write` scope; read tools require `read`.
+```bash
+codex mcp add mogplex \
+  --url https://www.mogplex.com/api/v1/mogplex/mcp \
+  --oauth-resource https://www.mogplex.com/api/v1/mogplex/mcp
+codex mcp login mogplex
+```
+
+The client discovers Mogplex's protected-resource metadata, dynamically
+registers itself with the authorization server, and opens the Mogplex consent
+screen. See [Install the Mogplex MCP server](/extend/mcp-server) for Codex,
+Claude Code, Cursor, and troubleshooting instructions.
+
+Mogplex validates the OAuth token's issuer, signature, expiry, client id,
+audience, allowlist admission, and linked Mogplex profile. An unauthenticated
+request receives a `401` and a `WWW-Authenticate` challenge with the protected
+resource metadata URL.
+
+## PAT fallback
+
+Clients without remote MCP OAuth support can send a personal access token:
+
+| Header | Value |
+| --- | --- |
+| `Authorization` | `Bearer mog_...` |
+| `Content-Type` | `application/json` |
+| `Accept` | `application/json, text/event-stream` |
+
+PAT scopes apply to the underlying operation: reads require `read`; mutations
+require `write`. OAuth grants access through the browser consent flow.
 
 ## Methods
 
-| Method        | Description                                          |
-| ------------- | ---------------------------------------------------- |
-| `initialize`  | Returns server info, capabilities, and instructions  |
-| `ping`        | Returns `{}`                                          |
-| `tools/list`  | Returns the list of available tools                  |
-| `tools/call`  | Invokes a tool                                        |
+| Method | Description |
+| --- | --- |
+| `initialize` | Return server info, capabilities, protocol version, and instructions. |
+| `notifications/initialized` | Acknowledge client initialization with HTTP `202`. |
+| `ping` | Return an empty object. |
+| `tools/list` | Return the current tool definitions and JSON schemas. |
+| `tools/call` | Validate arguments and invoke one tool. |
+
+The server advertises MCP protocol version `2025-11-25` and returns the
+`mcp-protocol-version` response header. It is stateless: clients do not need an
+MCP session id.
 
 ## Initialize
 
@@ -45,211 +72,131 @@ curl -sS \
   -X POST \
   -H "Authorization: Bearer $MOGPLEX_TOKEN" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize"}' \
-  "$MOGPLEX_BASE_URL/api/v1/mogplex/mcp"
+  https://www.mogplex.com/api/v1/mogplex/mcp
 ```
 
-Response:
+The result includes:
 
 ```json
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "protocolVersion": "2025-11-25",
-    "capabilities": { "tools": { "listChanged": false } },
-    "serverInfo": { "name": "mogplex", "version": "0.1.0" },
-    "instructions": "Use Mogplex tools to list repos, start repo-bound agent runs, fetch run state and events, and request cancellation."
-  }
+  "protocolVersion": "2025-11-25",
+  "capabilities": { "tools": { "listChanged": false } },
+  "serverInfo": { "name": "mogplex", "version": "0.1.0" }
 }
 ```
 
 ## Tools
 
-### mogplex_list_repos
+### Discovery and sandboxes
 
-Wraps [`GET /repos`](/web/api/repos). Scope: `read`.
+| Tool | Scope | Important arguments |
+| --- | --- | --- |
+| `mogplex_list_repos` | `read` | Optional `query`, `limit` (1–200). |
+| `mogplex_list_agents` | `read` | None. |
+| `mogplex_list_models` | `read` | None. |
+| `mogplex_list_sandboxes` | `read` | Optional `repoId`, `status`, `limit` (1–200). |
+| `mogplex_create_sandbox` | `write` | Required `repoId`; optional branch and root-directory fields. |
+| `mogplex_get_sandbox_logs` | `read` | Required sandbox record `sandboxId`. |
 
-```json
-{
-  "name": "mogplex_list_repos",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "query": { "type": "string", "description": "Case-insensitive substring filter" },
-      "limit": { "type": "integer", "minimum": 1, "maximum": 200 }
-    }
-  }
-}
-```
+`mogplex_create_sandbox` creates or reuses a repo/branch sandbox. It consumes
+the existing launch event stream and returns when the sandbox record is ready
+or launch fails; the MCP server does not add a polling loop.
 
-### mogplex_list_sandboxes
+### Automations
 
-Wraps [`GET /sandboxes`](/web/api/sandboxes). Scope: `read`.
+| Tool | Scope | Important arguments |
+| --- | --- | --- |
+| `mogplex_list_automations` | `read` | Optional `limit` (1–100, default 50) and opaque `cursor`. |
+| `mogplex_get_automation` | `read` | Required `automationId`. |
+| `mogplex_create_automation` | `write` | Required positive integer `installationId`; optional metadata, graph, and `publish`. |
+| `mogplex_update_automation` | `write` | Required `automationId`; optional metadata, positive integer `installationId`, and graph. |
+| `mogplex_publish_automation` | `write` | Required `automationId`. |
+| `mogplex_set_automation_model` | `write` | Required `automationId`, `nodeId`, and enabled `modelId` or `null`; optional `publish`. |
+| `mogplex_trigger_automation` | `write` | Required `automationId` and `repoId`; optional `input` and `idempotencyKey`. |
+| `mogplex_list_automation_runs` | `read` | Required `automationId`; optional `limit` (1–50). |
+| `mogplex_get_automation_run_logs` | `read` | Required `automationId` and `runId`. |
 
-```json
-{
-  "name": "mogplex_list_sandboxes",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "repoId": { "type": "string" },
-      "status": { "type": "string" },
-      "limit": { "type": "integer", "minimum": 1, "maximum": 200 }
-    }
-  }
-}
-```
+Automation listing is deliberately bounded and returns graph-free summaries.
+Pass `nextCursor` from one result back as `cursor`, and call
+`mogplex_get_automation` only when you need the full draft and published
+graphs.
 
-### mogplex_start_agent_run
+Create and update accept only a complete Flow graph with `nodes` and `edges`
+arrays plus an optional valid `viewport`. Malformed values are rejected before
+the draft is changed. The create and update `installationId`, when supplied,
+must be a positive safe integer. Publishing performs the stricter executable
+graph checks and creates an active version.
 
-Wraps [`POST /runs`](/web/api/runs). Scope: `write`.
+### Agent runs
 
-```json
-{
-  "name": "mogplex_start_agent_run",
-  "inputSchema": {
-    "type": "object",
-    "required": ["repoId", "prompt"],
-    "properties": {
-      "repoId": { "type": "string" },
-      "prompt": { "type": "string" },
-      "harness": { "type": "string", "enum": ["codex", "claude-code"] },
-      "baseBranch": { "type": "string" },
-      "workingBranch": { "type": "string" },
-      "createBranch": { "type": "boolean" },
-      "rootDirectory": { "type": ["string", "null"] },
-      "idempotencyKey": { "type": "string", "maxLength": 200 }
-    }
-  }
-}
-```
+| Tool | Scope | Important arguments |
+| --- | --- | --- |
+| `mogplex_start_agent_run` | `write` | Required `repoId` and `prompt`; optional harness, branch, root directory, and idempotency key. |
+| `mogplex_get_run` | `read` | Required `runId`. |
+| `mogplex_get_run_events` | `read` | Required `runId`; optional `limit` (1–200). |
+| `mogplex_cancel_run` | `write` | Required `runId`. |
 
-If `idempotencyKey` is omitted, the server generates one. Pass an explicit key
-when orchestrating your own retries.
-
-### mogplex_get_run
-
-Wraps [`GET /runs/{runId}`](/web/api/runs#get-a-run). Scope: `read`.
-
-```json
-{
-  "name": "mogplex_get_run",
-  "inputSchema": {
-    "type": "object",
-    "required": ["runId"],
-    "properties": { "runId": { "type": "string" } }
-  }
-}
-```
-
-### mogplex_get_run_events
-
-Wraps [`GET /runs/{runId}/events`](/web/api/runs#list-run-events). Scope: `read`.
-
-```json
-{
-  "name": "mogplex_get_run_events",
-  "inputSchema": {
-    "type": "object",
-    "required": ["runId"],
-    "properties": {
-      "runId": { "type": "string" },
-      "limit": { "type": "integer", "minimum": 1, "maximum": 200 }
-    }
-  }
-}
-```
-
-### mogplex_cancel_run
-
-Wraps [`POST /runs/{runId}/cancel`](/web/api/runs#cancel-a-run). Scope: `write`.
-
-```json
-{
-  "name": "mogplex_cancel_run",
-  "inputSchema": {
-    "type": "object",
-    "required": ["runId"],
-    "properties": { "runId": { "type": "string" } }
-  }
-}
-```
-
-## Calling a tool
+## Call a tool directly
 
 ```bash
 curl -sS \
   -X POST \
   -H "Authorization: Bearer $MOGPLEX_TOKEN" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
   -d '{
     "jsonrpc": "2.0",
     "id": 42,
     "method": "tools/call",
     "params": {
-      "name": "mogplex_list_repos",
-      "arguments": { "limit": 5 }
+      "name": "mogplex_list_automations",
+      "arguments": { "limit": 20 }
     }
   }' \
-  "$MOGPLEX_BASE_URL/api/v1/mogplex/mcp"
+  https://www.mogplex.com/api/v1/mogplex/mcp
 ```
 
-Response:
+Successful tool results include both human-readable text and structured JSON:
 
 ```json
 {
   "jsonrpc": "2.0",
   "id": 42,
   "result": {
-    "content": [
-      { "type": "text", "text": "{\n  \"repos\": [...]\n}" }
-    ]
+    "content": [{ "type": "text", "text": "Found 0 Mogplex automation summaries." }],
+    "structuredContent": { "automations": [] }
   }
 }
 ```
 
-The tool's REST envelope is serialized into the `content[0].text` JSON. Parse
-it on the client to read individual fields.
-
 ## Errors
 
-JSON-RPC errors map to MCP error codes plus HTTP status:
+| JSON-RPC code | HTTP | Meaning |
+| --- | --- | --- |
+| `-32700` | 400 | Parse error: invalid JSON. |
+| `-32600` | 400 | Invalid JSON-RPC request. |
+| `-32601` | 200 | Method or tool not found. |
+| `-32602` | 200 | Invalid tool arguments. |
+| `-32001` | 401 | Missing or invalid OAuth/PAT authorization. |
+| `-32002` | 429 | Rate limit exceeded. |
+| `-32003` | 403 | Forbidden browser origin. |
+| `-32603` | 200 | Internal error. |
 
-| JSON-RPC code | HTTP | Meaning                                          |
-| ------------- | ---- | ------------------------------------------------ |
-| `-32700`      | 400  | Parse error — invalid JSON                       |
-| `-32600`      | 400  | Invalid request                                   |
-| `-32601`      | 200  | Method not found                                  |
-| `-32602`      | 200  | Invalid tool arguments                            |
-| `-32001`      | 401  | Unauthorized                                      |
-| `-32002`      | 429  | Rate limit exceeded                               |
-| `-32003`      | 403  | Forbidden (origin or scope)                       |
-| `-32603`      | 200  | Internal error                                    |
-
-Tool calls that hit the underlying REST endpoint's errors (e.g. `FORBIDDEN`,
-`NOT_FOUND`) return them inside the tool result, not as JSON-RPC errors.
+Failures from an underlying Mogplex API operation, including insufficient PAT
+scope, are returned as MCP tool results with `isError: true` and structured
+error content.
 
 ## CORS
 
-Same-origin requests always pass. Cross-origin requests are accepted from the
-origins listed in `MOGPLEX_MCP_ALLOWED_ORIGINS` on the server. The `OPTIONS`
-preflight returns:
-
-```
-access-control-allow-headers: authorization, content-type, mcp-protocol-version, mcp-session-id
-```
-
-## When to use MCP vs REST
-
-<Callout>
-Use MCP when your agent host speaks it natively (Claude Code, Claude Desktop,
-the Claude Agent SDK). Use REST or the headless CLI for everything else — the
-surface is the same, MCP just packages it for MCP-aware hosts.
-</Callout>
+Same-origin requests pass automatically. Browser requests from other origins
+must match `MOGPLEX_MCP_ALLOWED_ORIGINS`. Native local clients generally omit
+the `Origin` header and do not require a CORS entry.
 
 ## Read next
 
-- [Runs](/web/api/runs) — the REST equivalents the tools wrap
-- [Authentication](/web/api/authentication) — PAT scopes apply to MCP tools too
-- [Headless runs](/cli/automation/headless-runs) — a CLI alternative when MCP isn't an option
+- [Install the MCP server](/extend/mcp-server)
+- [Authentication](/web/api/authentication)
+- [Runs](/web/api/runs)
+- [Sandboxes](/web/api/sandboxes)

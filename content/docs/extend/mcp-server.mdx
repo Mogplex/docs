@@ -1,93 +1,177 @@
 ---
-title: MCP server (preview)
-description: The Mogplex MCP server exposes Mogplex tools, agents, skills, and memories to any MCP-aware local agent over remote Streamable HTTP, authenticated via OAuth 2.1 + PKCE. Planned; preview state.
+title: MCP server
+description: Connect Codex, Claude Code, Cursor, and other local MCP clients to Mogplex over Streamable HTTP with OAuth 2.1 and PKCE.
 ---
 
-<Callout type="warn">
-The Mogplex MCP server is in **preview design state** — not generally available. Use [Skills](/extend/skills) today; this page documents the direction of travel so integrators can plan.
-</Callout>
+import { Callout } from 'fumadocs-ui/components/callout';
 
-## What it is
+The Mogplex MCP server is live at:
 
-A remote Model Context Protocol server hosted by Mogplex. Any MCP-aware agent host (Claude Code, Cursor, Claude Desktop, opencode, custom Agent SDK apps) will be able to connect and call Mogplex tools, agents, skills, and memories as MCP primitives — without the user pasting a token into a JSON config.
-
-<Callout>
-The final endpoint path is not yet committed. Examples on this page use `https://mogplex.com/mcp` as a **placeholder**; the shipping URL (exact host, version prefix) will be announced in release notes and this page will be updated then. Do not wire the placeholder URL into production clients.
-</Callout>
-
-## What it replaces
-
-The substitute available today is the **Skills** approach (see [Skills](/extend/skills)). Skills teach an external agent to drive Mogplex through the `mogplex` CLI. The MCP server path replaces that shim with a direct protocol-native integration once the host supports remote MCP with OAuth.
-
-```
-Claude Code / Cursor ──► mogplex.com/mcp  (Streamable HTTP, bearer token)
-                              │
-                              ▼
-              Mogplex tool/agent/skill/memory handlers
-              (same code paths the in-app agent uses)
+```text
+https://www.mogplex.com/api/v1/mogplex/mcp
 ```
 
-## Auth model
+It lets a local agent discover repos, agents, and models; create sandboxes;
+build, publish, and trigger Flow automations; and inspect run or sandbox logs.
+The server uses Streamable HTTP and the MCP `2025-11-25` protocol version.
 
-Spec-compliant MCP OAuth 2.1 + PKCE, reusing the user's existing Supabase session:
+## Install in Codex
 
-- `/.well-known/oauth-protected-resource` on the MCP endpoint.
-- `/.well-known/oauth-authorization-server` on the app origin.
-- **Dynamic Client Registration** at `/oauth/register` so each client (Claude Code, Cursor, a custom app) provisions its own `client_id` without the user editing any config.
-- Short-lived access tokens (1h, audience `mcp`), rotating refresh tokens (30d), stored hashed in Supabase.
-- Scopes: `tools:read`, `tools:execute`, `memories:read`, `memories:write`, `agents:run`, `skills:read`, `workspaces:read`. Default grant is read-only; execute and write require explicit consent at the authorize step.
-
-Users manage active clients from **Settings → Connections → Local agents** (revoke, inspect last-used, see requested scopes).
-
-## Tool surface (planned v1)
-
-Each tool is a thin adapter over an existing Mogplex service, not a new capability:
-
-- `mogplex_list_workspaces`, `mogplex_get_workspace`
-- `mogplex_list_skills`, `mogplex_get_skill`, `mogplex_run_skill`
-- `mogplex_list_agents`, `mogplex_run_agent` (streamed progress via MCP notifications)
-- `mogplex_search_memories`, `mogplex_add_memory`, `mogplex_edit_memory`
-- `mogplex_list_rules`, `mogplex_get_rule`
-- `mogplex_run_tool` (generic dispatcher)
-
-Mogplex skills are additionally exposed as MCP **prompts**, since a skill definition maps naturally to that primitive.
-
-## Install (once available)
-
-Remote Streamable HTTP — no shim, no token pasting, the host drives OAuth. The shape of the commands below is accurate; the URL is a placeholder that will be finalized when the server ships:
+Register the hosted endpoint and bind OAuth to the exact MCP resource:
 
 ```bash
-# Claude Code — replace <URL> with the final endpoint from release notes
-claude mcp add --transport http mogplex <URL>
-
-# Cursor
-# Settings → MCP → Add server → URL: <URL>
+codex mcp add mogplex \
+  --url https://www.mogplex.com/api/v1/mogplex/mcp \
+  --oauth-resource https://www.mogplex.com/api/v1/mogplex/mcp
+codex mcp login mogplex
 ```
 
-For hosts that don't yet speak remote MCP with OAuth, a stdio shim `npx -y @mogplex/mcp` will ship alongside. The shim runs the OAuth flow once, stores the token in `~/.mogplex/auth.json` (same file the CLI uses), and proxies stdio ↔ HTTP.
+Codex opens the Mogplex consent page. Sign in, review the request, and choose
+**Allow access**. Restart an already-running Codex session if the new tool
+catalog does not appear.
 
-## How it relates to Connections (inbound MCP)
+The equivalent `~/.codex/config.toml` entry is:
+
+```toml
+[mcp_servers.mogplex]
+url = "https://www.mogplex.com/api/v1/mogplex/mcp"
+oauth_resource = "https://www.mogplex.com/api/v1/mogplex/mcp"
+```
+
+Verify the saved configuration with:
+
+```bash
+codex mcp get mogplex
+```
+
+## Install in Claude Code
+
+```bash
+claude mcp add --transport http mogplex \
+  https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+Start Claude Code and complete the browser OAuth flow when prompted. Use
+`--scope user` if you want the server available across projects instead of only
+in the current project.
+
+## Other MCP clients
+
+For Cursor or another client that supports remote Streamable HTTP MCP servers,
+add this URL and select OAuth when the client asks how to authenticate:
+
+```text
+https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+The client discovers the protected-resource and authorization-server metadata,
+dynamically registers itself, and starts an OAuth authorization-code flow with
+PKCE. You should not need to paste a token into the client.
+
+<Callout type="info">
+  If a client cannot complete remote MCP OAuth, create a personal access token
+  under **Mogplex → Settings → API Keys** and configure it as an
+  `Authorization: Bearer mog_...` secret. Never put the token in a prompt or a
+  checked-in config file.
+</Callout>
+
+## OAuth and security
+
+OAuth is the preferred authentication path. Mogplex validates the token issuer,
+signature, expiry, approved client id, linked Mogplex user, and audience for the
+exact MCP resource on every request. A missing or invalid token receives a
+`401` response with a `WWW-Authenticate` challenge pointing to the resource
+metadata document.
+
+Personal access tokens remain supported as a compatibility fallback. A
+read-only PAT can list repos, agents, models, automations, runs, sandboxes, and
+logs. Creating a sandbox or changing, publishing, or running an automation
+requires `write`.
+
+## Available tools
+
+### Discovery and sandboxes
+
+| Tool | What it does |
+| --- | --- |
+| `mogplex_list_repos` | List accessible repos, including the GitHub installation id used by automations. |
+| `mogplex_list_agents` | List user-owned and preset agents for Flow nodes. |
+| `mogplex_list_models` | List enabled model ids. |
+| `mogplex_list_sandboxes` | List active or recent sandboxes. |
+| `mogplex_create_sandbox` | Create or reuse a repo/branch sandbox and return when launch succeeds or fails. |
+| `mogplex_get_sandbox_logs` | Read install logs, dev-server logs, errors, and lifecycle events. |
+
+### Automations
+
+| Tool | What it does |
+| --- | --- |
+| `mogplex_list_automations` | Return a bounded, cursor-paginated page of graph-free summaries. |
+| `mogplex_get_automation` | Read one automation, including its draft and published graphs. |
+| `mogplex_create_automation` | Create a draft automation, optionally with a complete graph. |
+| `mogplex_update_automation` | Update metadata or replace the complete draft graph. |
+| `mogplex_publish_automation` | Validate, version, and activate a draft. |
+| `mogplex_set_automation_model` | Set one agent node's model override, or clear it to inherit. |
+| `mogplex_trigger_automation` | Run an active published automation for an owned repo. |
+| `mogplex_list_automation_runs` | List recent executions and node/dispatch summaries. |
+| `mogplex_get_automation_run_logs` | Read node runs, dispatch events, AI calls, errors, token usage, and review findings. |
+
+### Agent runs
+
+| Tool | What it does |
+| --- | --- |
+| `mogplex_start_agent_run` | Start a Codex or Claude Code run in a repo sandbox. |
+| `mogplex_get_run` | Read current run status and metadata. |
+| `mogplex_get_run_events` | Read append-only run events. |
+| `mogplex_cancel_run` | Request cancellation of an active run. |
+
+## Build and run an automation
+
+For an existing automation:
+
+1. Call `mogplex_list_automations`. Pass `nextCursor` back as `cursor` to read
+   another page.
+2. Call `mogplex_get_automation` when you need the full draft graph.
+3. Call `mogplex_list_models`, then use `mogplex_set_automation_model` for a
+   narrow node-level change or `mogplex_update_automation` for a full graph
+   replacement.
+4. Call `mogplex_publish_automation`.
+5. Call `mogplex_trigger_automation` with the automation id and repo id.
+6. Inspect progress with `mogplex_list_automation_runs` and
+   `mogplex_get_automation_run_logs`.
+
+For a new automation, first call `mogplex_list_repos` and use the returned
+positive `installation_id`, then call `mogplex_list_agents` before building the
+graph. If `mogplex_create_automation` receives no graph, Mogplex creates a
+simple Start → Agent → End draft when an agent is available.
+
+The graph contract matches the Flow editor: `nodes` and `edges` arrays plus an
+optional valid `viewport`. Create and update reject malformed graphs before
+changing the draft. Publication also requires exactly one start node, exactly
+one end node, and at least one bound agent node.
+
+## Inbound and outbound MCP
 
 Do not confuse the two directions:
 
 | Direction | Where configured | Who authenticates |
 | --- | --- | --- |
-| **Mogplex consumes an MCP server** (Zapier, Notion, Supabase) | [Connections and MCP](/configure-and-extend/connections-and-mcp) | Mogplex to the external service |
-| **Mogplex exposed as an MCP server** | [Settings → Connections → Local agents](/web/settings) (when live) | External agent to Mogplex |
+| Mogplex calls an external MCP server such as Notion or Supabase | [Connections and MCP](/configure-and-extend/connections-and-mcp) | Mogplex authenticates to the external service. |
+| A local agent calls Mogplex | This page | The local client authenticates to Mogplex with OAuth or a PAT. |
 
-Both can be in use at the same time. An agent running outside Mogplex can call the Mogplex MCP server, and Mogplex can turn around and call a Notion MCP connection from within the same logical tool call.
+## Troubleshooting
 
-## Status
-
-- Design: approved.
-- Schema, OAuth endpoints, Streamable HTTP handler, stdio shim: planned, not yet merged.
-- Current public substitute: [Skills](/extend/skills) and the [CLI](/cli).
-
-When the server ships, this page will update with the live endpoints, the final scope list, and the Settings UI screenshot. Subscribe to release notes or watch the [mogplex-cli repo](https://github.com/webrenew/mogplex-cli) for the `@mogplex/mcp` package.
+| Symptom | What to check |
+| --- | --- |
+| Browser login succeeds but tools are missing | Restart the agent session so it reloads the server catalog. |
+| The client repeatedly asks you to authenticate | Confirm both the server URL and OAuth resource use the exact `www.mogplex.com/api/v1/mogplex/mcp` URL. |
+| `401 Unauthorized` | Re-run the client login; the token may be expired, revoked, for an unapproved client, or minted for the wrong audience. |
+| `403 Forbidden` with a PAT | Reissue the PAT with `write` when calling a mutation. |
+| A Flow graph update returns `BAD_REQUEST` | Send a complete graph with valid `nodes`, `edges`, and optional `viewport`; partial or malformed graphs are rejected. |
 
 ## See also
 
-- [Skills](/extend/skills) — today's substitute
-- [CLI Skills reference](/cli/skills) — canonical skill files
-- [Connections and MCP](/configure-and-extend/connections-and-mcp) — inbound MCP (Mogplex as consumer)
+- [MCP API reference](/web/api/mcp) — protocol methods, tools, and errors
+- [API authentication](/web/api/authentication) — OAuth and PAT behavior
+- [Skills](/extend/skills) — a complementary guidance path for skill-aware hosts
+- [Connections and MCP](/configure-and-extend/connections-and-mcp) — inbound MCP
 - [MCP specification](https://modelcontextprotocol.io/specification)
