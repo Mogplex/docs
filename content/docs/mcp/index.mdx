@@ -1,0 +1,76 @@
+---
+title: MCP
+description: Connect local agents to Mogplex with OAuth, then operate repos, sandboxes, automations, models, runs, and logs through hosted MCP tools.
+---
+
+import { McpInstallPanel } from '@/components/mcp-install-panel';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Mogplex MCP gives local agents a direct, authenticated control surface for the
+Mogplex platform. Connect once, approve access in your browser, and use the same
+hosted tools from Cursor, Codex, Claude Code, or OpenCode.
+
+```text
+https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+<McpInstallPanel />
+
+## What agents can do
+
+<Cards>
+  <Card
+    title="Install"
+    href="/mcp/install"
+    description="Connect Cursor, Codex, Claude Code, or OpenCode and complete OAuth."
+  />
+  <Card
+    title="Tools"
+    href="/mcp/tools"
+    description="Browse the shipped repo, sandbox, automation, model, run, and log tools."
+  />
+  <Card
+    title="Automations"
+    href="/mcp/automations"
+    description="Create, validate, publish, trigger, and inspect Flow automations safely."
+  />
+  <Card
+    title="Security"
+    href="/mcp/security"
+    description="Understand OAuth 2.1, PKCE, token validation, consent, and PAT fallback."
+  />
+  <Card
+    title="Troubleshooting"
+    href="/mcp/troubleshooting"
+    description="Resolve client setup, authentication, tool discovery, and request errors."
+  />
+  <Card
+    title="Protocol reference"
+    href="/web/api/mcp"
+    description="Inspect JSON-RPC methods, schemas, scopes, response shapes, and errors."
+  />
+</Cards>
+
+## One name, two directions
+
+<Callout title="Mogplex MCP is the local-agent entry point">
+  This section documents clients calling Mogplex. If Mogplex needs to call an
+  external service such as Notion, Supabase, or Sentry, configure an
+  [external MCP connection](/configure-and-extend/connections-and-mcp) instead.
+</Callout>
+
+| Surface | Direction | Purpose |
+| --- | --- | --- |
+| **Mogplex MCP endpoint** | Local agent → Mogplex | Operate Mogplex through hosted tools. |
+| **External MCP connections** | Mogplex → external service | Give Mogplex agents tools from another provider. |
+| **External MCP server catalog API** | Local host → Mogplex configuration | Sync the external MCP definitions saved in Mogplex. |
+
+## Transport and compatibility
+
+The endpoint uses remote Streamable HTTP and MCP protocol version `2025-11-25`.
+It is stateless, advertises its protected OAuth resource, and exposes a live
+tool catalog through `tools/list`. Clients that support remote MCP OAuth can
+discover the authorization flow without a pasted API token.
+
+Read [Install](/mcp/install) for client-specific setup or [Tools](/mcp/tools)
+for the complete capability map.

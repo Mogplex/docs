@@ -4,6 +4,8 @@
 
 /* Blackbox-inspired docs shell, retaining Mogplex brand color and code tokens. */
 
+/* MCP installation is a first-class docs action, not a generic card grid. */
+
 :root,
 .light {
   color-scheme: light;
@@ -139,6 +141,191 @@ html > body[data-scroll-locked] {
 :focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* MCP install panel */
+.mcp-install-panel {
+  margin: 28px 0 36px;
+  padding: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  background: var(--bg-surface-2);
+}
+
+.mcp-install-panel-heading {
+  display: grid;
+  max-width: 680px;
+  margin-bottom: 20px;
+}
+
+.mcp-install-panel-heading .mcp-install-eyebrow {
+  margin: 0 0 6px !important;
+  color: var(--accent) !important;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem !important;
+  font-weight: 600;
+  line-height: 1.4 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mcp-install-panel-heading h2 {
+  margin: 0 !important;
+  color: var(--text-primary) !important;
+  font-size: 1.5rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.018em;
+}
+
+.mcp-install-panel-heading > p:last-child {
+  max-width: 62ch;
+  margin: 8px 0 0 !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.65 !important;
+}
+
+.mcp-install-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mcp-install-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  background: var(--bg-surface);
+}
+
+.mcp-install-card-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mcp-install-card-icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  border-radius: 9px;
+  background: var(--accent-softer);
+  color: var(--accent);
+}
+
+.mcp-install-card-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mcp-install-card-title h3 {
+  margin: 0 !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.4 !important;
+}
+
+.mcp-install-card-title p {
+  margin: 3px 0 0 !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.75rem !important;
+  line-height: 1.55 !important;
+}
+
+.mcp-install-card pre {
+  min-height: 116px;
+  margin: 16px 0 12px;
+  padding: 13px 14px;
+  overflow: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--text-body);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.65;
+  white-space: pre;
+}
+
+.mcp-install-card pre code {
+  border: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  font: inherit;
+}
+
+.mcp-install-follow-up {
+  margin: -2px 0 12px !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.75rem !important;
+  line-height: 1.5 !important;
+}
+
+.mcp-install-follow-up code {
+  color: var(--accent) !important;
+  font-family: var(--font-mono);
+}
+
+.mcp-install-action {
+  display: inline-flex;
+  min-height: 36px;
+  margin-top: auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid var(--text-primary);
+  border-radius: 9px;
+  background: var(--text-primary);
+  color: var(--bg-surface) !important;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mcp-install-action:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--text-inverse) !important;
+  transform: translateY(-1px);
+}
+
+.mcp-install-action:active {
+  transform: translateY(0);
+}
+
+.mcp-install-action svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 760px) {
+  .mcp-install-panel {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .mcp-install-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mcp-install-card pre {
+    min-height: 0;
+  }
 }
 
 /* Header */

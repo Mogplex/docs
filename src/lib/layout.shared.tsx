@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 export const docsNavItems = [
+  { label: 'MCP', href: '/mcp' },
   { label: 'Platform', href: '/platform' },
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Guides', href: '/guides' },

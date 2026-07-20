@@ -1,5 +1,5 @@
 ---
-title: MCP server
+title: Mogplex MCP endpoint
 description: POST /api/v1/mogplex/mcp is the OAuth-enabled Streamable HTTP endpoint for repo, sandbox, automation, model, log, and agent-run tools.
 ---
 
@@ -30,7 +30,7 @@ codex mcp login mogplex
 
 The client discovers Mogplex's protected-resource metadata, dynamically
 registers itself with the authorization server, and opens the Mogplex consent
-screen. See [Install the Mogplex MCP server](/extend/mcp-server) for Codex,
+screen. See [Install Mogplex MCP](/mcp/install) for Codex,
 Claude Code, Cursor, and troubleshooting instructions.
 
 Mogplex validates the OAuth token's issuer, signature, expiry, client id,
@@ -196,7 +196,7 @@ the `Origin` header and do not require a CORS entry.
 
 ## Read next
 
-- [Install the MCP server](/extend/mcp-server)
+- [Install Mogplex MCP](/mcp/install)
 - [Authentication](/web/api/authentication)
 - [Runs](/web/api/runs)
 - [Sandboxes](/web/api/sandboxes)
