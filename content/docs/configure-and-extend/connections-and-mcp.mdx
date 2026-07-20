@@ -1,12 +1,12 @@
 ---
 title: Connections and MCP
-description: Configure REST and MCP connections, understand scope resolution, sync cloud MCP servers to the CLI, and avoid confusing inbound tools with the Mogplex MCP preview.
+description: Configure REST and MCP connections, understand scope resolution, sync cloud MCP servers to the CLI, and distinguish inbound tools from the outbound Mogplex MCP server.
 ---
 
 Connections are how Mogplex agents reach external systems.
 
 They are separate from managed model access, GitHub App coverage, Slack channel
-links, and the preview path where other MCP clients call into Mogplex.
+links, and the live endpoint where other MCP clients call into Mogplex.
 
 ## Direction matters
 
@@ -16,11 +16,12 @@ There are three MCP-related surfaces with different directionality:
 | --- | --- | --- |
 | Connections | Mogplex calls external REST APIs or MCP servers | Give agents tools such as Linear, Supabase, Notion, or Sentry. |
 | [MCP Servers API](/web/api/mcp-servers) | CLI or scripts read your configured external MCP servers | Sync cloud MCP definitions into local agent hosts. |
-| [Mogplex MCP server](/extend/mcp-server) | External MCP clients call Mogplex | Preview design path for exposing Mogplex as an MCP server. |
+| [Mogplex MCP server](/extend/mcp-server) | External MCP clients call Mogplex | Let local agents operate repos, sandboxes, automations, models, runs, and logs. |
 
 When a hosted run cannot call an external tool, debug Connections. When another
-agent host needs to call Mogplex, start with [Skills](/extend/skills) today and
-the [Mogplex MCP server preview](/extend/mcp-server) for the future path.
+agent host needs to call Mogplex directly, install the
+[Mogplex MCP server](/extend/mcp-server). Use [Skills](/extend/skills) when the
+host needs guidance for driving the CLI instead of direct MCP tools.
 
 ## Connection types
 

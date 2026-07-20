@@ -1,24 +1,29 @@
 ---
 title: Sandboxes
-description: GET /api/v1/mogplex/sandboxes lists the cloud sandboxes owned by the authenticated user, with optional filters for repo and status.
+description: List and create user-owned cloud sandboxes, then read their install, dev-server, error, and lifecycle logs through the v1 API.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-`GET /api/v1/mogplex/sandboxes`
+- `GET /api/v1/mogplex/sandboxes`
+- `POST /api/v1/mogplex/sandboxes`
+- `GET /api/v1/mogplex/sandboxes/{sandboxId}/logs`
 
-Lists cloud sandboxes the caller owns. Useful for cleanup scripts, dashboards,
-or scoping a run to an existing branch.
+The collection route lists cloud sandboxes the caller owns or creates/reuses a
+sandbox for a repo and branch. The item logs route returns stored launch and
+runtime diagnostics. These routes back `mogplex_list_sandboxes`,
+`mogplex_create_sandbox`, and `mogplex_get_sandbox_logs` in the
+[MCP server](/web/api/mcp).
 
 <Callout>
-v1 sandbox lifecycle routes (stop / pause / resume / get-by-id) are not yet
-exposed. They will land alongside the sandbox-lifecycle refactor. Until then,
-use the web UI at `mogplex.com/sandboxes/{id}` for lifecycle actions.
+v1 stop, pause, resume, and get-by-id routes are not exposed. Create and log
+access are available, but use the web UI for the remaining lifecycle actions.
 </Callout>
 
 ## Scope
 
-`read` — see [Authentication → Scopes](/web/api/authentication#scopes).
+Listing and logs require `read`. Creating a sandbox requires `write`. See
+[Authentication → Scopes](/web/api/authentication#scopes).
 
 ## Query parameters
 
@@ -28,7 +33,7 @@ use the web UI at `mogplex.com/sandboxes/{id}` for lifecycle actions.
 | `status`   | string  | —       | e.g. `running`, `paused`, `stopped`, `error`                   |
 | `limit`    | integer | 100     | 1–200                                                          |
 
-## Example
+## List sandboxes
 
 ```bash
 export MOGPLEX_BASE_URL="https://www.mogplex.com"
@@ -89,6 +94,40 @@ type MogplexApiSandbox = {
 ```
 
 Sandboxes are ordered by `last_active_at` desc (server-side default).
+
+## Create or reuse a sandbox
+
+```bash
+curl -sS \
+  -X POST \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "repoId": "8f3a2b1c-1234-4abc-9def-1234567890ab",
+    "baseBranch": "main",
+    "workingBranch": "agent/update-docs",
+    "createBranch": true,
+    "rootDirectory": null
+  }' \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/sandboxes"
+```
+
+`repoId` is required. The other fields are optional. Mogplex consumes the
+existing sandbox launch event stream and returns `202` with the ready sandbox
+record, or a typed error if launch fails.
+
+## Read sandbox logs
+
+Use the Mogplex sandbox record `id`, not the provider `sandbox_id`:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/api/v1/mogplex/sandboxes/<sandbox-record-id>/logs"
+```
+
+The response includes the sandbox record, install log, dev-server log, current
+error, and persisted lifecycle events.
 
 ## Errors
 

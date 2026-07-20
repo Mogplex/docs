@@ -16,7 +16,17 @@ If you want copy-paste examples first, go to
 Representative routes:
 
 - `/api/v1/mogplex/repos` (GET)
-- `/api/v1/mogplex/sandboxes` (GET)
+- `/api/v1/mogplex/agents` (GET)
+- `/api/v1/mogplex/models` (GET)
+- `/api/v1/mogplex/sandboxes` (GET, POST)
+- `/api/v1/mogplex/sandboxes/{sandboxId}/logs` (GET)
+- `/api/v1/mogplex/automations` (GET, POST)
+- `/api/v1/mogplex/automations/{automationId}` (GET, PUT)
+- `/api/v1/mogplex/automations/{automationId}/publish` (POST)
+- `/api/v1/mogplex/automations/{automationId}/model` (PUT)
+- `/api/v1/mogplex/automations/{automationId}/trigger` (POST)
+- `/api/v1/mogplex/automations/{automationId}/runs` (GET)
+- `/api/v1/mogplex/automations/{automationId}/runs/{runId}` (GET)
 - `/api/v1/mogplex/runs` (POST)
 - `/api/v1/mogplex/runs/{runId}` (GET)
 - `/api/v1/mogplex/runs/{runId}/events` (GET)
@@ -24,24 +34,26 @@ Representative routes:
 - `/api/v1/mogplex/mcp/servers` (GET)
 - `/api/v1/mogplex/mcp` (POST, JSON-RPC)
 
-This is the stable, **PAT-only** surface for headless callers — the CLI's
-`mogplex repos|run|runs|sandboxes` commands, the in-app MCP server, and any
-third-party integration. Every endpoint returns the same typed envelope
-documented at [Errors](/web/api/errors), and mutations enforce the `write`
-scope per [Authentication](/web/api/authentication).
+This is the stable PAT-authenticated REST surface for headless callers — the
+CLI, the Mogplex MCP server, and third-party integrations. The MCP endpoint
+also accepts OAuth 2.1 access tokens from local agents. REST endpoints return
+the typed envelope documented at [Errors](/web/api/errors), and mutations
+enforce the `write` scope per [Authentication](/web/api/authentication).
 
 Good first calls in this family:
 
 - `GET /api/v1/mogplex/repos` to discover repo IDs
+- `GET /api/v1/mogplex/automations` to list bounded, graph-free Flow summaries
 - `POST /api/v1/mogplex/runs` (with `Idempotency-Key`) to start an agent run
 - `GET /api/v1/mogplex/runs/{id}/events` to tail it
+- `POST /api/v1/mogplex/mcp` to expose the same workflows as MCP tools
 
 Read [Runs](/web/api/runs) for a full walkthrough.
 
-This family is intentionally narrower than the internal control-plane families
-below — it covers headless agent-run automation and nothing else. Other
-behaviors stay on the internal `/api/*` surface until they have a stable
-public contract.
+This family remains narrower than the internal control-plane families below,
+but now covers headless agent runs, Flow automation control, sandbox launch and
+diagnostics, and the MCP wrapper. Other behaviors stay on the internal `/api/*`
+surface until they have a stable public contract.
 
 ## Identity and setup
 

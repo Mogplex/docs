@@ -18,8 +18,8 @@ compatibility contract.
 - [API Quickstart](/web/api/quickstart) for the shortest complete path from
   token to repo lookup, run start, event inspection, cancellation, and sandbox
   listing
-- [Authentication](/web/api/authentication) for PAT lifecycle, scopes
-  (`read` / `write`), idempotency, and rate limits
+- [Authentication](/web/api/authentication) for MCP OAuth, PAT lifecycle,
+  scopes (`read` / `write`), idempotency, and rate limits
 - [Errors](/web/api/errors) for the typed error envelope, code table, and
   retry guidance
 - [Runs](/web/api/runs), [Repos](/web/api/repos), [Sandboxes](/web/api/sandboxes),
@@ -87,8 +87,9 @@ The same API is used by multiple Mogplex surfaces:
 The current auth resolution order is:
 
 1. `Authorization: Bearer mog_...` personal access token
-2. internal Playwright auth headers used in end-to-end testing
-3. browser session auth from the signed-in web app
+2. OAuth bearer token on `/api/v1/mogplex/mcp`
+3. internal Playwright auth headers used in end-to-end testing
+4. browser session auth from the signed-in web app
 
 That means many routes can support both browser and CLI callers without
 inventing a second API namespace.
@@ -99,6 +100,7 @@ Not every route treats PAT auth the same way.
 
 - Many shared read or control-plane routes accept PAT auth through the common
   auth helper.
+- The outbound MCP endpoint accepts OAuth access tokens as well as PATs.
 - Some sensitive routes intentionally require a real browser session and reject
   PAT auth. Token-management endpoints are the clearest example.
 

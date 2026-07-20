@@ -19,9 +19,30 @@ The common control-plane helper resolves in this order:
 2. internal Playwright auth headers used in end-to-end testing
 3. browser session auth from the signed-in web app
 
-The public `/api/v1/mogplex/*` surface accepts **only** PATs — the Playwright
-and session paths are for internal callers. Use a PAT for anything outside the
-browser.
+The public `/api/v1/mogplex/*` REST routes accept PATs — the Playwright and
+session paths are for internal callers. The
+[`/api/v1/mogplex/mcp`](/web/api/mcp) endpoint additionally accepts OAuth 2.1
+access tokens issued through the MCP browser-consent flow. Prefer OAuth for a
+local MCP client and use a PAT for direct REST calls or clients without remote
+MCP OAuth support.
+
+## MCP OAuth
+
+Local MCP clients authenticate with OAuth 2.1 authorization code and PKCE.
+Mogplex publishes protected-resource metadata for the exact MCP URL and uses
+dynamic client registration, so supported clients can register and open the
+browser consent screen without a pre-created client id.
+
+```bash
+codex mcp add mogplex \
+  --url https://www.mogplex.com/api/v1/mogplex/mcp \
+  --oauth-resource https://www.mogplex.com/api/v1/mogplex/mcp
+codex mcp login mogplex
+```
+
+Mogplex accepts the resulting access token only when its issuer, signature,
+expiry, client id, resource audience, allowlist admission, and linked user all
+validate. See [MCP server](/extend/mcp-server) for installation details.
 
 ## Personal access tokens
 
@@ -89,10 +110,10 @@ new one when an old one nears expiry.
 
 Two scopes exist today:
 
-| Scope   | Grants                                                                                          |
-| ------- | ----------------------------------------------------------------------------------------------- |
-| `read`  | All `GET /api/v1/mogplex/*` endpoints (repos, sandboxes, runs, run events)                       |
-| `write` | Mutating endpoints: `POST /runs`, `POST /runs/{id}/cancel`, future sandbox lifecycle POSTs       |
+| Scope | Grants |
+| --- | --- |
+| `read` | v1 list and detail routes for repos, agents, models, sandboxes and logs, automations and run diagnostics, and one-off runs and events. |
+| `write` | Starting or cancelling runs, creating sandboxes, and creating, updating, publishing, changing, or triggering automations. |
 
 Tokens default to `["read", "write"]` unless you explicitly request a smaller
 set. Tokens issued before scope enforcement landed were backfilled to
