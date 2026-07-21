@@ -1,10 +1,29 @@
 import { createMDX } from 'fumadocs-mdx/next';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { legacyApiPages } from './src/lib/legacy-api-redirect.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const withMDX = createMDX();
+
+const legacyApiRedirects = Object.keys(legacyApiPages).map((legacyPage) => ({
+  source: legacyPage === 'index' ? '/web/api' : `/web/api/${legacyPage}`,
+  legacyPage,
+}));
+
+function includeRawMarkdownRedirect({ source, legacyPage }) {
+  const destination = `/reference/api?legacyApi=${legacyPage}`;
+
+  return [
+    { source, destination, permanent: true },
+    {
+      source: `${source}.md`,
+      destination: '/reference/api.md',
+      permanent: true,
+    },
+  ];
+}
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -26,6 +45,7 @@ const config = {
         destination: '/mcp.md',
         permanent: true,
       },
+      ...legacyApiRedirects.flatMap(includeRawMarkdownRedirect),
     ];
   },
   async rewrites() {

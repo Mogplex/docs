@@ -38,7 +38,7 @@ Model configuration appears in several places:
 | [Automations](/web/automations) | Node-level model overrides inside one workflow draft |
 | [Repo settings](/web/spaces) | Repo-specific exclusions from the globally enabled model set |
 | [CLI Model Picker](/cli/reference/drawers) | Active model for the local cockpit run |
-| [API Models](/web/api/models) | Catalog, enabled state, and CLI-formatted model export |
+| [API Models](/reference/api#models) | Enabled, reachable model catalog and pricing metadata |
 
 The account default affects new work. It does not rewrite every saved agent,
 automation node, assignment, or repo rule.
@@ -79,7 +79,7 @@ Use these surfaces together:
   pressure, tokens, estimated cost, model calls, and tool calls
 - [Cost & Usage](/cli/reference/cost-and-usage) for local cockpit totals,
   threshold warnings, and per-run breakdowns
-- [API Models](/web/api/models) for pricing metadata when present in the model
+- [API Models](/reference/api#models) for pricing metadata when present in the model
   catalog
 
 If spend jumps, do not start by changing every model. First identify the route,
@@ -119,7 +119,7 @@ web account has enabled models and that the CLI is using account-backed login.
 
 <Cards>
   <Card title="Available Models" href="/web/models" />
-  <Card title="API Models" href="/web/api/models" />
+  <Card title="API Models" href="/reference/api#models" />
   <Card title="Observability" href="/capabilities/observability" />
   <Card title="Cost & Usage" href="/cli/reference/cost-and-usage" />
   <Card title="Agent Authoring" href="/configure-and-extend/agent-authoring" />

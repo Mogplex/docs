@@ -1,15 +1,10 @@
 {
   "title": "Integrations",
+  "root": true,
   "pages": [
     "index",
     "github",
     "vercel",
-    "slack",
-    "[CI Integration](/cli/automation/ci-integration)",
-    "[Hosted API](/web/api)",
-    "[External Connections](/configure-and-extend/connections-and-mcp)",
-    "[Mogplex MCP Clients](/mcp/install)",
-    "[GitHub App Coverage](/web/guides/github-app-coverage)",
-    "[GitHub Mention Routing](/web/guides/github-mention-routing)"
+    "slack"
   ]
 }

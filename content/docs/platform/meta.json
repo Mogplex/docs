@@ -8,13 +8,6 @@
     "cli",
     "headless-runs",
     "projects-and-sandboxes",
-    "hosted-api",
-    "---Deep Dives---",
-    "[Mogplex App Reference](/web)",
-    "[Mogplex CLI Reference](/cli)",
-    "[Headless Run Commands](/cli/automation)",
-    "[Projects Reference](/web/spaces)",
-    "[Sandboxes Reference](/web/sandboxes)",
-    "[API Reference](/web/api)"
+    "hosted-api"
   ]
 }

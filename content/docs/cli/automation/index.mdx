@@ -27,7 +27,7 @@ other invocation boots the TUI.
 | Cancel a runaway run from a Slack bot or webhook        | `mogplex runs cancel <id>`                             |
 
 The headless surface talks to the same `/api/v1/mogplex/*` endpoints
-documented under [API Reference](/web/api). The CLI just bundles the typed
+documented under [API Reference](/reference/api). The CLI just bundles the typed
 client, output formatting, exit codes, and credential resolution.
 
 ## Quick start
@@ -86,7 +86,7 @@ Set `MOGPLEX_API_KEY` for CI and one-shots (`MOGPLEX_API_KEY=mog_... mogplex
 repos list`). The auth.json fallback works without any env setup once you've
 signed in via the TUI.
 
-See [Authentication](/web/api/authentication) for PAT issuance, scope model
+See [Authentication](/reference/api#authentication) for PAT issuance, scope model
 (`read` / `write`), revocation, expiry, and rate limits.
 
 ## Base URL
@@ -131,4 +131,4 @@ esac
 
 - [Headless runs](/cli/automation/headless-runs) — `mogplex run` and event tailing in detail
 - [CI integration](/cli/automation/ci-integration) — GitHub Actions example
-- [API → Runs](/web/api/runs) — the REST endpoints the CLI wraps
+- [API → Runs](/reference/api#agent-runs) — the REST endpoints the CLI wraps

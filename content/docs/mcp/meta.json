@@ -1,7 +1,8 @@
 {
   "title": "MCP",
+  "root": true,
   "pages": [
-    "[Overview](/mcp)",
+    "index",
     "install",
     "tools",
     "automations",
