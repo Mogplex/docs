@@ -14,6 +14,20 @@ const config = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    return [
+      {
+        source: '/extend/mcp-server',
+        destination: '/mcp',
+        permanent: true,
+      },
+      {
+        source: '/extend/mcp-server.md',
+        destination: '/mcp.md',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     // Agent-friendly: `curl https://docs/<slug>.md` returns raw markdown.
     return [

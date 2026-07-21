@@ -1,0 +1,61 @@
+---
+title: MCP tools
+description: Reference the repo, sandbox, automation, model, log, and agent-run tools exposed by the Mogplex MCP endpoint.
+---
+
+Mogplex exposes 19 user-scoped tools. The client loads their current JSON
+schemas through `tools/list`, validates arguments locally when supported, and
+sends each call to the same service layer used by the v1 API.
+
+## Discovery and sandboxes
+
+| Tool | Scope | What it does |
+| --- | --- | --- |
+| `mogplex_list_repos` | `read` | List accessible repos and the GitHub installation id used by automations. |
+| `mogplex_list_agents` | `read` | List user-owned and preset agents available to Flow nodes. |
+| `mogplex_list_models` | `read` | List enabled model ids. |
+| `mogplex_list_sandboxes` | `read` | List active or recent sandboxes, optionally by repo or status. |
+| `mogplex_create_sandbox` | `write` | Create or reuse a repo and branch sandbox. |
+| `mogplex_get_sandbox_logs` | `read` | Read install logs, dev-server logs, errors, and lifecycle events. |
+
+`mogplex_create_sandbox` consumes the existing launch event stream and returns
+when the launch succeeds or fails. It does not create a separate status-polling
+loop.
+
+## Automations
+
+| Tool | Scope | What it does |
+| --- | --- | --- |
+| `mogplex_list_automations` | `read` | Return a bounded, cursor-paginated page of graph-free summaries. |
+| `mogplex_get_automation` | `read` | Read one automation with its complete draft and published graphs. |
+| `mogplex_create_automation` | `write` | Create a draft, optionally from a complete validated graph. |
+| `mogplex_update_automation` | `write` | Update metadata or replace the complete validated draft graph. |
+| `mogplex_publish_automation` | `write` | Validate, version, and activate the draft. |
+| `mogplex_set_automation_model` | `write` | Set or clear an agent node's model override. |
+| `mogplex_trigger_automation` | `write` | Run an active published automation for an owned repo. |
+| `mogplex_list_automation_runs` | `read` | List recent executions and node or dispatch summaries. |
+| `mogplex_get_automation_run_logs` | `read` | Read node runs, dispatch events, AI calls, errors, usage, and review findings. |
+
+Automation listing defaults to 50 records and accepts a maximum `limit` of
+100. Pass `nextCursor` from one response back as `cursor`. The list response
+omits graphs; call `mogplex_get_automation` only when you need the full draft or
+published graph.
+
+## Agent runs
+
+| Tool | Scope | What it does |
+| --- | --- | --- |
+| `mogplex_start_agent_run` | `write` | Start a Codex or Claude Code run in a repo sandbox. |
+| `mogplex_get_run` | `read` | Read current run state and metadata. |
+| `mogplex_get_run_events` | `read` | Read append-only run events. |
+| `mogplex_cancel_run` | `write` | Request cancellation of an active run. |
+
+## Response shape
+
+Successful calls include readable text for conversational clients and
+`structuredContent` for clients that consume JSON directly. Tool errors return
+the MCP error envelope with a stable machine-readable code such as
+`BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, or `NOT_FOUND`.
+
+For exact arguments, limits, and direct JSON-RPC examples, use the
+[Mogplex MCP endpoint reference](/web/api/mcp).

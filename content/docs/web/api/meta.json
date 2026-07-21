@@ -9,8 +9,8 @@
     "runs",
     "repos",
     "sandboxes",
-    "mcp-servers",
-    "mcp",
+    "[External MCP server catalog](/web/api/mcp-servers)",
+    "[Mogplex MCP endpoint](/web/api/mcp)",
     "working-requests",
     "route-families"
   ]

@@ -1,0 +1,130 @@
+---
+title: Install Mogplex MCP
+description: Connect Cursor, Codex, Claude Code, or OpenCode to the hosted Mogplex MCP endpoint and authenticate with OAuth.
+---
+
+import { McpInstallPanel } from '@/components/mcp-install-panel';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+All supported clients use the same remote Streamable HTTP endpoint:
+
+```text
+https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+<McpInstallPanel />
+
+<Callout title="What one click means">
+  Cursor provides a real install deep link. Codex and Claude Code provide
+  copy-ready setup commands. OpenCode provides a complete configuration block
+  to paste into `opencode.json`. Each path finishes with browser OAuth, so no
+  Mogplex token needs to be pasted into the client.
+</Callout>
+
+## Cursor
+
+Choose **Install in Cursor** above. Cursor opens the MCP installer with the
+Mogplex endpoint already configured. Approve the configuration, then complete
+the Mogplex consent screen in your browser.
+
+For manual setup, add this to your Cursor MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "mogplex": {
+      "url": "https://www.mogplex.com/api/v1/mogplex/mcp"
+    }
+  }
+}
+```
+
+See [Cursor MCP documentation](https://docs.cursor.com/context/model-context-protocol)
+for configuration locations and client controls.
+
+## Codex
+
+Run the copied setup exactly as shown:
+
+```bash
+codex mcp add mogplex \
+  --url https://www.mogplex.com/api/v1/mogplex/mcp \
+  --oauth-resource https://www.mogplex.com/api/v1/mogplex/mcp
+codex mcp login mogplex
+```
+
+The equivalent `~/.codex/config.toml` entry is:
+
+```toml
+[mcp_servers.mogplex]
+url = "https://www.mogplex.com/api/v1/mogplex/mcp"
+oauth_resource = "https://www.mogplex.com/api/v1/mogplex/mcp"
+```
+
+Confirm the saved server with `codex mcp get mogplex`. Restart an already-open
+Codex session if it does not immediately show the new tool catalog.
+
+## Claude Code
+
+Install Mogplex at user scope:
+
+```bash
+claude mcp add --transport http --scope user mogplex \
+  https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+Start Claude Code, run `/mcp`, select `mogplex`, and authenticate. Claude Code
+opens the Mogplex OAuth flow in your browser.
+
+User scope makes the connection available across projects. Replace
+`--scope user` with a narrower scope only when you want the connection limited
+to a particular project. See the
+[Claude Code MCP documentation](https://code.claude.com/docs/en/mcp) for scope
+and server-management commands.
+
+## OpenCode
+
+Add the copied entry to your `opencode.json`:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "mogplex": {
+      "type": "remote",
+      "url": "https://www.mogplex.com/api/v1/mogplex/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+Then run:
+
+```bash
+opencode mcp auth mogplex
+```
+
+OpenCode stores the resulting OAuth credential after authorization. See the
+[OpenCode MCP documentation](https://opencode.ai/docs/mcp-servers/) for config
+locations and credential management.
+
+## Complete OAuth
+
+The client discovers Mogplex's protected-resource and authorization-server
+metadata, registers an OAuth client, and opens the consent page. Sign in to the
+Mogplex account you want the agent to use, review the request, and choose
+**Allow access**.
+
+Mogplex binds the token to the exact endpoint URL. Keep both the server URL and
+OAuth resource on the `https://www.mogplex.com` origin shown above.
+
+## Personal access token fallback
+
+OAuth is the preferred path. If a client cannot complete remote MCP OAuth,
+create a personal access token in **Mogplex → Settings → API Keys** and send it
+as `Authorization: Bearer mog_...`. Never put a PAT in a prompt, repository, or
+checked-in configuration file.
+
+A read-only PAT can list repos, agents, models, automations, runs, sandboxes,
+and logs. Sandbox creation and automation mutations require `write`.

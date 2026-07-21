@@ -1,0 +1,81 @@
+---
+title: Automations through MCP
+description: Safely create, update, publish, trigger, and inspect Mogplex Flow automations from a local agent.
+---
+
+MCP automation tools expose the same validation and execution path as the Flow
+editor. An agent can discover valid repos, agents, and models before it changes
+a draft, then inspect each run without loading every graph into the listing.
+
+## Work with an existing automation
+
+1. Call `mogplex_list_automations` with a bounded `limit`.
+2. Pass `nextCursor` back as `cursor` when you need another page.
+3. Call `mogplex_get_automation` for the one draft you intend to inspect or change.
+4. Call `mogplex_list_models`, then use `mogplex_set_automation_model` for a narrow model change or `mogplex_update_automation` for a complete graph replacement.
+5. Call `mogplex_publish_automation` after the draft is ready.
+6. Call `mogplex_trigger_automation` with the automation id and repo id.
+7. Inspect execution with `mogplex_list_automation_runs` and `mogplex_get_automation_run_logs`.
+
+## Create an automation
+
+Call `mogplex_list_repos` first and use the returned positive
+`installation_id`. Call `mogplex_list_agents` before binding an agent node. Then
+call `mogplex_create_automation` with metadata and, optionally, a complete Flow
+graph.
+
+If create receives no graph, Mogplex builds a simple Start → Agent → End draft
+when an agent is available. Set `publish: true` only when the graph should be
+validated and activated immediately.
+
+## Graph contract
+
+Create and update accept a complete graph object:
+
+```json
+{
+  "nodes": [],
+  "edges": [],
+  "viewport": {
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  }
+}
+```
+
+`nodes` and `edges` are required arrays. `viewport` is optional, but when
+present its `x`, `y`, and positive `zoom` values must be valid finite numbers.
+`null`, strings, partial objects, and structurally malformed graphs return
+`BAD_REQUEST` before the existing draft can be replaced.
+
+The create and update `installationId`, when supplied, must be a positive safe
+integer. Invalid values return `BAD_REQUEST` instead of reaching persistence.
+
+## Publish checks
+
+Draft shape validation protects stored data. Publishing applies stricter
+execution checks:
+
+- exactly one start node
+- exactly one end node
+- at least one bound agent node
+- valid graph connections and node configuration
+- an enabled model wherever an explicit override is set
+
+Publishing creates an active version. Triggering always runs the published
+version, not an unpublished draft.
+
+## Change one model safely
+
+Prefer `mogplex_set_automation_model` when only one agent node needs a model
+change. Pass an enabled `modelId`, or `null` to clear the override and inherit
+the default. This avoids sending and replacing the entire graph for a narrow
+edit.
+
+## Inspect runs and logs
+
+`mogplex_list_automation_runs` returns recent execution summaries.
+`mogplex_get_automation_run_logs` returns the detailed node runs, dispatch
+events, AI calls, errors, token usage, and review findings for one run. Use the
+run id from the list response rather than repeatedly listing the automation.

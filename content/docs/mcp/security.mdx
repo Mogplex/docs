@@ -1,0 +1,72 @@
+---
+title: MCP security
+description: Understand Mogplex MCP OAuth, PKCE, consent, token validation, client admission, PAT fallback, and authorization scopes.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+OAuth is the default authentication path for the hosted Mogplex MCP endpoint.
+The flow uses authorization code with PKCE, protected-resource discovery, and
+dynamic client registration so supported local clients can connect without a
+pasted secret.
+
+## OAuth flow
+
+1. The MCP client requests the protected endpoint.
+2. Mogplex returns a `401` with a `WWW-Authenticate` challenge that identifies the protected-resource metadata.
+3. The client discovers the authorization server and registers its OAuth client metadata.
+4. The browser opens the Mogplex consent screen.
+5. After the user allows access, the client exchanges the code with its PKCE verifier.
+6. The client sends the resulting access token only to the exact Mogplex MCP resource.
+
+Mogplex validates the issuer, signature, expiry, approved client id, linked
+Mogplex profile, and exact resource audience on every OAuth request.
+
+## Client admission and consent
+
+Dynamic registration does not grant platform access by itself. Mogplex admits
+the client as part of the consent transaction. If consent approval or denial
+cannot be finalized, a newly inserted registration is removed before the flow
+returns a terminal error. Token validation accepts only clients that completed
+the admission path.
+
+## Resource binding
+
+Use this exact value for both the MCP server URL and any explicit OAuth
+resource field:
+
+```text
+https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+Changing the origin, omitting `www`, or binding the token to a broader audience
+can cause the token to be rejected even when browser login succeeded.
+
+## Personal access tokens
+
+PATs remain available for clients that do not support remote MCP OAuth. Send a
+PAT in the `Authorization: Bearer mog_...` header and protect it like a password.
+
+| Scope | Allowed operations |
+| --- | --- |
+| `read` | List and detail operations for repos, models, automations, runs, sandboxes, and logs. |
+| `write` | Sandbox creation and automation creation, update, publication, model changes, triggers, and run cancellation. |
+
+<Callout type="warn" title="Do not expose PATs">
+  Never place a PAT in a prompt, issue, chat transcript, repository, or
+  checked-in client configuration. Prefer browser OAuth whenever the client
+  supports it.
+</Callout>
+
+## Agent safety boundaries
+
+- All tools are user-scoped through the authenticated Mogplex profile.
+- Automation lists are bounded and omit full graphs.
+- Full graphs are read only from the item tool.
+- Graph replacements are schema-validated before persistence.
+- Installation ids must be positive safe integers.
+- Mutations require write access.
+- Sandbox launch uses the existing event stream rather than a polling worker.
+
+See [API authentication](/web/api/authentication) for the broader v1 API rules
+and [Mogplex MCP endpoint](/web/api/mcp) for protocol-level errors.
