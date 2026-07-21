@@ -4,6 +4,9 @@ description: The complete Mogplex v1 REST contract, including authentication, re
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
+import { LegacyApiAnchor } from '@/components/legacy-api-anchor';
+
+<LegacyApiAnchor />
 
 This page is the complete reference for the versioned Mogplex API.
 
@@ -841,6 +844,119 @@ Direct tool-call payload:
 }
 ```
 
+Response envelopes:
+
+```typescript
+type JsonRpcId = string | number | null;
+
+type JsonRpcSuccess<T> = {
+  jsonrpc: "2.0";
+  id: JsonRpcId;
+  result: T;
+};
+
+type JsonRpcError = {
+  jsonrpc: "2.0";
+  id?: JsonRpcId;
+  error: {
+    code: number;
+    message: string;
+    data?: unknown;
+  };
+};
+
+type McpToolResult = {
+  content: Array<{ type: "text"; text: string }>;
+  structuredContent?: Record<string, unknown>;
+  isError: boolean;
+};
+```
+
+An `initialize` request returns server capabilities and the negotiated protocol
+version inside a JSON-RPC success envelope:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2025-11-25",
+    "capabilities": { "tools": { "listChanged": false } },
+    "serverInfo": { "name": "mogplex", "version": "0.1.0" }
+  }
+}
+```
+
+A successful tool call returns human-readable content and structured JSON:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 42,
+  "result": {
+    "content": [
+      { "type": "text", "text": "Found 0 Mogplex automation summaries." }
+    ],
+    "structuredContent": { "automations": [] },
+    "isError": false
+  }
+}
+```
+
+Notifications do not have an `id` and return HTTP `202` with no response body.
+
+### MCP errors
+
+Transport and JSON-RPC failures use the JSON-RPC `error` envelope, not the
+REST error envelope documented below:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 42,
+  "error": {
+    "code": -32602,
+    "message": "repoId: Required"
+  }
+}
+```
+
+| JSON-RPC code | HTTP | Meaning |
+| --- | --- | --- |
+| `-32700` | 400 | The request body is not valid JSON. |
+| `-32600` | 400 | The body is not a valid JSON-RPC request. |
+| `-32601` | 200 | The requested method or tool does not exist. |
+| `-32602` | 200 | Tool arguments are missing or invalid. |
+| `-32001` | 401 | OAuth or PAT authorization is missing or invalid. |
+| `-32002` | 429 | The authentication rate limit was exceeded. |
+| `-32003` | 403 | A browser request came from a forbidden origin. |
+| `-32603` | 200 | An unexpected MCP message failure occurred. |
+
+An underlying Mogplex operation can fail after a valid `tools/call`. That is a
+tool result rather than a transport failure, so the HTTP response remains `200`
+and `result.isError` is `true`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 43,
+  "result": {
+    "content": [
+      { "type": "text", "text": "Run not found. List repos or runs again and pass an id owned by this token." }
+    ],
+    "structuredContent": {
+      "error": {
+        "code": "NOT_FOUND",
+        "status": 404,
+        "message": "Run not found",
+        "suggestion": "List repos or runs again and pass an id owned by this token."
+      }
+    },
+    "isError": true
+  }
+}
+```
+
 Send `Accept: application/json, text/event-stream`. The endpoint also accepts
 `OPTIONS` for CORS preflight. `GET` returns `405 Method Not Allowed`.
 
@@ -858,7 +974,5 @@ Send `Accept: application/json, text/event-stream`. The endpoint also accepts
 | `INTERNAL_ERROR` | 500 | An unexpected server error occurred. | Preserve the request id and report the failure. |
 | `SERVICE_UNAVAILABLE` | 503 | A required runtime or rate-limit service is unavailable. | Honor `Retry-After` when present. |
 
-MCP JSON-RPC errors use protocol codes instead of the REST envelope. The most
-important codes are `-32700` parse error, `-32600` invalid request, `-32601`
-method not found, `-32602` invalid tool arguments, `-32001` unauthorized,
-`-32002` rate limited, and `-32003` forbidden origin.
+MCP uses its own [JSON-RPC error contract](#mcp-errors) instead of this REST
+envelope.
