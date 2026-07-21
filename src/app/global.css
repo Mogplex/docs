@@ -187,7 +187,7 @@ html > body[data-scroll-locked] {
 
 .mcp-install-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -251,7 +251,8 @@ html > body[data-scroll-locked] {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: 1.65;
-  white-space: pre;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .mcp-install-card pre code {
@@ -273,7 +274,7 @@ html > body[data-scroll-locked] {
   font-family: var(--font-mono);
 }
 
-.mcp-install-action {
+.mcp-install-panel .mcp-install-action {
   display: inline-flex;
   min-height: 36px;
   margin-top: auto;
@@ -297,18 +298,18 @@ html > body[data-scroll-locked] {
     transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.mcp-install-action:hover {
+.mcp-install-panel .mcp-install-action:hover {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--text-inverse) !important;
   transform: translateY(-1px);
 }
 
-.mcp-install-action:active {
+.mcp-install-panel .mcp-install-action:active {
   transform: translateY(0);
 }
 
-.mcp-install-action svg {
+.mcp-install-panel .mcp-install-action svg {
   width: 14px;
   height: 14px;
 }
@@ -317,10 +318,6 @@ html > body[data-scroll-locked] {
   .mcp-install-panel {
     padding: 18px;
     border-radius: 14px;
-  }
-
-  .mcp-install-grid {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .mcp-install-card pre {

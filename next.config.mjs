@@ -1,30 +1,19 @@
 import { createMDX } from 'fumadocs-mdx/next';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { legacyApiPages } from './src/lib/legacy-api-redirect.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const withMDX = createMDX();
 
-const legacyApiRedirects = [
-  { source: '/web/api', legacyPage: null },
-  { source: '/web/api/quickstart', legacyPage: 'quickstart' },
-  { source: '/web/api/authentication', legacyPage: 'authentication' },
-  { source: '/web/api/errors', legacyPage: 'errors' },
-  { source: '/web/api/models', legacyPage: 'models' },
-  { source: '/web/api/runs', legacyPage: 'runs' },
-  { source: '/web/api/repos', legacyPage: 'repos' },
-  { source: '/web/api/sandboxes', legacyPage: 'sandboxes' },
-  { source: '/web/api/mcp-servers', legacyPage: 'mcp-servers' },
-  { source: '/web/api/mcp', legacyPage: 'mcp' },
-  { source: '/web/api/working-requests', legacyPage: 'working-requests' },
-  { source: '/web/api/route-families', legacyPage: 'route-families' },
-];
+const legacyApiRedirects = Object.keys(legacyApiPages).map((legacyPage) => ({
+  source: legacyPage === 'index' ? '/web/api' : `/web/api/${legacyPage}`,
+  legacyPage,
+}));
 
 function includeRawMarkdownRedirect({ source, legacyPage }) {
-  const destination = legacyPage
-    ? `/reference/api?legacyApi=${legacyPage}`
-    : '/reference/api';
+  const destination = `/reference/api?legacyApi=${legacyPage}`;
 
   return [
     { source, destination, permanent: true },
