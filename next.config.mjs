@@ -21,6 +21,11 @@ const config = {
         destination: '/mcp',
         permanent: true,
       },
+      {
+        source: '/extend/mcp-server.md',
+        destination: '/mcp.md',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
