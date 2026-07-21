@@ -1,0 +1,864 @@
+---
+title: API Reference
+description: The complete Mogplex v1 REST contract, including authentication, request types, payloads, response envelopes, errors, repositories, agents, models, sandboxes, automations, runs, and MCP transport.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+This page is the complete reference for the versioned Mogplex API.
+
+**Base URL:** `https://www.mogplex.com/api/v1/mogplex`
+
+<Callout type="info">
+  Only routes under `/api/v1/mogplex/*` are part of the public API. Unversioned
+  `/api/*` routes used by the Mogplex web app are internal product surfaces and
+  are not an external compatibility contract.
+</Callout>
+
+## Quickstart
+
+Create a personal access token in **Mogplex → Settings → API Keys**, then set:
+
+```bash
+export MOGPLEX_BASE_URL="https://www.mogplex.com/api/v1/mogplex"
+export MOGPLEX_TOKEN="mog_..."
+```
+
+List repositories to obtain the `repoId` used by runs, sandboxes, and
+automations:
+
+```bash
+curl -sS \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  "$MOGPLEX_BASE_URL/repos?limit=20"
+```
+
+Start an agent run with a unique idempotency key:
+
+```bash
+curl -sS \
+  -X POST \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "repoId": "repo-uuid",
+    "prompt": "Inspect the failing tests and implement the smallest safe fix.",
+    "harness": "codex",
+    "baseBranch": "main",
+    "createBranch": true,
+    "rootDirectory": "apps/web"
+  }' \
+  "$MOGPLEX_BASE_URL/runs"
+```
+
+## Authentication
+
+Send a bearer token on every request:
+
+```http
+Authorization: Bearer mog_...
+```
+
+Personal access tokens use the `mog_` prefix. The plaintext token is shown
+once, then stored by Mogplex as a SHA-256 hash. Revoke or replace a token from
+**Settings → API Keys**.
+
+The MCP transport also accepts OAuth 2.1 access tokens issued through the
+browser consent flow. Use a PAT for direct REST integrations. Use OAuth when
+installing the [Mogplex MCP server](/mcp/install) in a supported local client.
+
+### Scopes
+
+| Scope | Access |
+| --- | --- |
+| `read` | List and inspect repositories, agents, models, sandboxes, automations, runs, events, logs, and external MCP server definitions. |
+| `write` | Create sandboxes, create or change automations, publish and trigger automations, start runs, and cancel runs. |
+
+A valid token without the required scope returns `403 FORBIDDEN`.
+
+### Rate limits
+
+PAT requests are limited to 60 requests per 60 seconds. Run starts also use
+shared user limits: 10 per minute, 30 per hour, and 150 per day. A limited
+response includes `Retry-After`.
+
+## Request conventions
+
+JSON requests must include:
+
+```http
+Content-Type: application/json
+```
+
+`POST /runs` and `POST /automations/{automationId}/trigger` also require:
+
+```http
+Idempotency-Key: <unique value, at most 200 characters>
+```
+
+Reusing the same key with the same logical request returns the original
+result. Reusing it with a different request returns
+`409 IDEMPOTENCY_CONFLICT`.
+
+List limits are clamped to the documented range. Automation pagination uses
+an opaque cursor. Send `nextCursor` unchanged as the next request's `cursor`.
+
+## Response envelopes
+
+Every REST response uses one of these envelopes:
+
+```typescript
+type MogplexApiSuccess<T> = {
+  ok: true;
+  data: T;
+};
+
+type MogplexApiErrorCode =
+  | "BAD_REQUEST"
+  | "CONFLICT"
+  | "FORBIDDEN"
+  | "IDEMPOTENCY_CONFLICT"
+  | "INTERNAL_ERROR"
+  | "NOT_FOUND"
+  | "RATE_LIMITED"
+  | "SERVICE_UNAVAILABLE"
+  | "UNAUTHORIZED";
+
+type MogplexApiError = {
+  ok: false;
+  error: {
+    code: MogplexApiErrorCode;
+    message: string;
+  };
+};
+```
+
+## Endpoint index
+
+| Method | Path | Scope | Purpose |
+| --- | --- | --- | --- |
+| `GET` | [`/repos`](#list-repositories) | `read` | List imported repositories. |
+| `GET` | [`/agents`](#list-agents) | `read` | List owned and preset agents. |
+| `GET` | [`/models`](#list-models) | `read` | List enabled, reachable models. |
+| `GET` | [`/sandboxes`](#list-sandboxes) | `read` | List sandboxes. |
+| `POST` | [`/sandboxes`](#create-or-reuse-a-sandbox) | `write` | Create or reuse a sandbox. |
+| `GET` | [`/sandboxes/{sandboxId}/logs`](#read-sandbox-logs) | `read` | Read sandbox logs and lifecycle events. |
+| `GET` | [`/automations`](#list-automations) | `read` | List cursor-paginated automation summaries. |
+| `POST` | [`/automations`](#create-an-automation) | `write` | Create an automation draft. |
+| `GET` | [`/automations/{automationId}`](#get-an-automation) | `read` | Read one automation with complete graphs. |
+| `PUT` | [`/automations/{automationId}`](#update-an-automation) | `write` | Update metadata or replace the draft graph. |
+| `POST` | [`/automations/{automationId}/publish`](#publish-an-automation) | `write` | Validate and publish the draft. |
+| `PUT` | [`/automations/{automationId}/model`](#set-an-automation-model) | `write` | Set or clear one agent node's model. |
+| `POST` | [`/automations/{automationId}/trigger`](#trigger-an-automation) | `write` | Trigger the published automation. |
+| `GET` | [`/automations/{automationId}/runs`](#list-automation-runs) | `read` | List recent automation runs. |
+| `GET` | [`/automations/{automationId}/runs/{runId}`](#read-automation-run-logs) | `read` | Read detailed automation run logs. |
+| `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex or Claude Code run. |
+| `GET` | [`/runs/{runId}`](#get-a-run) | `read` | Read run state. |
+| `GET` | [`/runs/{runId}/events`](#list-run-events) | `read` | Read structured run events. |
+| `POST` | [`/runs/{runId}/cancel`](#cancel-a-run) | `write` | Cancel an active run. |
+| `GET` | [`/mcp/servers`](#list-configured-external-mcp-servers) | `read` | List configured external MCP servers. |
+| `POST` | [`/mcp`](#mcp-transport) | OAuth or PAT | Use Mogplex through Streamable HTTP MCP. |
+| `OPTIONS` | [`/mcp`](#mcp-transport) | None | Perform an allowed CORS preflight. |
+| `GET` | [`/mcp`](#mcp-transport) | None | Returns `405`; the transport accepts messages over `POST`. |
+
+## Repositories
+
+### List repositories
+
+`GET /repos`
+
+Request query:
+
+```typescript
+type ListReposQuery = {
+  q?: string;       // Case-insensitive substring of owner/repo.
+  limit?: number;   // 1 to 200. Default: 100.
+};
+```
+
+Response payload:
+
+```typescript
+type MogplexApiRepo = {
+  id: string;
+  full_name: string;
+  installation_id: number;
+  default_branch: string | null;
+  root_directory: string | null;
+};
+
+type ListReposData = {
+  repos: MogplexApiRepo[];
+};
+```
+
+Use `id` as `repoId`. Use `installation_id` when creating an automation.
+
+## Agents
+
+### List agents
+
+`GET /agents`
+
+No query or body.
+
+Response payload:
+
+```typescript
+type MogplexApiAgent = {
+  id: string;
+  name: string;
+  slug: string | null;
+  model: string;
+  description: string | null;
+  category: string | null;
+  preset: boolean;
+};
+
+type ListAgentsData = {
+  agents: MogplexApiAgent[];
+};
+```
+
+Preset ids use the `preset:` prefix. Bind an available agent id to an
+automation agent node before publishing.
+
+## Models
+
+### List models
+
+`GET /models`
+
+No query or body.
+
+Response payload:
+
+```typescript
+type MogplexApiModel = {
+  id: string;
+  provider: string;
+  name: string;
+  contextLength: number | null;
+  capabilities: string[];
+  pricing: {
+    input: number | null;
+    output: number | null;
+  };
+};
+
+type ListModelsData = {
+  models: MogplexApiModel[];
+};
+```
+
+The list already applies catalog visibility, the user's enabled-state policy,
+provider keys, and plan-backed managed access.
+
+## Sandboxes
+
+```typescript
+type MogplexApiSandbox = {
+  id: string;
+  sandbox_id: string | null;
+  repo_id: string;
+  status: string;
+  base_branch: string;
+  working_branch: string;
+  root_directory: string | null;
+  preview_url: string | null;
+  created_at: string;
+  last_active_at: string;
+  error: string | null;
+};
+```
+
+Use the Mogplex record `id`, not the provider `sandbox_id`, when requesting
+logs.
+
+### List sandboxes
+
+`GET /sandboxes`
+
+Request query:
+
+```typescript
+type ListSandboxesQuery = {
+  repo_id?: string;
+  status?: string;
+  limit?: number;   // 1 to 200. Default: 100.
+};
+```
+
+Response payload: `{ sandboxes: MogplexApiSandbox[] }`.
+
+### Create or reuse a sandbox
+
+`POST /sandboxes`
+
+Request body:
+
+```typescript
+type CreateSandboxRequest = {
+  repoId: string;
+  baseBranch?: string | null;
+  workingBranch?: string | null;
+  createBranch?: boolean;
+  rootDirectory?: string | null;
+  restoreSnapshotId?: string | null;
+  restoreSnapshotProjectId?: string | null;
+  restoreSnapshotTeamId?: string | null;
+};
+```
+
+Example payload:
+
+```json
+{
+  "repoId": "repo-uuid",
+  "baseBranch": "main",
+  "workingBranch": "agent/update-api-docs",
+  "createBranch": true,
+  "rootDirectory": "apps/web"
+}
+```
+
+The response is `202 Accepted` with
+`{ sandbox: MogplexApiSandbox }`. Branch names must be valid Git refs.
+`rootDirectory` must be a relative path without parent traversal.
+
+### Read sandbox logs
+
+`GET /sandboxes/{sandboxId}/logs`
+
+No query or body.
+
+Response payload:
+
+```typescript
+type SandboxLogsData = {
+  sandbox: MogplexApiSandbox & {
+    install_log: string | null;
+    dev_log: string | null;
+  };
+  lifecycle_events: Array<{
+    id: string;
+    event_type: string;
+    decision_code: string | null;
+    worker_run_id: string | null;
+    payload: Record<string, unknown>;
+    created_at: string;
+  }>;
+};
+```
+
+## Automations
+
+Automation list responses are bounded and graph-free. The item response owns
+the complete draft and published graphs.
+
+### Graph request type
+
+`graph` is always a complete replacement, not a patch:
+
+```typescript
+type FlowNodeType =
+  | "start"
+  | "agent"
+  | "condition"
+  | "parallel"
+  | "join"
+  | "delay"
+  | "await_event"
+  | "set_variable"
+  | "end";
+
+type FlowGraphRequest = {
+  nodes: Array<{
+    id: string;
+    type: FlowNodeType;
+    position: { x: number; y: number };
+    data: Record<string, unknown>;
+  }>;
+  edges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    sourceHandle?: string | null;
+    targetHandle?: string | null;
+  }>;
+  viewport?: {
+    x: number;
+    y: number;
+    zoom: number; // Finite and greater than zero.
+  };
+};
+```
+
+`nodes` and `edges` are required arrays. `null`, strings, partial objects, and
+malformed viewports return `400 BAD_REQUEST` before an existing draft is
+changed. Publishing applies stricter executable-graph validation.
+
+### Automation response types
+
+```typescript
+type MogplexApiAutomationSummary = {
+  id: string;
+  installationId: number;
+  name: string;
+  description: string | null;
+  status: "active" | "inactive";
+  publishedVersionId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type MogplexApiAutomation = {
+  id: string;
+  installationId: number;
+  name: string;
+  description: string | null;
+  notes: string | null;
+  status: "active" | "inactive";
+  draftGraph: FlowGraphRequest;
+  publishedVersion: {
+    id: string;
+    versionNumber: number;
+    graph: FlowGraphRequest;
+    createdAt: string;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+  runSummary: {
+    lastRunId: string | null;
+    lastRunStatus: string | null;
+    runningCount: number;
+    pendingCount: number;
+    failed24h: number;
+  };
+};
+```
+
+### List automations
+
+`GET /automations`
+
+Request query:
+
+```typescript
+type ListAutomationsQuery = {
+  limit?: number;   // 1 to 100. Default: 50.
+  cursor?: string;  // Opaque nextCursor from the previous page.
+};
+```
+
+Response payload:
+
+```typescript
+type ListAutomationsData = {
+  automations: MogplexApiAutomationSummary[];
+  nextCursor: string | null;
+};
+```
+
+### Create an automation
+
+`POST /automations`
+
+Request body:
+
+```typescript
+type CreateAutomationRequest = {
+  installationId: number; // Required positive safe integer.
+  name?: string;
+  description?: string | null;
+  notes?: string | null;
+  graph?: FlowGraphRequest;
+  publish?: boolean;
+};
+```
+
+Example metadata-first payload:
+
+```json
+{
+  "installationId": 12345678,
+  "name": "Review pull requests",
+  "description": "Review new pull requests and report actionable findings.",
+  "publish": false
+}
+```
+
+The response is `201 Created` with
+`{ automation: MogplexApiAutomation }`. When `graph` is omitted, Mogplex
+creates its default draft. Set `publish: true` only when the draft is ready for
+full executable validation.
+
+### Get an automation
+
+`GET /automations/{automationId}`
+
+No query or body. Response payload:
+`{ automation: MogplexApiAutomation }`.
+
+### Update an automation
+
+`PUT /automations/{automationId}`
+
+Request body:
+
+```typescript
+type UpdateAutomationRequest = {
+  name?: string;
+  description?: string | null;
+  notes?: string | null;
+  installationId?: number; // Positive safe integer when present.
+  graph?: FlowGraphRequest; // Complete draft replacement.
+};
+```
+
+Omitted fields remain unchanged. If `graph` is present, Mogplex validates the
+entire graph before calling the draft update service. Response payload:
+`{ automation: MogplexApiAutomation }`.
+
+### Publish an automation
+
+`POST /automations/{automationId}/publish`
+
+No request body. The draft must contain exactly one start node, exactly one end
+node, at least one bound agent node, valid connections and node configuration,
+and available explicit model overrides.
+
+Response payload: `{ automation: MogplexApiAutomation }`.
+
+### Set an automation model
+
+`PUT /automations/{automationId}/model`
+
+Request body:
+
+```typescript
+type SetAutomationModelRequest = {
+  nodeId: string;
+  modelId: string | null; // null clears the override.
+  publish?: boolean;
+};
+```
+
+Example payload:
+
+```json
+{
+  "nodeId": "agent-review",
+  "modelId": "provider/model-id",
+  "publish": false
+}
+```
+
+The node must exist and have type `agent`. A non-null model must appear in
+`GET /models`. Response payload: `{ automation: MogplexApiAutomation }`.
+
+### Trigger an automation
+
+`POST /automations/{automationId}/trigger`
+
+Requires `Idempotency-Key`.
+
+Request body:
+
+```typescript
+type TriggerAutomationRequest = {
+  repoId: string;
+  input?: Record<string, unknown>;
+};
+```
+
+Example payload:
+
+```json
+{
+  "repoId": "repo-uuid",
+  "input": {
+    "pull_request_number": 699
+  }
+}
+```
+
+The automation must be active and published. The repository must belong to
+the same GitHub installation. The response is `202 Accepted`:
+
+```typescript
+type TriggerAutomationData = {
+  run: {
+    automationId: string;
+    jobRunId: string | null;
+    outcome: string;
+    reason: string | null;
+    started: boolean;
+    status: string;
+    runtime: {
+      provider: string | null;
+      runId: string | null;
+    } | null;
+  };
+};
+```
+
+### List automation runs
+
+`GET /automations/{automationId}/runs`
+
+Request query:
+
+```typescript
+type ListAutomationRunsQuery = {
+  limit?: number; // 1 to 50. Default: 20.
+};
+```
+
+Response payload: `{ runs: AutomationRunSummary[] }`. Each record includes the
+job status, repository and agent summary, token and cost totals, latest
+dispatch event, and node-run summaries.
+
+### Read automation run logs
+
+`GET /automations/{automationId}/runs/{runId}`
+
+No query or body. Response payload: `{ run: AutomationRunDetail | null }`.
+The detail includes node runs, dispatch events, AI calls and events, errors,
+usage, and review findings.
+
+## Agent runs
+
+```typescript
+type MogplexApiRunStatus =
+  | "pending"
+  | "streaming"
+  | "success"
+  | "failed"
+  | "cancelled";
+
+type MogplexApiRunDetail = {
+  runId: string;
+  aiCallId: string;
+  sandboxRecordId: string | null;
+  sandboxId: string | null;
+  repoId: string;
+  harness: "codex" | "claude-code";
+  status: MogplexApiRunStatus;
+  branch: {
+    base: string;
+    working: string;
+    createBranch: boolean;
+  };
+  rootDirectory: string | null;
+  eventsUrl: string;
+  cancelUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  error: string | null;
+  runtime: {
+    provider: string | null;
+    runId: string | null;
+  };
+};
+```
+
+### Start a run
+
+`POST /runs`
+
+Requires `Idempotency-Key`.
+
+Request body:
+
+```typescript
+type StartRunRequest = {
+  repoId: string;
+  prompt: string; // At most 100,000 characters.
+  harness?: "codex" | "claude-code"; // Default: codex.
+  baseBranch?: string;
+  workingBranch?: string;
+  createBranch?: boolean;
+  rootDirectory?: string | null;
+  conversationId?: string;
+  workspaceSessionId?: string;
+  mode?: string;
+};
+```
+
+The response is `202 Accepted` with
+`MogplexApiRunDetail & { replayed: boolean }` inside `data`.
+
+When `createBranch` is true and `workingBranch` is omitted, Mogplex creates a
+deterministic branch name from the idempotency key and request. If supplied,
+the working branch must differ from the base branch.
+
+### Get a run
+
+`GET /runs/{runId}`
+
+No query or body. Response payload: `{ run: MogplexApiRunDetail }`.
+
+### List run events
+
+`GET /runs/{runId}/events`
+
+Request query:
+
+```typescript
+type ListRunEventsQuery = {
+  limit?: number; // 1 to 200. Default: 100.
+};
+```
+
+Response payload:
+
+```typescript
+type PresentedAiCallEvent = {
+  id: string;
+  type: string;
+  toolName: string | null;
+  message: string | null;
+  payload: Record<string, unknown>;
+  createdAt: string;
+};
+
+type RunEventsData = {
+  run: MogplexApiRunDetail;
+  events: PresentedAiCallEvent[];
+};
+```
+
+Event payloads are sanitized, sensitive fields are redacted, and oversized
+values are truncated. Use this endpoint for explicit inspection. Do not build
+an interval loop around it; prefer Mogplex's event-driven GitHub, Slack, and
+automation surfaces when another system needs completion signals.
+
+### Cancel a run
+
+`POST /runs/{runId}/cancel`
+
+No request body. Cancellation is idempotent.
+
+Response payload:
+
+```typescript
+type CancelRunData = {
+  run: MogplexApiRunDetail;
+  status: MogplexApiRunStatus;
+  alreadyTerminal: boolean;
+};
+```
+
+## External MCP servers
+
+### List configured external MCP servers
+
+`GET /mcp/servers`
+
+No query or body.
+
+Response payload:
+
+```typescript
+type MogplexApiMcpServer = {
+  name: string;
+  enabled: boolean;
+  config: Record<string, unknown>;
+};
+
+type ListMcpServersData = {
+  servers: MogplexApiMcpServer[];
+};
+```
+
+Common `config` shapes:
+
+```typescript
+type StdioMcpConfig = {
+  command: string;
+  args?: string[];
+  env?: Record<string, string>;
+};
+
+type HttpMcpConfig = {
+  url: string;
+  http_headers?: Record<string, string>;
+};
+```
+
+<Callout type="warn">
+  This response can contain vault-resolved environment values and authorization
+  headers. Treat it like a secret file. Do not log it or expose it in CI output.
+</Callout>
+
+This endpoint lists third-party MCP servers configured in the caller's
+Mogplex account. It is different from the Mogplex MCP transport below.
+
+## MCP transport
+
+`POST /mcp`
+
+The Mogplex MCP server uses stateless Streamable HTTP and JSON-RPC 2.0 at:
+
+```text
+https://www.mogplex.com/api/v1/mogplex/mcp
+```
+
+Use [Install Mogplex MCP](/mcp/install) for client setup and OAuth. Use
+[MCP tools](/mcp/tools) for all 19 tool argument schemas.
+
+Request envelope:
+
+```typescript
+type JsonRpcRequest = {
+  jsonrpc: "2.0";
+  id?: string | number | null;
+  method:
+    | "initialize"
+    | "notifications/initialized"
+    | "ping"
+    | "tools/list"
+    | "tools/call";
+  params?: Record<string, unknown>;
+};
+```
+
+Direct tool-call payload:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 42,
+  "method": "tools/call",
+  "params": {
+    "name": "mogplex_list_automations",
+    "arguments": {
+      "limit": 20
+    }
+  }
+}
+```
+
+Send `Accept: application/json, text/event-stream`. The endpoint also accepts
+`OPTIONS` for CORS preflight. `GET` returns `405 Method Not Allowed`.
+
+## Errors
+
+| Code | HTTP | Meaning | Action |
+| --- | --- | --- | --- |
+| `BAD_REQUEST` | 400 | JSON, query, graph, branch, or field validation failed. | Correct the request before retrying. |
+| `UNAUTHORIZED` | 401 | Bearer token is missing, invalid, expired, revoked, or has the wrong OAuth audience. | Authenticate again or replace the token. |
+| `FORBIDDEN` | 403 | The token lacks the required scope. | Issue a token with the required scope. |
+| `NOT_FOUND` | 404 | The user does not own the requested resource, or it does not exist. | Verify the id using a list endpoint. |
+| `CONFLICT` | 409 | Current resource state prevents the operation. | Read the resource, then decide whether the operation still applies. |
+| `IDEMPOTENCY_CONFLICT` | 409 | The key was already used for a different request. | Use the original body or a new key. |
+| `RATE_LIMITED` | 429 | A PAT or run-start limit was exceeded. | Honor `Retry-After`. |
+| `INTERNAL_ERROR` | 500 | An unexpected server error occurred. | Preserve the request id and report the failure. |
+| `SERVICE_UNAVAILABLE` | 503 | A required runtime or rate-limit service is unavailable. | Honor `Retry-After` when present. |
+
+MCP JSON-RPC errors use protocol codes instead of the REST envelope. The most
+important codes are `-32700` parse error, `-32600` invalid request, `-32601`
+method not found, `-32602` invalid tool arguments, `-32001` unauthorized,
+`-32002` rate limited, and `-32003` forbidden origin.

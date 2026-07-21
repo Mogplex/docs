@@ -147,8 +147,8 @@ let CI scripts distinguish "fix your token" from "wait and retry." See
 The CLI does not surface the raw `Retry-After` response header, so the sleep
 values above are conservative defaults rather than server-directed waits. If
 you call the API directly with `curl`, parse `Retry-After` from the response
-and honor it — see [API → Errors](/web/api/errors) and
-[API → Authentication](/web/api/authentication).
+and honor it — see [API → Errors](/reference/api#errors) and
+[API → Authentication](/reference/api#authentication).
 </Callout>
 
 ## Read-only dashboards
@@ -167,5 +167,5 @@ A read-only PAT hitting `mogplex run` exits with code `65` (forbidden) and a
 ## Read next
 
 - [Headless runs](/cli/automation/headless-runs) — the full command reference
-- [API → Authentication](/web/api/authentication) — PAT scope model and rate limits
-- [API → Errors](/web/api/errors) — error codes and retry guidance
+- [API → Authentication](/reference/api#authentication) — PAT scope model and rate limits
+- [API → Errors](/reference/api#errors) — error codes and retry guidance

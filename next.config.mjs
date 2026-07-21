@@ -6,6 +6,45 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const withMDX = createMDX();
 
+const legacyApiRedirects = [
+  { source: '/web/api', destination: '/reference/api' },
+  { source: '/web/api/quickstart', destination: '/reference/api#quickstart' },
+  {
+    source: '/web/api/authentication',
+    destination: '/reference/api#authentication',
+  },
+  { source: '/web/api/errors', destination: '/reference/api#errors' },
+  { source: '/web/api/models', destination: '/reference/api#models' },
+  { source: '/web/api/runs', destination: '/reference/api#agent-runs' },
+  { source: '/web/api/repos', destination: '/reference/api#repositories' },
+  { source: '/web/api/sandboxes', destination: '/reference/api#sandboxes' },
+  {
+    source: '/web/api/mcp-servers',
+    destination: '/reference/api#external-mcp-servers',
+  },
+  { source: '/web/api/mcp', destination: '/reference/api#mcp-transport' },
+  {
+    source: '/web/api/working-requests',
+    destination: '/reference/api#quickstart',
+  },
+  {
+    source: '/web/api/route-families',
+    destination: '/reference/api#endpoint-index',
+  },
+];
+
+function includeRawMarkdownRedirect({ source, destination }) {
+  const [destinationPath, fragment] = destination.split('#');
+  return [
+    { source, destination, permanent: true },
+    {
+      source: `${source}.md`,
+      destination: `${destinationPath}.md${fragment ? `#${fragment}` : ''}`,
+      permanent: true,
+    },
+  ];
+}
+
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -26,6 +65,7 @@ const config = {
         destination: '/mcp.md',
         permanent: true,
       },
+      ...legacyApiRedirects.flatMap(includeRawMarkdownRedirect),
     ];
   },
   async rewrites() {

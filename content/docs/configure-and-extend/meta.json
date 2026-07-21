@@ -1,20 +1,11 @@
 {
   "title": "Configure & Extend",
+  "root": true,
   "pages": [
     "index",
     "agent-authoring",
     "repo-instructions",
     "custom-slash-commands",
-    "connections-and-mcp",
-    "[Settings](/web/settings)",
-    "[Available Models](/web/models)",
-    "[Plans & Billing](/plans-and-billing)",
-    "[Installations](/web/installations)",
-    "[Skills](/extend/skills)",
-    "[Mogplex MCP](/mcp)",
-    "[Permissions](/cli/concepts/permissions)",
-    "[Approvals](/cli/concepts/approvals)",
-    "[Slash Commands](/cli/commands)",
-    "[Project Commands](/cli/guides/project-commands)"
+    "connections-and-mcp"
   ]
 }

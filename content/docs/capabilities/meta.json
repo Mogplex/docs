@@ -6,12 +6,6 @@
     "agents",
     "routing",
     "review-and-triage",
-    "observability",
-    "---Deep Dives---",
-    "[Agents Reference](/web/agents)",
-    "[Automations](/web/automations)",
-    "[Triggers](/web/triggers)",
-    "[Assignments](/web/assignments)",
-    "[Skills, Rules, and Context](/web/agents/skills-rules-context)"
+    "observability"
   ]
 }

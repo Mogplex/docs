@@ -6,7 +6,7 @@ description: Start, inspect, tail, and cancel cloud runs from the terminal witho
 import { Callout } from 'fumadocs-ui/components/callout';
 
 The `mogplex run` / `mogplex runs` commands cover the full agent-run lifecycle
-from any shell. They wrap the [v1 runs API](/web/api/runs) one-for-one and
+from any shell. They wrap the [v1 runs API](/reference/api#agent-runs) one-for-one and
 add the conveniences you'd want in CI: auto-generated idempotency keys,
 streaming output, and exit-code-mapped errors.
 
@@ -85,7 +85,7 @@ mogplex run --repo $REPO --json "Fix flaky tests"
 ```
 
 Emits one line of JSON — the
-[`StartMogplexApiAgentRunResult`](/web/api/runs#start-a-run) object with
+[`StartMogplexApiAgentRunResult`](/reference/api#start-a-run) object with
 top-level fields like `runId`, `status`, `repoId`, and `branch`. The CLI
 unwraps the REST `{ok, data}` envelope for you, so jq paths are flat:
 
@@ -112,7 +112,7 @@ created 2026-05-17T10:14:00.000Z
 updated 2026-05-17T10:15:30.000Z
 ```
 
-`--json` emits the [`MogplexApiRunDetail`](/web/api/runs#get-a-run) object
+`--json` emits the [`MogplexApiRunDetail`](/reference/api#get-a-run) object
 with flat top-level fields (`runId`, `status`, etc.) — the REST `{ok, data}`
 wrapper is stripped.
 
@@ -159,7 +159,7 @@ error: --follow timed out after 600s waiting for terminal status
 mogplex runs events <run-id> --follow --json
 ```
 
-One [`PresentedAiCallEvent`](/web/api/runs#list-run-events) per line. The
+One [`PresentedAiCallEvent`](/reference/api#list-run-events) per line. The
 final line is `{"runId":"...","status":"success"}`. Perfect for piping into
 `jq`, a structured log shipper, or a CI annotation step.
 
@@ -212,5 +212,5 @@ esac
 ## Read next
 
 - [CI integration](/cli/automation/ci-integration) — GitHub Actions worked example
-- [API → Runs](/web/api/runs) — the REST endpoints this command wraps
-- [API → Errors](/web/api/errors) — error codes mapped to exit codes
+- [API → Runs](/reference/api#agent-runs) — the REST endpoints this command wraps
+- [API → Errors](/reference/api#errors) — error codes mapped to exit codes

@@ -15,7 +15,7 @@ There are three MCP-related surfaces with different directionality:
 | Surface | Direction | Use it for |
 | --- | --- | --- |
 | Connections | Mogplex calls external REST APIs or MCP servers | Give agents tools such as Linear, Supabase, Notion, or Sentry. |
-| [External MCP server catalog API](/web/api/mcp-servers) | CLI or scripts read your configured external MCP servers | Sync cloud MCP definitions into local agent hosts. |
+| [External MCP server catalog API](/reference/api#external-mcp-servers) | CLI or scripts read your configured external MCP servers | Sync cloud MCP definitions into local agent hosts. |
 | [Mogplex MCP endpoint](/mcp) | External MCP clients call Mogplex | Let local agents operate repos, sandboxes, automations, models, runs, and logs. |
 
 When a hosted run cannot call an external tool, debug Connections. When another
@@ -136,6 +136,6 @@ Use `/mcp` in the CLI to inspect MCP state during a session.
 <Cards>
   <Card title="Settings" href="/web/settings" />
   <Card title="Connection Scope and Overrides" href="/web/guides/connection-scope-and-overrides" />
-  <Card title="External MCP server catalog API" href="/web/api/mcp-servers" />
+  <Card title="External MCP server catalog API" href="/reference/api#external-mcp-servers" />
   <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
 </Cards>

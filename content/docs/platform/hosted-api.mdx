@@ -1,77 +1,76 @@
 ---
 title: Hosted API
-description: Understand when to use the Mogplex hosted API for app-backed state, runs, repos, models, MCP, sandboxes, and observability.
+description: Understand when to use the versioned Mogplex API for repositories, agents, models, sandboxes, automations, runs, and MCP.
 ---
 
-The hosted API is the control-plane surface behind the Mogplex app and parts of
-the CLI.
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The hosted API is the versioned external control-plane surface at
+`/api/v1/mogplex/*`.
 
 Use it when another system needs to inspect or drive Mogplex state directly:
-repos, runs, models, MCP servers, sandboxes, settings, and runtime activity.
+repositories, agents, models, sandboxes, automations, runs, events, logs, and
+MCP server definitions.
+
+<Callout type="info">
+  Unversioned `/api/*` routes are private web-app implementation surfaces. Do
+  not build external integrations against them.
+</Callout>
 
 ## Use the API when
 
 - a CI job or internal tool needs to start or inspect runs
-- a dashboard needs repo, run, model, or observability state
-- the CLI needs hosted account state
-- you are debugging current route behavior in the product
-- an adjacent service should behave like the app
+- a dashboard needs repository, run, model, sandbox, or automation state
+- a local agent needs the Mogplex MCP tools
+- the CLI needs versioned hosted account state
+- an adjacent service needs a supported external contract
 
 Prefer the app when a human is configuring account setup, GitHub coverage,
 agents, routing, or sandboxes interactively.
 
-## Product-first route model
+## Public resource model
 
-The hosted API follows product surfaces. It is not documented as a frozen
-long-term public REST platform yet.
-
-That means you should read it from the product outward:
-
-1. identify the surface you are trying to drive
-2. find the route family behind that surface
-3. confirm the auth mode and response envelope
-4. document the routes your own integration depends on
-
-## Route families
+The public API exposes product resources without exposing the browser app's
+private route tree:
 
 | Family | Examples |
 | --- | --- |
-| Identity and settings | `/api/auth/*`, `/api/settings`, `/api/models` |
-| Projects and GitHub state | `/api/repos`, `/api/workspaces`, `/api/github/*` |
-| Reusable behavior | `/api/agents`, `/api/skills`, `/api/rules`, `/api/mcp-servers` |
-| Routing | `/api/triggers`, `/api/assignments`, `/api/flows` |
-| Runtime | `/api/chat`, `/api/commands`, `/api/sandbox`, `/api/observability/*` |
-| v1 public run surface | `/api/v1/mogplex/*` |
+| Discovery | `/repos`, `/agents`, `/models` |
+| Runtime | `/sandboxes`, `/runs`, run events and logs |
+| Automations | `/automations`, publish, model override, trigger, and run logs |
+| MCP | `/mcp/servers` and the OAuth-enabled `/mcp` transport |
 
-For the concrete map, use [Route Families](/web/api/route-families).
+The [API endpoint index](/reference/api#endpoint-index) lists every method and
+scope.
 
 ## Auth model
 
-The same hosted surface can be reached through browser session auth, personal
-access tokens, and internal test auth depending on the route.
+Direct REST integrations use personal access tokens. Supported local MCP
+clients use OAuth 2.1 authorization code with PKCE.
 
 Start with:
 
-- [API Authentication](/web/api/authentication) for PATs, scopes, idempotency,
-  and browser auth behavior
-- [API Errors](/web/api/errors) for envelope shape and retry guidance
-- [Working Requests](/web/api/working-requests) for copyable examples
+- [API Authentication](/reference/api#authentication) for PATs, OAuth, scopes,
+  idempotency, and rate limits
+- [API Errors](/reference/api#errors) for envelope shape and status behavior
+- [API Quickstart](/reference/api#quickstart) for copyable requests
 
 ## Good first calls
 
-- `GET /api/auth/user` to confirm setup state
-- `GET /api/settings` to inspect shared defaults
-- `GET /api/models` to inspect model availability
-- `GET /api/github/installations` to confirm GitHub App coverage
+- `GET /api/v1/mogplex/repos` to discover repository and installation ids
+- `GET /api/v1/mogplex/models` to inspect available models
+- `GET /api/v1/mogplex/automations` to list bounded automation summaries
 - `GET /api/v1/mogplex/mcp/servers` to export CLI-ready MCP definitions
-- `GET /api/observability/stats` to inspect runtime health and usage
+- `POST /api/v1/mogplex/runs` to start headless agent work
 
 ## Read next
 
 <Cards>
-  <Card title="API Quickstart" href="/web/api/quickstart" />
-  <Card title="API Overview" href="/web/api" />
-  <Card title="Authentication" href="/web/api/authentication" />
-  <Card title="Working Requests" href="/web/api/working-requests" />
-  <Card title="Runs API" href="/web/api/runs" />
+  <Card
+    title="API Reference"
+    href="/reference/api"
+    description="Authentication, request types, payloads, responses, errors, and every public endpoint on one page."
+  />
+  <Card title="Mogplex MCP" href="/mcp" />
+  <Card title="Headless Runs" href="/cli/automation/headless-runs" />
 </Cards>
