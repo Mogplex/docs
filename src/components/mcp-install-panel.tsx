@@ -36,12 +36,12 @@ codex mcp login mogplex`,
   {
     id: 'claude-code',
     name: 'Claude Code',
-    description: 'Install Mogplex for your user account and start the browser OAuth flow.',
+    description: 'Install Mogplex, then authenticate from Claude Code with /mcp.',
     action: 'copy' as const,
     actionLabel: 'Copy Claude setup',
     icon: Terminal,
     snippet: `claude mcp add --transport http --scope user mogplex ${MCP_URL}
-claude mcp login mogplex`,
+# Then start Claude Code, run /mcp, select mogplex, and authenticate.`,
     snippetLabel: 'Claude Code terminal setup',
   },
   {

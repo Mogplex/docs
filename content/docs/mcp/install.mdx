@@ -66,13 +66,15 @@ Codex session if it does not immediately show the new tool catalog.
 
 ## Claude Code
 
-Install Mogplex at user scope, then explicitly start OAuth:
+Install Mogplex at user scope:
 
 ```bash
 claude mcp add --transport http --scope user mogplex \
   https://www.mogplex.com/api/v1/mogplex/mcp
-claude mcp login mogplex
 ```
+
+Start Claude Code, run `/mcp`, select `mogplex`, and authenticate. Claude Code
+opens the Mogplex OAuth flow in your browser.
 
 User scope makes the connection available across projects. Replace
 `--scope user` with a narrower scope only when you want the connection limited
