@@ -3,8 +3,12 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
     groups:
+      security-fixes:
+        applies-to: security-updates
+        patterns:
+          - "*"
       dev-deps:
         dependency-type: development
         update-types:
