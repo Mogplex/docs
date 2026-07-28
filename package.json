@@ -31,7 +31,7 @@
     "geist": "^1.7.2",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "lucide-react": "^1.18.0",
-    "next": "16.2.9",
+    "next": "16.2.11",
     "next-themes": "^0.4.6",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -53,9 +53,20 @@
     "eslint-config-next": "16.2.6",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "postcss": "^8.5.15",
+    "postcss": "^8.5.24",
     "tailwindcss": "^4.3.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "sharp@<0.35.0": "^0.35.0",
+      "js-yaml@>=4.0.0 <4.3.0": "^4.3.0",
+      "brace-expansion@<1.1.16": "^1.1.16",
+      "brace-expansion@>=3.0.0 <5.0.8": "^5.0.8",
+      "@babel/core@<=7.29.0": "^7.29.6",
+      "esbuild@>=0.27.3 <0.28.1": "^0.28.1",
+      "postcss@<8.5.10": "^8.5.10"
+    }
   }
 }
