@@ -1,9 +1,9 @@
 ---
 title: MCP tools
-description: Reference the repo, sandbox, automation, model, log, and agent-run tools exposed by the Mogplex MCP endpoint.
+description: Reference the repo, env var, sandbox, automation, model, log, and agent-run tools exposed by the Mogplex MCP endpoint.
 ---
 
-Mogplex exposes 19 user-scoped tools. The client loads their current JSON
+Mogplex exposes 22 user-scoped tools. The client loads their current JSON
 schemas through `tools/list`, validates arguments locally when supported, and
 sends each call to the same service layer used by the v1 API.
 
@@ -21,6 +21,21 @@ sends each call to the same service layer used by the v1 API.
 `mogplex_create_sandbox` consumes the existing launch event stream and returns
 when the launch succeeds or fails. It does not create a separate status-polling
 loop.
+
+## Environment variables
+
+| Tool | Scope | What it does |
+| --- | --- | --- |
+| `mogplex_list_env_vars` | `read` | List env var keys, targets, and types on the repo's linked Vercel project. |
+| `mogplex_set_env_var` | `write` | Create or update an env var by key, optionally scoped to targets. |
+| `mogplex_delete_env_var` | `write` | Delete every entry of an env var key. |
+
+Env var tools operate on the Vercel project resolved for the repo — the same
+project sandboxes pull env vars from. Listing never returns values, so agents
+can reconcile keys without pulling secrets into model context.
+`mogplex_set_env_var` updates every existing entry with the same key, or
+creates one for all targets (`production`, `preview`, `development`) when none
+exists. Running sandboxes pick up changes on restart or resume.
 
 ## Automations
 
