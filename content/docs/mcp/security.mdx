@@ -50,7 +50,7 @@ PAT in the `Authorization: Bearer mog_...` header and protect it like a password
 | Scope | Allowed operations |
 | --- | --- |
 | `read` | List and detail operations for repos, models, automations, runs, sandboxes, and logs. |
-| `write` | Sandbox creation and automation creation, update, publication, model changes, triggers, and run cancellation. |
+| `write` | Sandbox creation; env var creation, update, and deletion on the linked Vercel project; and automation creation, update, publication, model changes, triggers, and run cancellation. |
 
 <Callout type="warn" title="Do not expose PATs">
   Never place a PAT in a prompt, issue, chat transcript, repository, or

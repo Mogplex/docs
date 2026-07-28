@@ -30,12 +30,16 @@ loop.
 | `mogplex_set_env_var` | `write` | Create or update an env var by key, optionally scoped to targets. |
 | `mogplex_delete_env_var` | `write` | Delete every entry of an env var key. |
 
-Env var tools operate on the Vercel project resolved for the repo — the same
-project sandboxes pull env vars from. Listing never returns values, so agents
-can reconcile keys without pulling secrets into model context.
-`mogplex_set_env_var` updates every existing entry with the same key, or
-creates one for all targets (`production`, `preview`, `development`) when none
-exists. Running sandboxes pick up changes on restart or resume.
+Env var tools operate on the Vercel project resolved for the repo. Listing
+never returns values, so agents can reconcile keys without pulling secrets
+into model context. When `target` is omitted, `mogplex_set_env_var` updates
+the value of every existing entry with the same key, or creates one for all
+targets (`production`, `preview`, `development`) when none exists. Passing
+`target` when a key has multiple target-specific entries returns a `CONFLICT`
+error — delete the key and recreate it instead. For repos whose
+[environment sync mode](/integrations/vercel) pulls from the linked Vercel
+project, running sandboxes pick up changes on restart or resume; repos using
+manual variables do not inherit these changes.
 
 ## Automations
 
