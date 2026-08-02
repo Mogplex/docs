@@ -9,7 +9,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 All supported clients use the same remote Streamable HTTP endpoint:
 
 ```text
-https://www.mogplex.com/api/v1/mogplex/mcp
+https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 <McpInstallPanel />
@@ -33,7 +33,7 @@ For manual setup, add this to your Cursor MCP configuration:
 {
   "mcpServers": {
     "mogplex": {
-      "url": "https://www.mogplex.com/api/v1/mogplex/mcp"
+      "url": "https://mogplex.com/api/v1/mogplex/mcp"
     }
   }
 }
@@ -48,8 +48,8 @@ Run the copied setup exactly as shown:
 
 ```bash
 codex mcp add mogplex \
-  --url https://www.mogplex.com/api/v1/mogplex/mcp \
-  --oauth-resource https://www.mogplex.com/api/v1/mogplex/mcp
+  --url https://mogplex.com/api/v1/mogplex/mcp \
+  --oauth-resource https://mogplex.com/api/v1/mogplex/mcp
 codex mcp login mogplex
 ```
 
@@ -57,8 +57,8 @@ The equivalent `~/.codex/config.toml` entry is:
 
 ```toml
 [mcp_servers.mogplex]
-url = "https://www.mogplex.com/api/v1/mogplex/mcp"
-oauth_resource = "https://www.mogplex.com/api/v1/mogplex/mcp"
+url = "https://mogplex.com/api/v1/mogplex/mcp"
+oauth_resource = "https://mogplex.com/api/v1/mogplex/mcp"
 ```
 
 Confirm the saved server with `codex mcp get mogplex`. Restart an already-open
@@ -70,7 +70,7 @@ Install Mogplex at user scope:
 
 ```bash
 claude mcp add --transport http --scope user mogplex \
-  https://www.mogplex.com/api/v1/mogplex/mcp
+  https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 Start Claude Code, run `/mcp`, select `mogplex`, and authenticate. Claude Code
@@ -92,7 +92,7 @@ Add the copied entry to your `opencode.json`:
   "mcp": {
     "mogplex": {
       "type": "remote",
-      "url": "https://www.mogplex.com/api/v1/mogplex/mcp",
+      "url": "https://mogplex.com/api/v1/mogplex/mcp",
       "enabled": true
     }
   }
@@ -117,7 +117,7 @@ Mogplex account you want the agent to use, review the request, and choose
 **Allow access**.
 
 Mogplex binds the token to the exact endpoint URL. Keep both the server URL and
-OAuth resource on the `https://www.mogplex.com` origin shown above.
+OAuth resource on the `https://mogplex.com` origin shown above.
 
 ## Personal access token fallback
 

@@ -6,7 +6,7 @@ description: Fix Mogplex MCP installation, OAuth, tool discovery, authorization,
 Start by confirming that the client is configured with this exact endpoint:
 
 ```text
-https://www.mogplex.com/api/v1/mogplex/mcp
+https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 ## Common symptoms
@@ -14,7 +14,7 @@ https://www.mogplex.com/api/v1/mogplex/mcp
 | Symptom | What to check |
 | --- | --- |
 | Browser login succeeds but tools are missing | Restart the agent session so it reloads the server catalog through `tools/list`. |
-| The client repeatedly requests authentication | Confirm both the server URL and explicit OAuth resource use the exact `www.mogplex.com` endpoint above. |
+| The client repeatedly requests authentication | Confirm both the server URL and explicit OAuth resource use the exact `mogplex.com` endpoint above. |
 | `401 Unauthorized` | Re-run client login. The token may be expired, revoked, issued to an unapproved client, or minted for the wrong resource. |
 | `403 Forbidden` with a PAT | Reissue the PAT with `write` when the requested tool mutates state. |
 | Automation update returns `BAD_REQUEST` | Send a complete graph with `nodes`, `edges`, and an optional valid `viewport`. |
@@ -55,7 +55,7 @@ curl -sS \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize"}' \
-  https://www.mogplex.com/api/v1/mogplex/mcp
+  https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 Do not paste the token or command output into a public issue. The

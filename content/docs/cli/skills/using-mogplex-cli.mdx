@@ -32,7 +32,7 @@ Confirm the CLI is installed before recommending it:
 command -v mogplex >/dev/null 2>&1 || { echo "mogplex CLI not installed" >&2; exit 1; }
 ```
 
-The `exit 1` matters: skill-aware hosts gate on the exit code, so a missing binary must fail the preflight rather than silently passing. If it's missing, point the user at [Installation](https://www.mogplex.com/cli/installation).
+The `exit 1` matters: skill-aware hosts gate on the exit code, so a missing binary must fail the preflight rather than silently passing. If it's missing, point the user at [Installation](https://mogplex.com/cli/installation).
 
 You **cannot** check auth state from outside the cockpit — there is no `mogplex login status` subcommand. Tell the user that the cockpit will surface the login screen on first launch if no credential is stored.
 
@@ -41,7 +41,7 @@ You **cannot** check auth state from outside the cockpit — there is no `mogple
 | Intent | What to tell the user |
 | --- | --- |
 | Start a run | Launch `mogplex`, then type `/run <task>` in the composer. |
-| Attach to an in-flight run | `mogplex --attach <runId>` — see [Attach](https://www.mogplex.com/cli/concepts/attach). |
+| Attach to an in-flight run | `mogplex --attach <runId>` — see [Attach](https://mogplex.com/cli/concepts/attach). |
 | Switch models | Type `/model` in the composer to open the Model Picker drawer. |
 | Approve / reject pending tool calls | The Approval drawer surfaces them automatically; the user clicks Approve or Reject. |
 | Switch permission modes | Type `/permissions auto` or `/permissions approval` in the composer. |
@@ -49,7 +49,7 @@ You **cannot** check auth state from outside the cockpit — there is no `mogple
 | Export the run | Type `/export` to open the Run Export drawer. |
 | Quit | Type `/quit`, or double-tap Ctrl+C within 1500ms. |
 
-For the full slash list see [Commands](https://www.mogplex.com/cli/commands).
+For the full slash list see [Commands](https://mogplex.com/cli/commands).
 
 ### Decision flow
 
@@ -83,8 +83,8 @@ is it a config / file change?
 ### What you **can** do
 
 - Author `AGENTS.md` at the repo root with stable repo guidance (build commands, conventions, layout).
-- Author `~/.mogplex/projects/<repo-slug>/permissions.json` with `allow` / `deny` / `ask` rules — see [Permissions](https://www.mogplex.com/cli/concepts/permissions) for the schema.
-- Recommend env-var escape hatches (`MOGPLEX_TRANSPORT`, `MOGPLEX_ATTACH_RUN_ID`) only when they fit CI, attach, or development workflows — see [Configuration and Flags](https://www.mogplex.com/cli/guides/configuration-and-flags).
+- Author `~/.mogplex/projects/<repo-slug>/permissions.json` with `allow` / `deny` / `ask` rules — see [Permissions](https://mogplex.com/cli/concepts/permissions) for the schema.
+- Recommend env-var escape hatches (`MOGPLEX_TRANSPORT`, `MOGPLEX_ATTACH_RUN_ID`) only when they fit CI, attach, or development workflows — see [Configuration and Flags](https://mogplex.com/cli/guides/configuration-and-flags).
 
 ### Safety
 

@@ -13,7 +13,7 @@ a workflow.
 ## Prereqs
 
 1. A PAT with the `write` scope, issued at
-   [mogplex.com/settings/api-keys](https://www.mogplex.com/settings/api-keys).
+   [mogplex.com/settings/api-keys](https://mogplex.com/settings/api-keys).
 2. Store the token in your CI's secret store. Never commit it.
 3. Pick the repo ID(s) you want to operate on:
    ```bash
@@ -116,7 +116,7 @@ Three secrets matter for typical CI use:
 PATs are bearer tokens with no audience check. Don't reuse the same token
 across CI for unrelated projects — issue one per project so a leak from one
 repo doesn't compromise the others. Revoke compromised tokens at
-[settings/api-keys](https://www.mogplex.com/settings/api-keys).
+[settings/api-keys](https://mogplex.com/settings/api-keys).
 </Callout>
 
 ## Retry pattern for transient failures
