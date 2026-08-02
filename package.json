@@ -1,6 +1,7 @@
 {
   "name": "mogplex-docs",
   "version": "0.0.0",
+  "license": "MIT",
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
