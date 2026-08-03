@@ -33,9 +33,9 @@ This is a Next.js documentation site using [Fumadocs](https://fumadocs.vercel.ap
 | Directory | Description |
 |-----------|-------------|
 | `content/` | MDX documentation files |
-| `app/` | Next.js app router pages |
-| `components/` | React components |
-| `lib/` | Utilities and source configuration |
+| `src/app/` | Next.js app router pages |
+| `src/components/` | React components |
+| `src/lib/` | Utilities and source configuration |
 | `scripts/` | Build and generation scripts |
 | `tests/` | Test files |
 
