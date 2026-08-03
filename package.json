@@ -23,7 +23,7 @@
     "@ai-sdk/react": "^3.0.206",
     "@openrouter/ai-sdk-provider": "^2.9.1",
     "@radix-ui/react-presence": "^1.1.10",
-    "ai": "^6.0.204",
+    "ai": "^6.0.240",
     "class-variance-authority": "^0.7.1",
     "flexsearch": "^0.8.212",
     "fumadocs-core": "16.14.0",
