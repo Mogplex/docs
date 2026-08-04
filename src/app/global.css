@@ -554,7 +554,7 @@ html > body[data-scroll-locked] {
   gap: 10px !important;
   border: 1px solid var(--border-strong) !important;
   border-radius: 6px !important;
-  background: var(--accent-softer) !important;
+  background: var(--bg-surface) !important;
   color: var(--text-secondary) !important;
   font-family: var(--font-mono) !important;
   font-size: 11.5px !important;
