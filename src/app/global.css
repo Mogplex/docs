@@ -2,15 +2,14 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
-/* Mogplex blueprint docs shell, aligned with the warm-paper product brand. */
+/* Mogplex docs shell, aligned with the current site theme
+   (mogplex/app/globals.css): monochrome near-black dark by default,
+   warm-paper light, Geist sans/mono, dashed hairline rails, dot grid. */
 
 /* MCP installation is a first-class docs action, not a generic card grid. */
 
-:root,
-.light {
-  color-scheme: light;
-
-  --font-sans: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+:root {
+  --font-sans: var(--font-geist-sans), 'Geist', ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), 'Geist Mono', ui-monospace, 'SFMono-Regular',
     Menlo, Monaco, Consolas, monospace;
 
@@ -18,65 +17,83 @@
   --docs-sidebar-width: 300px;
   --docs-toc-width: 220px;
 
-  --bg-canvas: oklch(95.7% 0.012 84);
-  --bg-surface: oklch(99.2% 0.006 84);
-  --bg-surface-2: oklch(97.2% 0.012 84);
-  --bg-hover: oklch(94.5% 0.018 84);
-  --bg-hover-soft: oklch(98% 0.009 84);
-  --bg-overlay: oklch(18% 0.012 64 / 42%);
-  --bg-inverse: oklch(18% 0.012 64);
-  --bg-inverse-hover: oklch(23% 0.014 64);
-  --topbar-bg: oklch(95.7% 0.012 84 / 92%);
-  --code-bg: oklch(98.4% 0.009 84);
-
-  --border-subtle: oklch(90.5% 0.018 84);
-  --border-default: oklch(86.5% 0.022 84);
-  --border-strong: oklch(80.5% 0.027 84);
-
-  --text-primary: oklch(18% 0.012 64);
-  --text-body: oklch(36% 0.018 64);
-  --text-secondary: oklch(48% 0.018 64);
-  --text-tertiary: oklch(59% 0.015 64);
-  --text-inverse: oklch(98% 0.006 84);
-
-  --accent: #ff4b00;
-  --accent-hover: #e64300;
-  --accent-soft: color-mix(in oklch, var(--accent) 10%, var(--bg-surface));
-  --accent-softer: color-mix(in oklch, var(--accent) 5%, var(--bg-surface));
-  --accent-underline: color-mix(in oklch, var(--accent) 42%, transparent);
-  --focus-ring: color-mix(in oklch, var(--accent) 48%, transparent);
+  --gradient: linear-gradient(95deg, #9aa3ff 0%, #c9a0ff 35%, #d6a4ff 55%, #ffa5d8 95%);
 }
 
+:root,
 .dark {
   color-scheme: dark;
 
-  --bg-canvas: oklch(12.5% 0.006 84);
-  --bg-surface: oklch(12.5% 0.006 84);
-  --bg-surface-2: oklch(17% 0.009 84);
-  --bg-hover: oklch(19% 0.012 84);
-  --bg-hover-soft: oklch(15.5% 0.009 84);
-  --bg-overlay: oklch(5% 0.006 84 / 72%);
-  --bg-inverse: oklch(92% 0.009 84);
-  --bg-inverse-hover: oklch(98% 0.006 84);
-  --topbar-bg: oklch(12.5% 0.006 84 / 92%);
-  --code-bg: oklch(15.5% 0.008 84);
+  --bg-canvas: #050505;
+  --bg-surface: #0a0a0a;
+  --bg-surface-2: #141414;
+  --bg-hover: rgba(255, 255, 255, 0.06);
+  --bg-hover-soft: rgba(255, 255, 255, 0.03);
+  --bg-overlay: rgba(5, 5, 5, 0.72);
+  --bg-inverse: #f5f5f5;
+  --bg-inverse-hover: #ffffff;
+  --topbar-bg: rgba(10, 10, 10, 0.7);
+  --code-bg: #101010;
 
-  --border-subtle: oklch(21% 0.009 84);
-  --border-default: oklch(25% 0.011 84);
-  --border-strong: oklch(31% 0.013 84);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --grid-line: hsl(0 0% 98% / 0.16);
+  --grid-dot: hsl(0 0% 98% / 0.04);
 
-  --text-primary: oklch(94% 0.005 84);
-  --text-body: oklch(76% 0.009 84);
-  --text-secondary: oklch(66% 0.01 84);
-  --text-tertiary: oklch(53% 0.01 84);
-  --text-inverse: oklch(17% 0.008 84);
+  --text-primary: #f5f5f5;
+  --text-body: #d4d4d4;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #6b6b6b;
+  --text-inverse: #0a0a0a;
 
-  --accent: #ff6a2c;
-  --accent-hover: #ff8655;
-  --accent-soft: color-mix(in oklch, var(--accent) 13%, var(--bg-surface));
-  --accent-softer: color-mix(in oklch, var(--accent) 7%, var(--bg-surface));
-  --accent-underline: color-mix(in oklch, var(--accent) 48%, transparent);
-  --focus-ring: color-mix(in oklch, var(--accent) 56%, transparent);
+  --accent: #f5f5f5;
+  --accent-hover: #ffffff;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --accent-softer: rgba(255, 255, 255, 0.03);
+  --accent-underline: rgba(255, 255, 255, 0.35);
+  --focus-ring: rgba(255, 255, 255, 0.6);
+
+  --selection-bg: rgba(255, 255, 255, 0.18);
+  --selection-fg: #ffffff;
+}
+
+/* Light theme matches the site's warm-paper light mode. */
+.light {
+  color-scheme: light;
+
+  --bg-canvas: #f6f5f1;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #f1efe8;
+  --bg-hover: rgba(23, 23, 23, 0.06);
+  --bg-hover-soft: rgba(23, 23, 23, 0.03);
+  --bg-overlay: rgba(23, 23, 23, 0.42);
+  --bg-inverse: #171717;
+  --bg-inverse-hover: #262626;
+  --topbar-bg: rgba(246, 245, 241, 0.85);
+  --code-bg: #faf9f5;
+
+  --border-subtle: #ebe7dd;
+  --border-default: #ddd7ca;
+  --border-strong: #c9c2b2;
+  --grid-line: #ccc5b5;
+  --grid-dot: #ddd7ca;
+
+  --text-primary: #171717;
+  --text-body: #3f3c37;
+  --text-secondary: #57534e;
+  --text-tertiary: #78716c;
+  --text-inverse: #fafaf9;
+
+  --accent: #171717;
+  --accent-hover: #262626;
+  --accent-soft: rgba(23, 23, 23, 0.07);
+  --accent-softer: rgba(23, 23, 23, 0.035);
+  --accent-underline: rgba(23, 23, 23, 0.35);
+  --focus-ring: rgba(23, 23, 23, 0.5);
+
+  --selection-bg: rgba(23, 23, 23, 0.85);
+  --selection-fg: #fafaf9;
 }
 
 :root,
@@ -119,10 +136,11 @@ body {
   font-size: 13px;
   font-kerning: normal;
   font-optical-sizing: auto;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  background-image: radial-gradient(var(--border-subtle) 0.7px, transparent 0.7px);
-  background-size: 18px 18px;
+  text-rendering: geometricPrecision;
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+  background-size: 36px 36px;
 }
 
 html.docs-nav-open,
@@ -136,8 +154,8 @@ html > body[data-scroll-locked] {
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--text-inverse);
+  background: var(--selection-bg);
+  color: var(--selection-fg);
 }
 
 :focus-visible {
@@ -150,7 +168,7 @@ html > body[data-scroll-locked] {
   margin: 28px 0 36px;
   padding: 24px;
   border: 1px solid var(--border-strong);
-  border-radius: 18px;
+  border-radius: 10px;
   background: var(--bg-surface-2);
 }
 
@@ -162,10 +180,13 @@ html > body[data-scroll-locked] {
 
 .mcp-install-panel-heading .mcp-install-eyebrow {
   margin: 0 0 6px !important;
-  color: var(--accent) !important;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
   font-family: var(--font-mono);
   font-size: 0.6875rem !important;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.4 !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -199,7 +220,7 @@ html > body[data-scroll-locked] {
   flex-direction: column;
   padding: 18px;
   border: 1px solid var(--border-default);
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--bg-surface);
 }
 
@@ -217,7 +238,7 @@ html > body[data-scroll-locked] {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-default);
-  border-radius: 9px;
+  border-radius: 6px;
   background: var(--accent-softer);
   color: var(--accent);
 }
@@ -247,7 +268,7 @@ html > body[data-scroll-locked] {
   padding: 13px 14px;
   overflow: auto;
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--code-bg);
   color: var(--text-body);
   font-family: var(--font-mono);
@@ -285,7 +306,7 @@ html > body[data-scroll-locked] {
   gap: 7px;
   padding: 8px 12px;
   border: 1px solid var(--text-primary);
-  border-radius: 9px;
+  border-radius: 6px;
   background: var(--text-primary);
   color: var(--bg-surface) !important;
   font-family: inherit;
@@ -301,8 +322,8 @@ html > body[data-scroll-locked] {
 }
 
 .mcp-install-panel .mcp-install-action:hover {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--bg-inverse-hover);
+  background: var(--bg-inverse-hover);
   color: var(--text-inverse) !important;
   transform: translateY(-1px);
 }
@@ -319,7 +340,7 @@ html > body[data-scroll-locked] {
 @media (max-width: 760px) {
   .mcp-install-panel {
     padding: 18px;
-    border-radius: 14px;
+    border-radius: 10px;
   }
 
   .mcp-install-card pre {
@@ -336,7 +357,9 @@ html > body[data-scroll-locked] {
   height: var(--docs-header-height);
   padding: 0 24px;
   border: 0;
-  background: var(--bg-surface);
+  border-bottom: 1px dashed var(--grid-line);
+  background: var(--topbar-bg);
+  backdrop-filter: blur(14px);
 }
 
 .docs-header[data-transparent='true'] {
@@ -429,10 +452,10 @@ html > body[data-scroll-locked] {
   z-index: 80;
   width: 196px;
   padding: 6px;
-  border: 1px solid var(--border-default);
-  border-radius: 12px;
-  background: var(--bg-surface);
-  box-shadow: 0 18px 48px -18px oklch(5% 0.006 305 / 35%);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg-surface-2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 }
 
 .docs-header-popover[hidden] {
@@ -527,17 +550,21 @@ html > body[data-scroll-locked] {
   padding: 0 14px !important;
   gap: 10px !important;
   border: 1px solid var(--border-strong) !important;
-  border-radius: 999px !important;
-  background: transparent !important;
-  color: var(--text-tertiary) !important;
-  font-size: 14px !important;
+  border-radius: 6px !important;
+  background: var(--accent-softer) !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11.5px !important;
   font-weight: 400 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   line-height: 1 !important;
 }
 
 .docs-search-trigger-full:hover {
   border-color: var(--text-tertiary) !important;
-  color: var(--text-secondary) !important;
+  background: var(--bg-hover-soft) !important;
+  color: var(--text-primary) !important;
 }
 
 .docs-search-trigger-full > svg {
@@ -567,15 +594,18 @@ html > body[data-scroll-locked] {
   align-items: center;
   height: 36px;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--bg-inverse);
   color: var(--text-inverse);
-  transition: background-color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
 }
 
 .docs-dashboard-group:hover,
 .docs-dashboard-group:focus-within {
   background: var(--bg-inverse-hover);
+  transform: translateY(-1px);
 }
 
 .docs-dashboard-link {
@@ -651,7 +681,7 @@ html > body[data-scroll-locked] {
 }
 
 #nd-sidebar {
-  border-inline-end: 0 !important;
+  border-inline-end: 1px dashed var(--grid-line) !important;
 }
 
 #nd-sidebar > :first-child {
@@ -676,7 +706,7 @@ html > body[data-scroll-locked] {
   min-height: 30px;
   padding-block: 6px !important;
   padding-inline-end: 10px !important;
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
@@ -707,12 +737,15 @@ html > body[data-scroll-locked] {
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] p {
-  margin-top: 22px;
-  margin-bottom: 2px;
+  margin-top: 26px;
+  margin-bottom: 4px;
   padding-block: 6px;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 500;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   line-height: 1.43;
 }
 
@@ -761,10 +794,13 @@ html > body[data-scroll-locked] {
 
 .docs-breadcrumb {
   gap: 6px !important;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   color: var(--text-tertiary) !important;
-  font-size: 13px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
   font-weight: 400 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   line-height: 16px !important;
 }
 
@@ -883,7 +919,8 @@ html > body[data-scroll-locked] {
 
 .docs-body :where(hr) {
   margin: 36px 0 !important;
-  border-color: var(--border-default) !important;
+  border: 0 !important;
+  border-top: 1px dashed var(--grid-line) !important;
 }
 
 .docs-body :where(blockquote) {
@@ -895,12 +932,14 @@ html > body[data-scroll-locked] {
 }
 
 .docs-body :where(code):not(:where(pre code, [class~='not-prose'] *)) {
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-  color: var(--accent) !important;
+  padding: 1px 5px !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: 4px;
+  background: var(--accent-softer) !important;
+  color: var(--text-primary) !important;
   font-family: var(--font-mono);
-  font-size: 0.875em;
+  font-size: 0.8125em;
+  letter-spacing: 0;
   font-variant-ligatures: none;
 }
 
@@ -910,7 +949,7 @@ html > body[data-scroll-locked] {
   margin: 24px 0 !important;
   overflow: hidden;
   border: 1px solid var(--border-strong) !important;
-  border-radius: 12px;
+  border-radius: 8px;
   border-collapse: separate !important;
   border-spacing: 0;
   background: var(--bg-surface) !important;
@@ -941,8 +980,8 @@ html > body[data-scroll-locked] {
 #nd-page [data-card='true'] {
   padding: 18px;
   border: 1px solid var(--border-strong) !important;
-  border-radius: 14px !important;
-  background: var(--bg-surface) !important;
+  border-radius: 8px !important;
+  background: var(--accent-softer) !important;
   box-shadow: none !important;
   transition:
     border-color 150ms ease,
@@ -977,24 +1016,24 @@ html > body[data-scroll-locked] {
 
 #nd-page [role='alert'] {
   padding: 18px 20px;
-  border: 1px solid var(--border-default) !important;
-  border-radius: 16px !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 8px !important;
   background: var(--accent-softer) !important;
   color: var(--text-body);
   box-shadow: none !important;
 }
 
 #nd-page [role='alert'] svg {
-  color: var(--accent) !important;
+  color: var(--text-primary) !important;
 }
 
 #nd-page [style*='--callout-color'] {
-  --callout-color: var(--accent) !important;
+  --callout-color: var(--text-primary) !important;
   gap: 14px !important;
   margin: 22px 0 !important;
   padding: 18px 20px !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: 16px !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 8px !important;
   background: var(--accent-softer) !important;
   color: var(--text-body) !important;
   box-shadow: none !important;
@@ -1013,15 +1052,20 @@ html > body[data-scroll-locked] {
   opacity: 1;
 }
 
-/* Code keeps Mogplex's existing Shiki token themes; only its frame follows the reference. */
+/* Code keeps Mogplex's existing Shiki token themes; the frame follows the
+   landing terminal: hairline border, small radius, inset top highlight. */
 #nd-page figure.shiki {
   margin: 20px 0 !important;
   border: 1px solid var(--border-default) !important;
-  border-radius: 12px !important;
+  border-radius: 8px !important;
   background: var(--code-bg) !important;
-  box-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
   font-family: var(--font-mono) !important;
   font-variant-ligatures: none;
+}
+
+.light #nd-page figure.shiki {
+  box-shadow: none !important;
 }
 
 #nd-page figure.shiki [role='region'] {
@@ -1077,9 +1121,12 @@ html > body[data-scroll-locked] {
 #nd-toc #toc-title {
   gap: 0;
   margin-bottom: 10px;
-  color: var(--text-primary) !important;
-  font-size: 12px;
-  font-weight: 600;
+  color: var(--text-tertiary) !important;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   line-height: 15px;
 }
 
@@ -1138,14 +1185,14 @@ html > body[data-scroll-locked] {
   gap: 6px;
   margin-top: 18px;
   padding-top: 14px;
-  border-top: 1px solid var(--border-default);
+  border-top: 1px dashed var(--grid-line);
 }
 
 .docs-toc-actions button,
 .docs-toc-actions a {
   min-height: 30px;
   border-color: var(--border-default) !important;
-  border-radius: 7px !important;
+  border-radius: 6px !important;
   background: transparent !important;
   color: var(--text-secondary) !important;
   font-size: 12px !important;
@@ -1174,7 +1221,7 @@ html > body[data-scroll-locked] {
   gap: 20px 32px;
   margin-top: 64px;
   padding-top: 22px;
-  border-top: 1px solid var(--border-default);
+  border-top: 1px dashed var(--grid-line);
   color: var(--text-tertiary);
 }
 
@@ -1241,7 +1288,7 @@ html > body[data-scroll-locked] {
   top: clamp(48px, 13vh, 162px) !important;
   width: min(1000px, calc(100% - 32px)) !important;
   max-width: none !important;
-  border-radius: 12px !important;
+  border-radius: 8px !important;
   background: var(--topbar-bg) !important;
   color: var(--text-primary) !important;
   box-shadow: 0 25px 50px -12px oklch(5% 0.006 305 / 24%) !important;
