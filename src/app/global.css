@@ -2,7 +2,7 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
-/* Blackbox-inspired docs shell, retaining Mogplex brand color and code tokens. */
+/* Mogplex blueprint docs shell, aligned with the warm-paper product brand. */
 
 /* MCP installation is a first-class docs action, not a generic card grid. */
 
@@ -18,29 +18,29 @@
   --docs-sidebar-width: 300px;
   --docs-toc-width: 220px;
 
-  --bg-canvas: oklch(99.4% 0.003 305);
-  --bg-surface: oklch(99.4% 0.003 305);
-  --bg-surface-2: oklch(97.8% 0.004 305);
-  --bg-hover: oklch(96% 0.006 305);
-  --bg-hover-soft: oklch(98.5% 0.004 305);
-  --bg-overlay: oklch(18% 0.008 305 / 42%);
-  --bg-inverse: oklch(17% 0.008 305);
-  --bg-inverse-hover: oklch(23% 0.012 305);
-  --topbar-bg: oklch(99.4% 0.003 305 / 92%);
-  --code-bg: oklch(98.8% 0.003 305);
+  --bg-canvas: oklch(95.7% 0.012 84);
+  --bg-surface: oklch(99.2% 0.006 84);
+  --bg-surface-2: oklch(97.2% 0.012 84);
+  --bg-hover: oklch(94.5% 0.018 84);
+  --bg-hover-soft: oklch(98% 0.009 84);
+  --bg-overlay: oklch(18% 0.012 64 / 42%);
+  --bg-inverse: oklch(18% 0.012 64);
+  --bg-inverse-hover: oklch(23% 0.014 64);
+  --topbar-bg: oklch(95.7% 0.012 84 / 92%);
+  --code-bg: oklch(98.4% 0.009 84);
 
-  --border-subtle: oklch(93.5% 0.006 305);
-  --border-default: oklch(90.5% 0.008 305);
-  --border-strong: oklch(86.5% 0.01 305);
+  --border-subtle: oklch(90.5% 0.018 84);
+  --border-default: oklch(86.5% 0.022 84);
+  --border-strong: oklch(80.5% 0.027 84);
 
-  --text-primary: oklch(18% 0.009 305);
-  --text-body: oklch(42% 0.012 305);
-  --text-secondary: oklch(52% 0.011 305);
-  --text-tertiary: oklch(63% 0.009 305);
-  --text-inverse: oklch(98% 0.003 305);
+  --text-primary: oklch(18% 0.012 64);
+  --text-body: oklch(36% 0.018 64);
+  --text-secondary: oklch(48% 0.018 64);
+  --text-tertiary: oklch(59% 0.015 64);
+  --text-inverse: oklch(98% 0.006 84);
 
-  --accent: #7d3fa2;
-  --accent-hover: #6c328f;
+  --accent: #ff4b00;
+  --accent-hover: #e64300;
   --accent-soft: color-mix(in oklch, var(--accent) 10%, var(--bg-surface));
   --accent-softer: color-mix(in oklch, var(--accent) 5%, var(--bg-surface));
   --accent-underline: color-mix(in oklch, var(--accent) 42%, transparent);
@@ -50,29 +50,29 @@
 .dark {
   color-scheme: dark;
 
-  --bg-canvas: oklch(12.5% 0.007 305);
-  --bg-surface: oklch(12.5% 0.007 305);
-  --bg-surface-2: oklch(17% 0.009 305);
-  --bg-hover: oklch(19% 0.011 305);
-  --bg-hover-soft: oklch(15.5% 0.009 305);
-  --bg-overlay: oklch(5% 0.006 305 / 72%);
-  --bg-inverse: oklch(92% 0.005 305);
-  --bg-inverse-hover: oklch(98% 0.003 305);
-  --topbar-bg: oklch(12.5% 0.007 305 / 92%);
-  --code-bg: oklch(15.5% 0.008 305);
+  --bg-canvas: oklch(12.5% 0.006 84);
+  --bg-surface: oklch(12.5% 0.006 84);
+  --bg-surface-2: oklch(17% 0.009 84);
+  --bg-hover: oklch(19% 0.012 84);
+  --bg-hover-soft: oklch(15.5% 0.009 84);
+  --bg-overlay: oklch(5% 0.006 84 / 72%);
+  --bg-inverse: oklch(92% 0.009 84);
+  --bg-inverse-hover: oklch(98% 0.006 84);
+  --topbar-bg: oklch(12.5% 0.006 84 / 92%);
+  --code-bg: oklch(15.5% 0.008 84);
 
-  --border-subtle: oklch(21% 0.009 305);
-  --border-default: oklch(25% 0.011 305);
-  --border-strong: oklch(31% 0.013 305);
+  --border-subtle: oklch(21% 0.009 84);
+  --border-default: oklch(25% 0.011 84);
+  --border-strong: oklch(31% 0.013 84);
 
-  --text-primary: oklch(94% 0.005 305);
-  --text-body: oklch(76% 0.009 305);
-  --text-secondary: oklch(66% 0.01 305);
-  --text-tertiary: oklch(53% 0.01 305);
-  --text-inverse: oklch(17% 0.008 305);
+  --text-primary: oklch(94% 0.005 84);
+  --text-body: oklch(76% 0.009 84);
+  --text-secondary: oklch(66% 0.01 84);
+  --text-tertiary: oklch(53% 0.01 84);
+  --text-inverse: oklch(17% 0.008 84);
 
-  --accent: #af71d2;
-  --accent-hover: #c38be0;
+  --accent: #ff6a2c;
+  --accent-hover: #ff8655;
   --accent-soft: color-mix(in oklch, var(--accent) 13%, var(--bg-surface));
   --accent-softer: color-mix(in oklch, var(--accent) 7%, var(--bg-surface));
   --accent-underline: color-mix(in oklch, var(--accent) 48%, transparent);
@@ -121,6 +121,8 @@ body {
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  background-image: radial-gradient(var(--border-subtle) 0.7px, transparent 0.7px);
+  background-size: 18px 18px;
 }
 
 html.docs-nav-open,
@@ -362,7 +364,7 @@ html > body[data-scroll-locked] {
 
 .mogplex-wordmark {
   display: block;
-  width: 98px;
+  width: 120px;
   height: 19px;
   background: currentColor;
   mask: url('/mogplex-logo.svg') center / contain no-repeat;
@@ -1192,7 +1194,7 @@ html > body[data-scroll-locked] {
 }
 
 .docs-site-footer-brand .mogplex-wordmark {
-  width: 82px;
+  width: 101px;
   height: 16px;
 }
 
