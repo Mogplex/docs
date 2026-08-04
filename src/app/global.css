@@ -367,9 +367,7 @@ html > body[data-scroll-locked] {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 1920px;
   height: 100%;
-  margin-inline: auto;
 }
 
 .docs-header-brand {
