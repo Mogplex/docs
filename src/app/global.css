@@ -2,98 +2,97 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
-/* Mogplex docs shell, aligned with the current site theme
-   (mogplex/app/globals.css): monochrome near-black dark by default,
-   warm-paper light, Geist sans/mono, dashed hairline rails, dot grid. */
+/* Mogplex docs shell, aligned with the marketing site theme
+   (mogplex/components/marketing/landing-v2.css): warm-paper light,
+   warm near-black dark, orange accent, Inter Tight + IBM Plex Mono,
+   dashed hairline rails, 18px dot-grid canvas. */
 
 /* MCP installation is a first-class docs action, not a generic card grid. */
 
 :root {
-  --font-sans: var(--font-geist-sans), 'Geist', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), 'Geist Mono', ui-monospace, 'SFMono-Regular',
-    Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--font-inter-tight), 'Inter Tight', ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono: var(--font-plex-mono), 'IBM Plex Mono', ui-monospace,
+    'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
 
   --docs-header-height: 80px;
   --docs-sidebar-width: 300px;
   --docs-toc-width: 220px;
-
-  --gradient: linear-gradient(95deg, #9aa3ff 0%, #c9a0ff 35%, #d6a4ff 55%, #ffa5d8 95%);
 }
 
 :root,
-.dark {
-  color-scheme: dark;
-
-  --bg-canvas: #050505;
-  --bg-surface: #0a0a0a;
-  --bg-surface-2: #141414;
-  --bg-hover: rgba(255, 255, 255, 0.06);
-  --bg-hover-soft: rgba(255, 255, 255, 0.03);
-  --bg-overlay: rgba(5, 5, 5, 0.72);
-  --bg-inverse: #f5f5f5;
-  --bg-inverse-hover: #ffffff;
-  --topbar-bg: rgba(10, 10, 10, 0.7);
-  --code-bg: #101010;
-
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --grid-line: hsl(0 0% 98% / 0.16);
-  --grid-dot: hsl(0 0% 98% / 0.04);
-
-  --text-primary: #f5f5f5;
-  --text-body: #d4d4d4;
-  --text-secondary: #a3a3a3;
-  --text-tertiary: #6b6b6b;
-  --text-inverse: #0a0a0a;
-
-  --accent: #f5f5f5;
-  --accent-hover: #ffffff;
-  --accent-soft: rgba(255, 255, 255, 0.08);
-  --accent-softer: rgba(255, 255, 255, 0.03);
-  --accent-underline: rgba(255, 255, 255, 0.35);
-  --focus-ring: rgba(255, 255, 255, 0.6);
-
-  --selection-bg: rgba(255, 255, 255, 0.18);
-  --selection-fg: #ffffff;
-}
-
-/* Light theme matches the site's warm-paper light mode. */
 .light {
   color-scheme: light;
 
-  --bg-canvas: #f6f5f1;
-  --bg-surface: #ffffff;
-  --bg-surface-2: #f1efe8;
-  --bg-hover: rgba(23, 23, 23, 0.06);
-  --bg-hover-soft: rgba(23, 23, 23, 0.03);
-  --bg-overlay: rgba(23, 23, 23, 0.42);
-  --bg-inverse: #171717;
-  --bg-inverse-hover: #262626;
-  --topbar-bg: rgba(246, 245, 241, 0.85);
-  --code-bg: #faf9f5;
+  --bg-canvas: #f4f1eb;
+  --bg-surface: #fdfcf9;
+  --bg-surface-2: #f0ede6;
+  --bg-hover: rgba(25, 23, 18, 0.06);
+  --bg-hover-soft: rgba(25, 23, 18, 0.03);
+  --bg-overlay: rgba(25, 23, 18, 0.42);
+  --bg-inverse: #191712;
+  --bg-inverse-hover: #2c2820;
+  --topbar-bg: rgba(244, 241, 235, 0.9);
+  --code-bg: #fbf9f5;
 
-  --border-subtle: #ebe7dd;
-  --border-default: #ddd7ca;
-  --border-strong: #c9c2b2;
-  --grid-line: #ccc5b5;
-  --grid-dot: #ddd7ca;
+  --border-subtle: #e6e1d5;
+  --border-default: #ddd8c9;
+  --border-strong: #cdc7b6;
+  --grid-line: #d3cdbd;
+  --grid-dot: #dcd7c9;
 
-  --text-primary: #171717;
-  --text-body: #3f3c37;
-  --text-secondary: #57534e;
-  --text-tertiary: #78716c;
-  --text-inverse: #fafaf9;
+  --text-primary: #191712;
+  --text-body: #4c473e;
+  --text-secondary: #6f6a5e;
+  --text-tertiary: #8a8578;
+  --text-inverse: #fdfcf9;
 
-  --accent: #171717;
-  --accent-hover: #262626;
-  --accent-soft: rgba(23, 23, 23, 0.07);
-  --accent-softer: rgba(23, 23, 23, 0.035);
-  --accent-underline: rgba(23, 23, 23, 0.35);
-  --focus-ring: rgba(23, 23, 23, 0.5);
+  --accent: #ff4b00;
+  --accent-hover: #e64300;
+  --accent-soft: rgba(255, 75, 0, 0.1);
+  --accent-softer: rgba(255, 75, 0, 0.05);
+  --accent-underline: rgba(255, 75, 0, 0.42);
+  --focus-ring: rgba(255, 75, 0, 0.48);
 
-  --selection-bg: rgba(23, 23, 23, 0.85);
-  --selection-fg: #fafaf9;
+  --selection-bg: var(--accent);
+  --selection-fg: #ffffff;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg-canvas: #0b0c0b;
+  --bg-surface: #0b0c0b;
+  --bg-surface-2: #151614;
+  --bg-hover: rgba(233, 231, 225, 0.07);
+  --bg-hover-soft: rgba(233, 231, 225, 0.035);
+  --bg-overlay: rgba(8, 9, 8, 0.72);
+  --bg-inverse: #e9e7e1;
+  --bg-inverse-hover: #ffffff;
+  --topbar-bg: rgba(11, 12, 11, 0.85);
+  --code-bg: #121311;
+
+  --border-subtle: #292a27;
+  --border-default: #30312d;
+  --border-strong: #3c3d38;
+  --grid-line: #30312d;
+  --grid-dot: #2b2d29;
+
+  --text-primary: #e9e7e1;
+  --text-body: #b7b3a9;
+  --text-secondary: #a3a096;
+  --text-tertiary: #77736a;
+  --text-inverse: #151310;
+
+  --accent: #ff6a2c;
+  --accent-hover: #ff8655;
+  --accent-soft: rgba(255, 106, 44, 0.13);
+  --accent-softer: rgba(255, 106, 44, 0.07);
+  --accent-underline: rgba(255, 106, 44, 0.48);
+  --focus-ring: rgba(255, 106, 44, 0.56);
+
+  --selection-bg: var(--accent);
+  --selection-fg: #151310;
 }
 
 :root,
@@ -136,11 +135,11 @@ body {
   font-size: 13px;
   font-kerning: normal;
   font-optical-sizing: auto;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
   background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
-  background-size: 36px 36px;
+  background-size: 18px 18px;
 }
 
 html.docs-nav-open,
@@ -180,13 +179,10 @@ html > body[data-scroll-locked] {
 
 .mcp-install-panel-heading .mcp-install-eyebrow {
   margin: 0 0 6px !important;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
+  color: var(--accent) !important;
   font-family: var(--font-mono);
   font-size: 0.6875rem !important;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.4 !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -322,9 +318,9 @@ html > body[data-scroll-locked] {
 }
 
 .mcp-install-panel .mcp-install-action:hover {
-  border-color: var(--bg-inverse-hover);
-  background: var(--bg-inverse-hover);
-  color: var(--text-inverse) !important;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--selection-fg) !important;
   transform: translateY(-1px);
 }
 
@@ -392,6 +388,15 @@ html > body[data-scroll-locked] {
   background: currentColor;
   mask: url('/mogplex-logo.svg') center / contain no-repeat;
   -webkit-mask: url('/mogplex-logo.svg') center / contain no-repeat;
+}
+
+/* Compact brandmark swaps in for the wordmark on tablet and below,
+   matching the marketing site's brand rule. */
+.mogplex-brandmark {
+  display: none;
+  width: 26px;
+  height: 26px;
+  background: url('/mogplex-mark.svg') center / contain no-repeat;
 }
 
 .docs-header-center {
@@ -595,8 +600,8 @@ html > body[data-scroll-locked] {
   height: 36px;
   overflow: hidden;
   border-radius: 6px;
-  background: var(--bg-inverse);
-  color: var(--text-inverse);
+  background: var(--accent);
+  color: var(--selection-fg);
   transition:
     background-color 150ms ease,
     transform 150ms ease;
@@ -604,7 +609,7 @@ html > body[data-scroll-locked] {
 
 .docs-dashboard-group:hover,
 .docs-dashboard-group:focus-within {
-  background: var(--bg-inverse-hover);
+  background: var(--accent-hover);
   transform: translateY(-1px);
 }
 
@@ -632,7 +637,7 @@ html > body[data-scroll-locked] {
   height: 36px;
   padding: 0;
   border: 0;
-  border-inline-start: 1px solid color-mix(in oklch, var(--text-inverse) 14%, transparent);
+  border-inline-start: 1px solid color-mix(in oklch, var(--selection-fg) 22%, transparent);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -647,7 +652,7 @@ html > body[data-scroll-locked] {
 .docs-dashboard-link:focus-visible,
 .docs-dashboard-more:focus-visible {
   outline: none;
-  box-shadow: inset 0 0 0 2px var(--text-inverse);
+  box-shadow: inset 0 0 0 2px var(--selection-fg);
 }
 
 .docs-dashboard-popover {
@@ -935,8 +940,8 @@ html > body[data-scroll-locked] {
   padding: 1px 5px !important;
   border: 1px solid var(--border-default) !important;
   border-radius: 4px;
-  background: var(--accent-softer) !important;
-  color: var(--text-primary) !important;
+  background: var(--bg-surface-2) !important;
+  color: var(--accent) !important;
   font-family: var(--font-mono);
   font-size: 0.8125em;
   letter-spacing: 0;
@@ -981,7 +986,7 @@ html > body[data-scroll-locked] {
   padding: 18px;
   border: 1px solid var(--border-strong) !important;
   border-radius: 8px !important;
-  background: var(--accent-softer) !important;
+  background: var(--bg-surface) !important;
   box-shadow: none !important;
   transition:
     border-color 150ms ease,
@@ -1024,11 +1029,11 @@ html > body[data-scroll-locked] {
 }
 
 #nd-page [role='alert'] svg {
-  color: var(--text-primary) !important;
+  color: var(--accent) !important;
 }
 
 #nd-page [style*='--callout-color'] {
-  --callout-color: var(--text-primary) !important;
+  --callout-color: var(--accent) !important;
   gap: 14px !important;
   margin: 22px 0 !important;
   padding: 18px 20px !important;
@@ -1426,6 +1431,14 @@ html > body[data-scroll-locked] {
   .docs-search-trigger-compact,
   .docs-sidebar-trigger {
     display: inline-flex;
+  }
+
+  .docs-header .mogplex-wordmark {
+    display: none;
+  }
+
+  .docs-header .mogplex-brandmark {
+    display: block;
   }
 }
 

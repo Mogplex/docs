@@ -23,6 +23,7 @@ export function MogplexWordmark({ className }: { className?: string }) {
   return (
     <span className={className} aria-label="Mogplex">
       <span className="mogplex-wordmark" aria-hidden="true" />
+      <span className="mogplex-brandmark" aria-hidden="true" />
     </span>
   );
 }
