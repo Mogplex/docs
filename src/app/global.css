@@ -718,6 +718,13 @@ html > body[data-scroll-locked] {
   line-height: 1.43;
 }
 
+/* Hover/active chips hug the label instead of spanning the sidebar;
+   folder toggles stay full-width so their chevrons keep right-aligned. */
+:is(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] a {
+  width: fit-content;
+  max-width: 100%;
+}
+
 :is(#nd-sidebar, #nd-sidebar-mobile)
   [data-radix-scroll-area-viewport]
   > div
