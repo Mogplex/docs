@@ -110,7 +110,7 @@
   --color-fd-primary-foreground: var(--text-inverse);
   --color-fd-secondary: var(--bg-surface-2);
   --color-fd-secondary-foreground: var(--text-body);
-  --color-fd-accent: var(--accent-soft);
+  --color-fd-accent: var(--bg-hover);
   --color-fd-accent-foreground: var(--text-primary);
   --color-fd-border: var(--border-default);
   --color-fd-ring: var(--focus-ring);
@@ -488,8 +488,9 @@ html > body[data-scroll-locked] {
 }
 
 .docs-header-popover a[data-active='true'] {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .docs-section-popover {
@@ -767,8 +768,9 @@ html > body[data-scroll-locked] {
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active='true'] {
-  background: var(--accent-soft) !important;
-  color: var(--accent) !important;
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active='true']::before,
