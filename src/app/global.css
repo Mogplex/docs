@@ -367,9 +367,7 @@ html > body[data-scroll-locked] {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 1920px;
   height: 100%;
-  margin-inline: auto;
 }
 
 .docs-header-brand {
@@ -716,6 +714,13 @@ html > body[data-scroll-locked] {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.43;
+}
+
+/* Hover/active chips hug the label instead of spanning the sidebar;
+   folder toggles stay full-width so their chevrons keep right-aligned. */
+:is(#nd-sidebar, #nd-sidebar-mobile) [data-radix-scroll-area-viewport] a {
+  width: fit-content;
+  max-width: 100%;
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile)
