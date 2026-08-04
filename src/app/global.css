@@ -110,7 +110,7 @@
   --color-fd-primary-foreground: var(--text-inverse);
   --color-fd-secondary: var(--bg-surface-2);
   --color-fd-secondary-foreground: var(--text-body);
-  --color-fd-accent: var(--bg-hover);
+  --color-fd-accent: var(--accent-soft);
   --color-fd-accent-foreground: var(--text-primary);
   --color-fd-border: var(--border-default);
   --color-fd-ring: var(--focus-ring);
@@ -381,22 +381,22 @@ html > body[data-scroll-locked] {
   color: var(--text-primary);
 }
 
-.mogplex-wordmark {
+.mogplex-brandmark {
   display: block;
-  width: 120px;
-  height: 19px;
+  width: 88px;
+  height: 20px;
   background: currentColor;
-  mask: url('/mogplex-logo.svg') center / contain no-repeat;
-  -webkit-mask: url('/mogplex-logo.svg') center / contain no-repeat;
+  mask: url('/mogplex-brandmark.svg') center / contain no-repeat;
+  -webkit-mask: url('/mogplex-brandmark.svg') center / contain no-repeat;
 }
 
-/* Compact brandmark swaps in for the wordmark on tablet and below,
+/* Compact icon swaps in for the brandmark on tablet and below,
    matching the marketing site's brand rule. */
-.mogplex-brandmark {
+.mogplex-icon {
   display: none;
   width: 26px;
   height: 26px;
-  background: url('/mogplex-mark.svg') center / contain no-repeat;
+  background: url('/mogplex-icon.svg') center / contain no-repeat;
 }
 
 .docs-header-center {
@@ -488,9 +488,8 @@ html > body[data-scroll-locked] {
 }
 
 .docs-header-popover a[data-active='true'] {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  box-shadow: inset 2px 0 0 var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .docs-section-popover {
@@ -737,7 +736,6 @@ html > body[data-scroll-locked] {
   [data-radix-scroll-area-viewport]
   > div
   > a:first-of-type {
-  padding-inline-start: 0 !important;
   color: var(--text-primary);
   font-weight: 500;
 }
@@ -768,9 +766,8 @@ html > body[data-scroll-locked] {
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active='true'] {
-  background: var(--bg-hover) !important;
-  color: var(--text-primary) !important;
-  box-shadow: inset 2px 0 0 var(--accent);
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
 }
 
 :is(#nd-sidebar, #nd-sidebar-mobile) a[data-active='true']::before,
@@ -1247,8 +1244,8 @@ html > body[data-scroll-locked] {
   color: var(--text-primary);
 }
 
-.docs-site-footer-brand .mogplex-wordmark {
-  width: 101px;
+.docs-site-footer-brand .mogplex-brandmark {
+  width: 70px;
   height: 16px;
 }
 
@@ -1435,11 +1432,11 @@ html > body[data-scroll-locked] {
     display: inline-flex;
   }
 
-  .docs-header .mogplex-wordmark {
+  .docs-header .mogplex-brandmark {
     display: none;
   }
 
-  .docs-header .mogplex-brandmark {
+  .docs-header .mogplex-icon {
     display: block;
   }
 }
@@ -1487,11 +1484,10 @@ html > body[data-scroll-locked] {
 }
 
 @media (max-width: 480px) {
-  .mogplex-wordmark {
-    width: 82px;
-    height: 16px;
+  .mogplex-brandmark {
+    width: 62px;
+    height: 14px;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
