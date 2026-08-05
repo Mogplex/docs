@@ -78,7 +78,7 @@ Never echo a raw key.
 | Symptom | What to recommend |
 | --- | --- |
 | Login screen appears at every launch | No credential stored and no env var set. Pick a path on the login screen. |
-| Login succeeds but prompts fail with "no model access" | Account-backed login is active but the hosted account lacks model access. Direct the user to https://www.mogplex.com/web/settings to add a provider key. |
+| Login succeeds but prompts fail with "no model access" | Account-backed login is active but the hosted account lacks model access. Direct the user to https://mogplex.com/web/settings to add a provider key. |
 | Cockpit behaves differently than expected after `/login` | An env var is overriding the stored credential. Have the user `unset` it and relaunch. |
 | User wants to switch accounts | Type `/logout` in the composer, then `/login` (or relaunch). |
 
@@ -112,5 +112,5 @@ Always confirm with the user before suggesting `/logout`.
 ## See also
 
 - [using-mogplex-cli](../using-mogplex-cli/SKILL.md)
-- [Authentication guide](https://www.mogplex.com/cli/guides/authentication)
-- [Configuration and Flags](https://www.mogplex.com/cli/guides/configuration-and-flags)
+- [Authentication guide](https://mogplex.com/cli/guides/authentication)
+- [Configuration and Flags](https://mogplex.com/cli/guides/configuration-and-flags)

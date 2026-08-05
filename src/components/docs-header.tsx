@@ -98,7 +98,7 @@ function DashboardMenu() {
       <div className="docs-dashboard-group">
         <a
           className="docs-dashboard-link"
-          href="https://www.mogplex.com"
+          href="https://mogplex.com"
           aria-label="Open the Mogplex dashboard"
         >
           Dashboard
