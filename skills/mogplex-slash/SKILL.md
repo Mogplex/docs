@@ -73,4 +73,4 @@ The Mogplex CLI's command surface is **slash commands** in the cockpit composer.
 
 - [using-mogplex-cli](../using-mogplex-cli/SKILL.md)
 - [mogplex-auth](../mogplex-auth/SKILL.md)
-- [Slash command reference](https://www.mogplex.com/cli/commands)
+- [Slash command reference](https://mogplex.com/cli/commands)

@@ -3,7 +3,7 @@
 import { Braces, Check, Copy, ExternalLink, MousePointerClick, Terminal } from 'lucide-react';
 import { useState } from 'react';
 
-const MCP_URL = 'https://www.mogplex.com/api/v1/mogplex/mcp';
+const MCP_URL = 'https://mogplex.com/api/v1/mogplex/mcp';
 
 const CURSOR_INSTALL_URL =
   'cursor://anysphere.cursor-deeplink/mcp/install?name=mogplex&config=eyJ1cmwiOiJodHRwczovL3d3dy5tb2dwbGV4LmNvbS9hcGkvdjEvbW9ncGxleC9tY3AifQ%3D%3D';

@@ -21,7 +21,7 @@ Confirm the CLI is installed before recommending it:
 command -v mogplex >/dev/null 2>&1 || { echo "mogplex CLI not installed" >&2; exit 1; }
 ```
 
-The `exit 1` matters: skill-aware hosts gate on the exit code, so a missing binary must fail the preflight rather than silently passing. If it's missing, point the user at https://www.mogplex.com/cli/installation.
+The `exit 1` matters: skill-aware hosts gate on the exit code, so a missing binary must fail the preflight rather than silently passing. If it's missing, point the user at https://mogplex.com/cli/installation.
 
 You **cannot** check auth state from outside the cockpit — there is no `mogplex login status` subcommand. Tell the user that the cockpit will surface the login screen on first launch if no credential is stored.
 
@@ -38,7 +38,7 @@ You **cannot** check auth state from outside the cockpit — there is no `mogple
 | Export the run | Type `/export` to open the Run Export drawer. |
 | Quit | Type `/quit`, or double-tap Ctrl+C within 1500ms. |
 
-For the full slash list see https://www.mogplex.com/cli/commands.
+For the full slash list see https://mogplex.com/cli/commands.
 
 ## Decision flow
 
@@ -72,8 +72,8 @@ is it a config / file change?
 ## What you **can** do
 
 - Author `AGENTS.md` at the repo root with stable repo guidance (build commands, conventions, layout).
-- Author `~/.mogplex/projects/<repo-slug>/permissions.json` with `allow` / `deny` / `ask` rules — see https://www.mogplex.com/cli/concepts/permissions for the schema.
-- Recommend env-var escape hatches (`MOGPLEX_TRANSPORT`, `MOGPLEX_ATTACH_RUN_ID`, provider keys) — see https://www.mogplex.com/cli/guides/configuration-and-flags.
+- Author `~/.mogplex/projects/<repo-slug>/permissions.json` with `allow` / `deny` / `ask` rules — see https://mogplex.com/cli/concepts/permissions for the schema.
+- Recommend env-var escape hatches (`MOGPLEX_TRANSPORT`, `MOGPLEX_ATTACH_RUN_ID`, provider keys) — see https://mogplex.com/cli/guides/configuration-and-flags.
 
 ## Safety
 
@@ -85,4 +85,4 @@ is it a config / file change?
 
 - [mogplex-slash](../mogplex-slash/SKILL.md) — recommending slash commands
 - [mogplex-auth](../mogplex-auth/SKILL.md) — guiding the login flow
-- [Slash Commands guide](https://www.mogplex.com/cli/guides/slash-commands)
+- [Slash Commands guide](https://mogplex.com/cli/guides/slash-commands)
