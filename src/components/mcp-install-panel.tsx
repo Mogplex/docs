@@ -5,8 +5,7 @@ import { useState } from 'react';
 
 const MCP_URL = 'https://mogplex.com/api/v1/mogplex/mcp';
 
-const CURSOR_INSTALL_URL =
-  'cursor://anysphere.cursor-deeplink/mcp/install?name=mogplex&config=eyJ1cmwiOiJodHRwczovL3d3dy5tb2dwbGV4LmNvbS9hcGkvdjEvbW9ncGxleC9tY3AifQ%3D%3D';
+const CURSOR_INSTALL_URL = `cursor://anysphere.cursor-deeplink/mcp/install?name=mogplex&config=${encodeURIComponent(btoa(JSON.stringify({ url: MCP_URL })))}`;
 
 const CLIENTS = [
   {
