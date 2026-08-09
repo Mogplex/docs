@@ -394,7 +394,7 @@ html > body[data-scroll-locked] {
   display: none;
   width: 26px;
   height: 26px;
-  background: url('/mogplex-icon.svg') center / contain no-repeat;
+  background: url('/icon.png') center / contain no-repeat;
 }
 
 .docs-header-center {
