@@ -3,7 +3,7 @@ title: MCP tools
 description: Reference the repo, env var, sandbox, automation, model, log, and agent-run tools exposed by the Mogplex MCP endpoint.
 ---
 
-Mogplex exposes 22 user-scoped tools. The client loads their current JSON
+Mogplex exposes 23 user-scoped tools. The client loads their current JSON
 schemas through `tools/list`, validates arguments locally when supported, and
 sends each call to the same service layer used by the v1 API.
 
@@ -54,6 +54,7 @@ manual variables do not inherit these changes.
 | `mogplex_trigger_automation` | `write` | Run an active published automation for an owned repo. |
 | `mogplex_list_automation_runs` | `read` | List recent executions and node or dispatch summaries. |
 | `mogplex_get_automation_run_logs` | `read` | Read node runs, dispatch events, AI calls, errors, usage, and review findings. |
+| `mogplex_rerun_pr_review` | `write` | Queue another Mogplex PR Review run for a pull request. |
 
 Automation listing defaults to 50 records and accepts a maximum `limit` of
 100. Pass `nextCursor` from one response back as `cursor`. The list response

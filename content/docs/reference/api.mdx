@@ -156,6 +156,7 @@ type MogplexApiError = {
 | `POST` | [`/automations/{automationId}/trigger`](#trigger-an-automation) | `write` | Trigger the published automation. |
 | `GET` | [`/automations/{automationId}/runs`](#list-automation-runs) | `read` | List recent automation runs. |
 | `GET` | [`/automations/{automationId}/runs/{runId}`](#read-automation-run-logs) | `read` | Read detailed automation run logs. |
+| `POST` | [`/pr-reviews/rerun`](#rerun-a-pr-review) | `write` | Queue a fresh Mogplex PR review. |
 | `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex or Claude Code run. |
 | `GET` | [`/runs/{runId}`](#get-a-run) | `read` | Read run state. |
 | `GET` | [`/runs/{runId}/events`](#list-run-events) | `read` | Read structured run events. |
@@ -631,6 +632,61 @@ No query or body. Response payload: `{ run: AutomationRunDetail | null }`.
 The detail includes node runs, dispatch events, AI calls and events, errors,
 usage, and review findings.
 
+## PR reviews
+
+### Rerun a PR review
+
+`POST /pr-reviews/rerun`
+
+Requires the `write` scope. Queues a fresh Mogplex PR review for a pull
+request, equivalent to clicking **Re-run review** on the "Mogplex PR Review"
+GitHub check run. No `Idempotency-Key`; each call queues a distinct attempt.
+
+Request body:
+
+```typescript
+type RerunPrReviewRequest = {
+  repoId: string;
+  prNumber: number; // Positive integer.
+};
+```
+
+Example payload:
+
+```json
+{
+  "repoId": "repo-uuid",
+  "prNumber": 699
+}
+```
+
+Response payload:
+
+```typescript
+type RerunPrReviewData = {
+  queued: boolean;
+  jobRunId: string | null;
+  prNumber: number;
+  repoId: string;
+  started: boolean;
+  deferred: boolean;
+  reason: string | null;
+  status: string | null;
+  runtimeProvider: string | null;
+  runtimeRunId: string | null;
+  workflowRunId: string | null;
+  versionFallbackUsed: boolean;
+};
+```
+
+Endpoint-specific errors:
+
+| Code | HTTP | Meaning |
+| --- | --- | --- |
+| `BAD_REQUEST` | 400 | The body is not valid JSON, `repoId` is empty, or `prNumber` is not a positive integer. |
+| `NOT_FOUND` | 404 | The repository, the pull request, or its "Mogplex PR Review" check run was not found. |
+| `CONFLICT` | 409 | No GitHub access token is available for the repository, the latest check run is not linked to a Mogplex run, or the retry could not be queued. |
+
 ## Agent runs
 
 ```typescript
@@ -810,7 +866,7 @@ https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 Use [Install Mogplex MCP](/mcp/install) for client setup and OAuth. Use
-[MCP tools](/mcp/tools) for all 22 tool argument schemas.
+[MCP tools](/mcp/tools) for all 23 tool argument schemas.
 
 Request envelope:
 
