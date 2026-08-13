@@ -4,6 +4,31 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
+const docsRoutes = (content) => [
+  ...[...content.matchAll(/\]\((\/[^)#]+)(?:#[^)]+)?\)/g)].map(
+    (match) => match[1],
+  ),
+  ...[...content.matchAll(/href="(\/[^"#]+)(?:#[^"]+)?"/g)].map(
+    (match) => match[1],
+  ),
+];
+
+async function assertDocsRouteExists(route, page) {
+  const slug = route.replace(/^\//, '');
+  const candidates = [
+    `content/docs/${slug}.mdx`,
+    `content/docs/${slug}/index.mdx`,
+  ];
+  const found = await Promise.any(
+    candidates.map(async (candidate) => {
+      await access(new URL(`../${candidate}`, import.meta.url));
+      return candidate;
+    }),
+  ).catch(() => null);
+
+  assert.ok(found, `${page} links to missing docs route ${route}`);
+}
+
 test('documents Sandboxes and Worktrees as separate bound resources', async () => {
   const [glossary, worktrees, guide, objectModel] = await Promise.all([
     read('content/docs/reference/glossary.mdx'),
@@ -98,6 +123,7 @@ test('execution environment links across public docs resolve to existing routes'
   const pages = entries
     .filter((entry) => entry.endsWith('.mdx'))
     .map((entry) => `content/docs/${entry}`);
+  assert.ok(pages.length > 0, 'expected to find MDX pages under content/docs');
   const executionRoutes = new Set([
     '/guides/control-execution-environments',
     '/web/worktrees',
@@ -105,24 +131,26 @@ test('execution environment links across public docs resolve to existing routes'
 
   for (const page of pages) {
     const content = await read(page);
-    const routes = [...content.matchAll(/\]\((\/[^)#]+)(?:#[^)]+)?\)/g)]
-      .map((match) => match[1])
-      .filter((route) => executionRoutes.has(route));
+    const routes = docsRoutes(content).filter((route) =>
+      executionRoutes.has(route),
+    );
 
     for (const route of routes) {
-      const slug = route.replace(/^\//, '');
-      const candidates = [
-        `content/docs/${slug}.mdx`,
-        `content/docs/${slug}/index.mdx`,
-      ];
-      const found = await Promise.any(
-        candidates.map(async (candidate) => {
-          await access(new URL(`../${candidate}`, import.meta.url));
-          return candidate;
-        }),
-      ).catch(() => null);
+      await assertDocsRouteExists(route, page);
+    }
+  }
+});
 
-      assert.ok(found, `${page} links to missing docs route ${route}`);
+test('new execution environment pages only link to existing docs routes', async () => {
+  const pages = [
+    'content/docs/web/worktrees.mdx',
+    'content/docs/guides/control-execution-environments.mdx',
+  ];
+
+  for (const page of pages) {
+    const content = await read(page);
+    for (const route of docsRoutes(content)) {
+      await assertDocsRouteExists(route, page);
     }
   }
 });
