@@ -8,10 +8,12 @@ const docsRoutes = (content) => [
   ...[...content.matchAll(/\]\((\/[^)#]+)(?:#[^)]+)?\)/g)].map(
     (match) => match[1],
   ),
-  ...[...content.matchAll(/href="(\/[^"#]+)(?:#[^"]+)?"/g)].map(
-    (match) => match[1],
+  ...[...content.matchAll(/href=(["'])(\/[^"'#]+)(?:#[^"']+)?\1/g)].map(
+    (match) => match[2],
   ),
 ];
+
+const nonDocsRoutes = new Set(['/llms-full.txt', '/llms.txt']);
 
 async function assertDocsRouteExists(route, page) {
   const slug = route.replace(/^\//, '');
@@ -117,28 +119,25 @@ test('publishes the new pages in navigation and search metadata', async () => {
   assert.match(guide, /^description: .+$/m);
 });
 
-test('execution environment links across public docs resolve to existing routes', async () => {
+test('internal links across public docs resolve to existing routes', async () => {
   const docsRoot = new URL('../content/docs/', import.meta.url);
   const entries = await readdir(docsRoot, { recursive: true });
   const pages = entries
     .filter((entry) => entry.endsWith('.mdx'))
     .map((entry) => `content/docs/${entry}`);
   assert.ok(pages.length > 0, 'expected to find MDX pages under content/docs');
-  const executionRoutes = new Set([
-    '/guides/control-execution-environments',
-    '/web/worktrees',
-  ]);
+  let checkedRoutes = 0;
 
   for (const page of pages) {
     const content = await read(page);
-    const routes = docsRoutes(content).filter((route) =>
-      executionRoutes.has(route),
-    );
-
-    for (const route of routes) {
+    for (const route of docsRoutes(content)) {
+      if (nonDocsRoutes.has(route)) continue;
       await assertDocsRouteExists(route, page);
+      checkedRoutes += 1;
     }
   }
+
+  assert.ok(checkedRoutes > 0, 'expected to check internal docs routes');
 });
 
 test('new execution environment pages only link to existing docs routes', async () => {
