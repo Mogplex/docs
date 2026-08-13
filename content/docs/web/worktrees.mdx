@@ -1,0 +1,179 @@
+---
+title: Worktrees
+description: Learn how Mogplex gives each planned task a Git checkout inside selected Sandbox compute.
+---
+
+A Worktree gives one coding task its own Git checkout and branch.
+
+Mogplex creates Worktrees inside [Sandbox](/web/sandboxes) compute. The two
+resources stay separate. A Sandbox supplies remote compute for commands and
+previews. A Worktree supplies an isolated checkout for one task.
+
+A Sandbox can start without a Worktree. A Sandbox can run with no
+Worktrees, or it can host several Worktrees for parallel tasks.
+
+## When Mogplex creates a Worktree
+
+Mogplex creates a Worktree only for a planned task that needs an isolated Git
+checkout. The task must use the selected Sandbox.
+
+These actions do not create a Worktree:
+
+- start a preview runtime
+- inspect a repository
+- run a shell command in the selected Sandbox
+- stop, resume, or restart Sandbox compute
+
+Use the [Control execution environments guide](/guides/control-execution-environments)
+to choose the correct resource for each action.
+
+## Worktree identity
+
+Each Worktree record binds these values:
+
+| Part | Meaning |
+| --- | --- |
+| Task | The planned unit of work that owns the checkout |
+| Branch | The task-specific Git branch |
+| Checkout path | The exact directory that contains the task files |
+| Sandbox binding | The Sandbox that hosts the checkout and runs its commands |
+| Status | `creating`, `active`, `error`, `archived`, or `pruned` |
+
+The branch does not identify the Sandbox. The Sandbox can have its own working
+branch as repository context, but its primary identity is the compute record
+and runtime.
+
+The checkout path matters when Mogplex starts a worker. The worker uses the
+persisted Sandbox binding and exact checkout path. It does not infer either
+value from another account resource.
+
+## One Sandbox can host parallel Worktrees
+
+One Sandbox can host multiple task Worktrees. Each Worktree has a different
+task ID, branch, and checkout path.
+
+```text
+selected Sandbox compute
+├── task A -> Worktree A -> branch A -> checkout A
+└── task B -> Worktree B -> branch B -> checkout B
+```
+
+This model lets parallel tasks share compute. Each task keeps a separate
+writable checkout. More compute does not increase the Worktree count.
+
+## Worktree actions
+
+### Diff
+
+**Diff** compares the persisted Worktree branch with its persisted base branch.
+It reads the task checkout and does not change Sandbox compute.
+
+### Rebase
+
+**Rebase** rebases an active Worktree branch onto its persisted base branch.
+Run it when the task branch must include newer base-branch changes.
+
+Resolve rebase conflicts in the same Worktree checkout. Do not create a new
+Sandbox to resolve a Git conflict.
+
+### Archive
+
+**Archive worktree** marks the Worktree inactive.
+
+Archive keeps all of these resources:
+
+- the Git checkout
+- the Git branch
+- the Worktree record
+- the Sandbox compute
+
+Archive a completed or paused task when the checkout must remain available.
+Archive does not stop compute and does not remove files.
+
+### Prune
+
+**Prune checkout** removes an archived Git checkout and releases its task
+binding.
+
+Prune keeps these resources:
+
+- the Git branch
+- the Worktree record in `pruned` state
+- the Sandbox compute
+
+Prune does not delete the branch. It also does not stop or delete the Sandbox.
+Archive the Worktree before pruning it.
+
+## Lifecycle consequences
+
+| Action | Compute | Sandbox record | Worktree record | Checkout | Branch |
+| --- | --- | --- | --- | --- | --- |
+| Stop Sandbox | Removed | Kept as `stopped` | Kept | Unavailable while compute is stopped | Kept |
+| Delete Sandbox | Removed | Removed | Kept | Unavailable | Kept |
+| Archive Worktree | Unchanged | Kept | Kept as `archived` | Kept | Kept |
+| Prune Worktree | Unchanged | Kept | Kept as `pruned` | Removed | Kept |
+
+The Sandbox and Worktree lifecycles never substitute for each other. Use Stop
+or Delete for compute. Use Archive or Prune for a task checkout.
+
+## Failure recovery
+
+### Worktree creation does not finish
+
+Refresh the Worktrees tab first. A recent `creating` record can still be in
+progress. Mogplex lets an operator archive a stale reservation after its
+creation window expires.
+
+Do not prune an active or creating Worktree. Archive it first when the UI makes
+that action available.
+
+### Sandbox compute is stopped
+
+The Worktree record and its Sandbox binding remain. Restart the same Sandbox
+record before a task tries to use that checkout.
+
+The stopped state does not guarantee that uncommitted files can survive compute
+teardown. Commit or push important changes before a destructive compute action.
+
+### Sandbox record no longer exists
+
+The Worktree record and Git branch can remain after Sandbox deletion. The
+checkout is no longer reachable through that Sandbox.
+
+For an archived Worktree, **Retire binding** can mark the record as pruned when
+Mogplex confirms that the Sandbox is gone. This action keeps the Git branch and
+does not change other compute.
+
+### Rebase or Diff fails
+
+Confirm that the Worktree is active and that its Sandbox is available. Then
+confirm that the checkout path still exists.
+
+Use [Observability](/web/observability) to find the selected resource IDs and
+rejected mismatch reason. Do not retry with an unrelated Sandbox or checkout.
+
+### A Worktree is already pruned
+
+A pruned Worktree has no managed checkout. Continue from the preserved Git
+branch if more work is necessary. A new task needs a new Worktree record.
+
+## Similar terms that mean different things
+
+| Term | Difference from a Mogplex Worktree |
+| --- | --- |
+| Git branch | A ref that names commits. A Worktree checks out one branch at one path. Pruning a Worktree does not delete its branch. |
+| Sandbox snapshot | Provider state used for runtime recovery. It is not a Git checkout or Worktree record. |
+| Browser or accessibility snapshot | Captured page or accessibility state for inspection. It does not contain a task checkout. |
+| Local contributor worktree | A Git checkout that a contributor creates on a local machine. Control Worktrees are persisted mission resources inside selected Sandbox compute. |
+| Run | One execution of work. A run can use a Sandbox without creating a Worktree. |
+| Workspace session | The Control chat, preview, and terminal session for a repository. It can select a Sandbox, but it is not a Worktree. |
+
+## Read next
+
+<Cards>
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
+  <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="How Mogplex Fits Together" href="/platform/how-mogplex-fits-together" />
+  <Card title="Observability" href="/web/observability" />
+  <Card title="Troubleshooting" href="/guides/troubleshooting" />
+</Cards>

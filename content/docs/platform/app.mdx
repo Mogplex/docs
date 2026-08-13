@@ -1,6 +1,6 @@
 ---
 title: Mogplex App
-description: Use the Mogplex app as the hosted control plane for setup, routing, repo work, reusable agents, sandboxes, and inspection.
+description: Use the Mogplex app for setup, routing, Control sessions, Sandbox compute, Worktree checkouts, reusable agents, and inspection.
 ---
 
 The Mogplex app is the hosted control plane.
@@ -23,6 +23,7 @@ that other surfaces consume.
 | [Assignments](/web/assignments) | Repo-owned standing work such as review, triage, CI failure response, and scheduled jobs |
 | [Automations](/web/automations) | Multi-step GitHub-triggered workflows with branches, delays, parallel work, drafts, and publishing |
 | [Sandboxes](/web/sandboxes) | Running and pending preview runtimes across repos |
+| [Worktrees](/web/worktrees) | Planned task checkouts, branches, Sandbox bindings, Diff, Rebase, Archive, and Prune |
 | [Observability](/web/observability) | Run health, pressure, model calls, tool calls, tokens, sandbox linkage, and cost |
 
 ## Start here when
@@ -32,6 +33,7 @@ that other surfaces consume.
 - an agent slug, model, prompt, rule, skill, or context library needs to be
   changed centrally
 - a sandbox preview is starting, failing, stale, or attached to the wrong repo
+- a Control worker needs an isolated task checkout or uses the wrong Worktree
 - you need to understand what actually ran and what it cost
 
 ## Healthy first setup
@@ -62,7 +64,8 @@ account-backed model defaults and remote MCP definitions from hosted state.
 ## Read next
 
 <Cards>
-  <Card title="Projects and Sandboxes" href="/platform/projects-and-sandboxes" />
+  <Card title="Projects, Sandboxes, and Worktrees" href="/platform/projects-and-sandboxes" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
   <Card title="Agents" href="/capabilities/agents" />
   <Card title="Routing" href="/capabilities/routing" />
   <Card title="Observability" href="/capabilities/observability" />

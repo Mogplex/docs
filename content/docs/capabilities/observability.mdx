@@ -18,6 +18,7 @@ Use it for runtime questions, not setup questions.
 - how many tokens were used?
 - what was the estimated cost?
 - did the run touch a sandbox?
+- did the task use the intended Worktree and checkout?
 - what error was captured?
 
 ## Read summary before detail
@@ -80,6 +81,11 @@ never emitted a run did not route.
 3. Open high-token or high-cost calls.
 4. Compare model, task, tool usage, and sandbox linkage.
 
+When isolated coding used a Worktree, compare its task, Sandbox binding,
+branch, and checkout path. Use
+[Control Execution Environments](/guides/control-execution-environments) when
+the selected resource is wrong.
+
 ### A sandbox preview is unhealthy
 
 1. Start from [Sandboxes](/web/sandboxes) if you know the runtime.
@@ -92,6 +98,7 @@ never emitted a run did not route.
   <Card title="Observability Page" href="/web/observability" />
   <Card title="Observability Runbook" href="/guides/observability-runbook" />
   <Card title="Projects and Sandboxes" href="/platform/projects-and-sandboxes" />
+  <Card title="Worktrees" href="/web/worktrees" />
   <Card title="Support" href="/support" />
   <Card title="API Endpoint Index" href="/reference/api#endpoint-index" />
 </Cards>

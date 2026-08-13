@@ -9,7 +9,7 @@
     "dev": "next dev",
     "start": "next start",
     "gen:models": "tsx --env-file=.env.local scripts/gen-models-table.ts",
-    "test": "node --test tests/legacy-api-redirect.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint": "eslint",

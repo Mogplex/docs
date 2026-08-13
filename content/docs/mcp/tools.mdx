@@ -22,6 +22,13 @@ sends each call to the same service layer used by the v1 API.
 when the launch succeeds or fails. It does not create a separate status-polling
 loop.
 
+Creating a Sandbox through MCP does not create a Control Worktree. The public
+MCP catalog does not currently expose Worktree creation, Diff, Rebase, Archive,
+Prune, or worker-launch tools. Use the shipped Control Worktrees surface for
+those actions. See
+[Control Execution Environments](/guides/control-execution-environments) for
+the resource boundary.
+
 ## Environment variables
 
 | Tool | Scope | What it does |

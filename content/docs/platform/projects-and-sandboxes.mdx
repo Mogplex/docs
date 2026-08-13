@@ -1,13 +1,14 @@
 ---
-title: Projects and Sandboxes
-description: Understand how Mogplex connects imported repos, workspace sessions, repo settings, preview runtimes, and sandbox operations.
+title: Projects, Sandboxes, and Worktrees
+description: Understand how Projects connect repository context to Sandbox compute and task-specific Worktree checkouts in Control.
 ---
 
-Projects and Sandboxes are the repo execution layer of the app.
+Projects, Sandboxes, and Worktrees form the repo execution layer of the app.
 
 Use [Projects](/web/spaces) when you are choosing or configuring a repo. Use
 [Sandboxes](/web/sandboxes) when the runtime itself is the thing you need to
-inspect or control.
+inspect or control. Use [Worktrees](/web/worktrees) when one planned task needs
+an isolated Git checkout.
 
 ## Mental model
 
@@ -17,9 +18,13 @@ inspect or control.
 | Project | The app grouping layer shown as Projects at `/spaces` |
 | Workspace session | The live repo session you open from the app |
 | Sandbox | The runtime and preview environment attached to repo work |
+| Worktree | A task-specific branch and checkout bound to one Sandbox |
 
 This split matters because repo visibility, workspace launch, and sandbox
 health are related but not identical.
+
+Starting a Sandbox does not create a Worktree. One Sandbox can host multiple
+Worktrees with separate tasks, branches, and checkout paths.
 
 ## Use Projects when
 
@@ -46,6 +51,22 @@ repo settings needed to start the right runtime.
 Sandboxes is the operational runtime list. It answers:
 
 **Which preview is actually alive right now?**
+
+## Use Worktrees when
+
+- one planned coding task needs an isolated branch and checkout
+- several coding tasks must run in parallel without sharing files
+- you need the persisted Diff or Rebase action for one task
+- you need to Archive a checkout without removing it
+- you need to Prune an archived checkout without deleting its branch or
+  Sandbox
+
+Worktrees answers:
+
+**Which checkout belongs to this task, and where does it run?**
+
+Use [Control Execution Environments](/guides/control-execution-environments)
+for the outcome-based decision table and all lifecycle consequences.
 
 ## Common paths
 
@@ -84,6 +105,8 @@ and [Vercel](/integrations/vercel) before editing routing or agent behavior.
   <Card title="Sandbox Setup Checklist" href="/guides/sandbox-setup-checklist" />
   <Card title="Projects" href="/web/spaces" />
   <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="Worktrees" href="/web/worktrees" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
   <Card title="Vercel" href="/integrations/vercel" />
   <Card title="Observability" href="/capabilities/observability" />
 </Cards>

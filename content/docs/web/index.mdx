@@ -12,6 +12,7 @@ behavior, or why something ran the way it did, the answer usually starts here.
 <Cards>
   <Card title="Projects" href="/web/spaces" />
   <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="Worktrees" href="/web/worktrees" />
   <Card title="Agents" href="/web/agents" />
   <Card title="Automations" href="/web/automations" />
   <Card title="Triggers" href="/web/triggers" />
@@ -29,6 +30,8 @@ behavior, or why something ran the way it did, the answer usually starts here.
   organization, sandbox launch, and workspace opening happen.
 - **Sandboxes** lives at `/spaces/sandboxes`. It is the cross-repo runtime
   view for running, pending, and stale preview environments.
+- **Worktrees** in Control shows task-specific Git checkouts inside selected
+  Sandbox compute. Its count is independent from the Sandbox count.
 - **Agents** lives under `/agents/*` and manages the reusable agent roster plus
   shared skills, rules, and context.
 - **Automations** at `/automations` is the canvas builder for multi-step
@@ -66,6 +69,8 @@ That framing helps you choose the right page faster:
   are deciding what should run
 - use [Observability](/web/observability) and [Sandboxes](/web/sandboxes) after
   work has queued or started
+- use [Control Execution Environments](/guides/control-execution-environments)
+  when a task must choose compute, an isolated checkout, or a lifecycle action
 
 ## Start in this order
 
@@ -148,6 +153,9 @@ For the full redirect map, use [Legacy Routes](/web/guides/legacy-routes).
   state. Agent behavior belongs in [Agents](/web/agents).
 - **Where do I manually stop or inspect previews across repos?** Use
   [Sandboxes](/web/sandboxes).
+- **Why do Sandbox and Worktree counts differ?** They count compute and task
+  checkouts. Starting compute does not create a Worktree. Read
+  [Worktrees](/web/worktrees).
 - **Where do I start for mention-driven workflows?** Use
   [Triggers](/web/triggers) for a direct mention route, or
   [Automations](/web/automations) if the mention should fan into a workflow.

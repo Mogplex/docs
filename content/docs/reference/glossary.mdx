@@ -1,6 +1,6 @@
 ---
 title: Glossary
-description: Definitions for Mogplex product terms such as agents, runs, projects, installations, triggers, assignments, automations, sandboxes, and observability.
+description: Definitions for Mogplex product terms such as agents, runs, projects, installations, triggers, assignments, automations, sandboxes, worktrees, and observability.
 ---
 
 Use this page when a Mogplex page names a product object and you need the
@@ -239,3 +239,22 @@ Use the hosted API pages when another system needs to create or inspect work
 programmatically.
 
 Read next: [API Quickstart](/reference/api#quickstart).
+
+## Worktree
+
+A task-specific Git checkout inside selected Sandbox compute.
+
+Each Worktree binds one mission task, Git branch, checkout path, and Sandbox.
+Mogplex creates one only when a planned coding task needs an isolated checkout.
+Starting a Sandbox, opening a preview, or running a command does not create a
+Worktree.
+
+Archive keeps the checkout, branch, record, and Sandbox compute. Prune removes
+the archived checkout and task binding. It keeps the Git branch, pruned record,
+and Sandbox compute.
+
+A Mogplex Worktree is not a Sandbox snapshot, browser snapshot, run, workspace
+session, branch, or local contributor worktree.
+
+Read next: [Worktrees](/web/worktrees) and
+[Control Execution Environments](/guides/control-execution-environments).

@@ -1,6 +1,6 @@
 ---
 title: Projects
-description: Use Projects at /spaces to organize repos, launch sandboxes, open workspaces, and configure repo-specific runtime settings.
+description: Use Projects at /spaces to organize repos, launch Sandbox compute, open workspace sessions, and enter Control with the correct repository context.
 ---
 
 In the Mogplex app, the top-bar label is **Projects** and the route is
@@ -19,6 +19,8 @@ automation attached to a specific repository.
   a repo.
 - A **sandbox** is the runtime and preview environment attached to that repo
   work.
+- A **worktree** is a separate task checkout inside selected Sandbox compute.
+  Starting the Sandbox does not create one.
 
 ## What Projects actually manages
 
@@ -51,6 +53,10 @@ Each repo card can surface:
 
 If you need a cross-repo list of running or pending sandboxes, use
 [Sandboxes](/web/sandboxes).
+
+After a workspace opens in Control, use [Worktrees](/web/worktrees) only for
+planned coding tasks that need isolated checkouts. Preview and command requests
+use the selected Sandbox without a Worktree.
 
 ## Repo settings you can control
 
@@ -116,6 +122,9 @@ Use [Sandboxes](/web/sandboxes) when you need a cross-repo operational view
 of running or pending previews, or when you want manual override on a specific
 sandbox instead of going through the repo card.
 
+Use [Control Execution Environments](/guides/control-execution-environments)
+when you need to choose between Sandbox compute and a task Worktree.
+
 ## Failure modes that matter
 
 - **Repo is visible but trigger-backed features do not work**:
@@ -139,3 +148,5 @@ sandbox instead of going through the repo card.
 - [Triggers](/web/triggers) is for installation-scoped event routing.
 - [Observability](/web/observability) is where you inspect cost, calls,
   sandbox linkage, and runtime health after work starts.
+- [Worktrees](/web/worktrees) explains task, branch, checkout, and Sandbox
+  binding after Control delegates isolated coding work.

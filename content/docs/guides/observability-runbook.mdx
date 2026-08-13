@@ -1,6 +1,6 @@
 ---
 title: Observability Runbook
-description: Trace failed, stuck, expensive, or noisy Mogplex work from source surface to run events, tool calls, sandboxes, and API state.
+description: Trace failed, stuck, expensive, or misrouted work through runs, tools, selected Sandboxes, Worktree checkouts, and API state.
 ---
 
 Use this runbook after something has tried to run.
@@ -15,7 +15,7 @@ If no work was emitted at all, start with the owning route surface instead:
 
 Ask one question before opening every page:
 
-**Did Mogplex create a run, call, or sandbox record?**
+**Did Mogplex create a run, call, Sandbox, or Worktree record?**
 
 | Answer | Start here |
 | --- | --- |
@@ -36,6 +36,7 @@ Before changing configuration, capture:
 - repo owner/name and Mogplex repo ID
 - run ID or call ID if one exists
 - sandbox ID if a preview/runtime exists
+- Worktree ID, task ID, and checkout path if isolated coding started
 - model and provider
 - first error message
 - whether the status is pending, streaming, success, failed, or cancelled
@@ -70,7 +71,9 @@ Check in this order:
 5. event timeline
 6. tool calls
 7. sandbox metadata and preview URL
-8. raw metadata only if the higher-level fields are not enough
+8. task, Worktree, branch, and checkout context when present
+9. resource decision source or mismatch reason
+10. raw metadata only if the higher-level fields are not enough
 
 Do not edit the agent prompt until you know whether the failure came from the
 model, a tool, connection state, sandbox state, or routing setup.
@@ -144,6 +147,21 @@ Use [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) for launch
 configuration, and [Projects and Sandboxes](/platform/projects-and-sandboxes)
 for the platform model.
 
+## Worktree Or Checkout Failure
+
+For isolated coding failures:
+
+1. Confirm that the mission created the intended task ID.
+2. Confirm that the task has one active persisted Worktree.
+3. Confirm that its Sandbox binding matches the selected Sandbox.
+4. Confirm that the worker used the exact persisted checkout path.
+5. Check the branch and Worktree status before Diff or Rebase.
+6. Use Archive or Prune only for Worktree lifecycle changes.
+
+Use [Control Execution Environments](/guides/control-execution-environments)
+for the decision contract. Use [Worktrees](/web/worktrees#failure-recovery) for
+stopped, missing, stale, archived, or pruned resources.
+
 ## Cost Or Token Spike
 
 For unexpectedly high usage:
@@ -181,6 +199,8 @@ safe-sharing checklist.
 <Cards>
   <Card title="Observability" href="/capabilities/observability" />
   <Card title="Troubleshooting" href="/guides/troubleshooting" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
+  <Card title="Worktrees" href="/web/worktrees" />
   <Card title="Slack" href="/integrations/slack" />
   <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
 </Cards>

@@ -1,6 +1,6 @@
 ---
 title: Observability
-description: Inspect Mogplex run health, pressure, sandbox time, model-call activity, tool calls, and estimated cost across CLI, cloud, and automation.
+description: Inspect Mogplex run health, resource selection, Sandbox time, Worktree linkage, model calls, tool calls, and estimated cost.
 ---
 
 Observability is the runtime view for Mogplex work that has already started.
@@ -11,6 +11,7 @@ This is where you answer questions like:
 - is the system under pressure, stuck, or failing?
 - which model call or tool call caused the problem?
 - is cost coming from the CLI, hosted work, or automation?
+- did the run select the intended Sandbox, task Worktree, and checkout?
 
 ## The page has two jobs
 
@@ -99,6 +100,8 @@ can include:
   related event
 - managed sandbox access details, optional linked Vercel project metadata,
   sandbox record ID, preview URL, and runtime ID
+- selected resource IDs and bounded Worktree context when orchestration records
+  them
 - a shortcut to open sandbox health directly
 - runtime command ID when the call came from the CLI path
 - the error string, if the call failed
@@ -118,6 +121,16 @@ this call come from?”
 2. Inspect managed sandbox access and preview metadata.
 3. Jump straight to sandbox health from the row instead of debugging the model
    call in isolation.
+
+### A coding task used the wrong environment
+
+1. Compare the Sandbox record ID with the selected Sandbox in Control.
+2. Compare the task and Worktree IDs with the intended mission task.
+3. Compare the persisted checkout path and branch.
+4. Inspect the decision source or rejected mismatch reason.
+5. Use
+   [Control Execution Environments](/guides/control-execution-environments)
+   before retrying with a different resource.
 
 ### Cost or token usage jumped unexpectedly
 
@@ -146,11 +159,14 @@ source surfaces:
 - [Assignments](/web/assignments)
 - [Automations](/web/automations)
 - [Sandboxes](/web/sandboxes)
+- [Worktrees](/web/worktrees)
 
 ## Read next
 
 <Cards>
   <Card title="Observability Runbook" href="/guides/observability-runbook" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
+  <Card title="Worktrees" href="/web/worktrees" />
   <Card title="Troubleshooting" href="/guides/troubleshooting" />
   <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
 </Cards>
