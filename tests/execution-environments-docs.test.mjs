@@ -4,15 +4,30 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
-const docsRoutes = (content) => [
-  ...[...content.matchAll(/\]\((\/[^)#]+)(?:#[^)]+)?\)/g)].map(
-    (match) => match[1],
-  ),
-  ...[...content.matchAll(/href=(["'])(\/[^"'#]+)(?:#[^"']+)?\1/g)].map(
-    (match) => match[2],
-  ),
-];
+const docsRoutes = (content) => {
+  const prose = content.replace(/(```|~~~)[\s\S]*?\1/g, '');
 
+  return [
+    // Markdown links, excluding images, plus reference-style definitions.
+    ...[
+      ...prose.matchAll(/(?<!!)\[[^\]]*\]\((\/[^\s)#]+)(?:#[^)]+)?\)/g),
+    ].map((match) => match[1]),
+    ...[
+      ...prose.matchAll(/^\s*\[[^\]]+\]:\s*(\/[^\s#]+)(?:#\S+)?\s*$/gm),
+    ].map((match) => match[1]),
+    // JSX href values written as strings or expression-wrapped strings.
+    ...[
+      ...prose.matchAll(/href\s*=\s*(["'])(\/[^"'#]+)(?:#[^"']+)?\1/g),
+    ].map((match) => match[2]),
+    ...[
+      ...prose.matchAll(
+        /href\s*=\s*\{\s*(["'`])(\/[^"'`#]+)(?:#[^"'`]+)?\1\s*\}/g,
+      ),
+    ].map((match) => match[2]),
+  ];
+};
+
+// Generated text surfaces are valid routes but have no source MDX page.
 const nonDocsRoutes = new Set(['/llms-full.txt', '/llms.txt']);
 
 async function assertDocsRouteExists(route, page) {
@@ -30,6 +45,27 @@ async function assertDocsRouteExists(route, page) {
 
   assert.ok(found, `${page} links to missing docs route ${route}`);
 }
+
+test('extracts supported docs links without scanning images or code examples', () => {
+  const routes = docsRoutes(`
+[Inline](/inline#section)
+![Image](/images/example.png)
+[Reference]: /reference
+<Card href="/quoted" />
+<Card href={'/expression'} />
+\`\`\`mdx
+[Example only](/inside-code)
+<Card href="/also-inside-code" />
+\`\`\`
+`);
+
+  assert.deepEqual(routes.sort(), [
+    '/expression',
+    '/inline',
+    '/quoted',
+    '/reference',
+  ]);
+});
 
 test('documents Sandboxes and Worktrees as separate bound resources', async () => {
   const [glossary, worktrees, guide, objectModel] = await Promise.all([
@@ -137,19 +173,8 @@ test('internal links across public docs resolve to existing routes', async () =>
     }
   }
 
-  assert.ok(checkedRoutes > 0, 'expected to check internal docs routes');
-});
-
-test('new execution environment pages only link to existing docs routes', async () => {
-  const pages = [
-    'content/docs/web/worktrees.mdx',
-    'content/docs/guides/control-execution-environments.mdx',
-  ];
-
-  for (const page of pages) {
-    const content = await read(page);
-    for (const route of docsRoutes(content)) {
-      await assertDocsRouteExists(route, page);
-    }
-  }
+  assert.ok(
+    checkedRoutes > 100,
+    `expected to check more than 100 internal docs routes, checked ${checkedRoutes}`,
+  );
 });
