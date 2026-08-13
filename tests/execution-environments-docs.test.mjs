@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import test from 'node:test';
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -92,17 +92,22 @@ test('publishes the new pages in navigation and search metadata', async () => {
   assert.match(guide, /^description: .+$/m);
 });
 
-test('new execution environment pages only link to existing docs routes', async () => {
-  const pages = [
-    'content/docs/web/worktrees.mdx',
-    'content/docs/guides/control-execution-environments.mdx',
-  ];
+test('execution environment links across public docs resolve to existing routes', async () => {
+  const docsRoot = new URL('../content/docs/', import.meta.url);
+  const entries = await readdir(docsRoot, { recursive: true });
+  const pages = entries
+    .filter((entry) => entry.endsWith('.mdx'))
+    .map((entry) => `content/docs/${entry}`);
+  const executionRoutes = new Set([
+    '/guides/control-execution-environments',
+    '/web/worktrees',
+  ]);
 
   for (const page of pages) {
     const content = await read(page);
-    const routes = [...content.matchAll(/\]\((\/[^)#]+)(?:#[^)]+)?\)/g)].map(
-      (match) => match[1],
-    );
+    const routes = [...content.matchAll(/\]\((\/[^)#]+)(?:#[^)]+)?\)/g)]
+      .map((match) => match[1])
+      .filter((route) => executionRoutes.has(route));
 
     for (const route of routes) {
       const slug = route.replace(/^\//, '');
