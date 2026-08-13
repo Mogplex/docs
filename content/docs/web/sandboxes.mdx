@@ -1,6 +1,6 @@
 ---
 title: Sandboxes
-description: Use the Sandboxes view at /spaces/sandboxes to inspect running and pending previews across repos, open a workspace pinned to a sandbox, and manually stop or remove stale runtimes.
+description: Use Sandbox compute for commands and previews, select the correct runtime in Control, and understand Stop or Delete without changing Worktrees.
 ---
 
 Sandboxes is the cross-repo runtime view for Mogplex previews.
@@ -8,6 +8,10 @@ Sandboxes is the cross-repo runtime view for Mogplex previews.
 In the app, this surface lives at `/spaces/sandboxes`. Use it when
 [Projects](/web/spaces) is too repo-centric and you need to operate the
 sandbox fleet directly.
+
+A Sandbox is remote compute, not a Git checkout. A
+[Worktree](/web/worktrees) is a separate task checkout inside selected Sandbox
+compute. Starting a Sandbox does not create or increment a Worktree.
 
 ## Use Sandboxes when
 
@@ -64,15 +68,34 @@ problem instead of only the preview state.
 
 ### Stop
 
-Use **Stop** for a sandbox that is still running, creating, or installing and
-should not keep consuming time or billing.
+Use **Stop compute** for a Sandbox that should stop consuming runtime. Stop
+removes compute, snapshots, sessions, and preview. It keeps the Sandbox record
+in `stopped` state, so Control can restart the same record.
+
+Worktree records and Git branches remain. Their checkouts are unavailable while
+compute is stopped. Preserve important Git changes before Stop.
 
 ### Delete
 
-**Delete** removes the sandbox record and does a best-effort teardown of the
-remote sandbox.
+**Delete sandbox** removes compute, snapshots, sessions, preview, and the
+Sandbox record.
 
-Use it for stale or broken records you no longer need to keep around.
+Worktree records and Git branches remain, but their checkouts become
+unavailable through that Sandbox. Use Delete for stale or broken records that
+must disappear. Delete is not Stop.
+
+## How Sandboxes relate to Worktrees
+
+One Sandbox can host zero or more Worktrees. Each Worktree still owns a
+different task ID, branch, and checkout path.
+
+Sandbox lifecycle actions do not archive or prune Worktrees. Worktree actions
+do not stop or delete Sandbox compute.
+
+Use the separate **Sandboxes** and **Worktrees** tabs in Control. Their counts
+measure different resources. Read
+[Control Execution Environments](/guides/control-execution-environments) for
+the complete decision table and lifecycle consequences.
 
 ## How Sandboxes relates to Projects
 
@@ -107,9 +130,8 @@ the work you care about.
 
 ### A sandbox is clearly stale
 
-Use **Delete** when the record should disappear entirely. Use **Stop** when you
-want to halt the current runtime but keep the record around long enough to
-inspect it.
+Use **Delete sandbox** when the record should disappear. Use **Stop compute**
+when you want to halt the runtime and keep the record for restart.
 
 ## Failure modes that matter
 
@@ -122,3 +144,12 @@ inspect it.
   debugging from the repo alone.
 - **Delete feels destructive**: it is meant for stale or broken runtime
   records, not for routine day-to-day stop and start control.
+
+## Read next
+
+<Cards>
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
+  <Card title="Worktrees" href="/web/worktrees" />
+  <Card title="Projects" href="/web/spaces" />
+  <Card title="Observability" href="/web/observability" />
+</Cards>

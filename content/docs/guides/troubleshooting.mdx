@@ -20,6 +20,7 @@ work started.
 | Route exists but no run appears | route source, coverage, enabled state, or published automation |
 | Run appears but fails | runtime, model, tool, connection, sandbox, or prompt |
 | Preview is unhealthy | repo settings, managed sandbox access, optional Vercel metadata, sandbox state, or dev command |
+| Coding task uses the wrong checkout | selected Sandbox, task identity, Worktree binding, or checkout path |
 | Model is missing from a picker | model catalog, plan access, default model, or repo exclusion |
 | CLI signs in but state looks wrong | CLI auth, account state, local config, or synced hosted state |
 
@@ -37,6 +38,8 @@ work started.
 6. Check [Slack](/integrations/slack) when Slack is the source surface.
 7. Check [Observability](/web/observability) only after a run exists.
 8. Check [Sandboxes](/web/sandboxes) when a preview/runtime is involved.
+9. Check [Worktrees](/web/worktrees) when a planned coding task uses an
+   isolated checkout.
 
 ## Repo is visible but events do not fire
 
@@ -153,6 +156,29 @@ tool, cost, or error trail.
 Use [Sandbox Setup Checklist](/guides/sandbox-setup-checklist) when launch
 settings are still uncertain.
 
+## Worktree or checkout is wrong
+
+Start with
+[Control Execution Environments](/guides/control-execution-environments).
+Confirm that the task used the selected Sandbox and an active persisted
+Worktree.
+
+Check these values separately:
+
+- mission and task ID
+- Worktree record ID and status
+- Git branch
+- checkout path
+- Sandbox record ID
+- provider runtime ID
+
+Do not infer a Worktree from a Sandbox branch. Do not move a worker to another
+checkout to work around a binding error.
+
+If the Sandbox is stopped, restart the same Sandbox record before using the
+checkout. If the Sandbox record is gone, follow
+[Worktree failure recovery](/web/worktrees#failure-recovery).
+
 ## API request fails
 
 Start with [API Authentication](/reference/api#authentication) and
@@ -191,6 +217,8 @@ listing.
   <Card title="GitHub Routing Cookbook" href="/guides/github-routing-cookbook" />
   <Card title="Observability Runbook" href="/guides/observability-runbook" />
   <Card title="Sandbox Setup Checklist" href="/guides/sandbox-setup-checklist" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
+  <Card title="Worktrees" href="/web/worktrees" />
   <Card title="Security and Data Handling" href="/reference/security-and-data-handling" />
   <Card title="Glossary" href="/reference/glossary" />
 </Cards>

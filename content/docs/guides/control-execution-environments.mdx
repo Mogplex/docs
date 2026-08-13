@@ -1,0 +1,165 @@
+---
+title: Control Execution Environments
+description: Choose Sandbox compute or a task Worktree in Control. Learn the exact effect of each lifecycle action.
+---
+
+Control separates compute from task checkouts.
+
+- A **Sandbox** supplies remote compute for commands and previews.
+- A **Worktree** supplies one planned coding task with an isolated Git checkout.
+
+A Sandbox can exist without a Worktree. A Sandbox can also host several
+Worktrees. Sandbox start never creates a Worktree.
+
+## Choose the resource from the outcome
+
+| Outcome | Use | What Mogplex must not infer |
+| --- | --- | --- |
+| Preview or runtime | Start or select a Sandbox | Do not create a Worktree. |
+| Shell command | Run the command in the selected Sandbox | Do not infer a Worktree from the Sandbox branch. |
+| Single isolated coding task | Plan the task. Select a Sandbox. Create a Worktree. Start the worker. | Do not start a worker without a persisted Worktree. |
+| Parallel coding tasks | Create one Worktree per task. The Worktrees can share one Sandbox. | Do not share a checkout or task ID. |
+| Stop compute | Stop the Sandbox | Do not archive or prune Worktrees. |
+| Archive a checkout | Archive the Worktree | Do not stop Sandbox compute or remove the checkout. |
+| Prune a checkout | Prune an archived Worktree | Do not delete the Sandbox or Git branch. |
+| Delete a runtime record | Delete the Sandbox record | Do not report this action as Stop. Worktree records and branches remain. |
+
+## How Control shows the resources
+
+Control has separate **Sandboxes** and **Worktrees** tabs. Each tab has its own
+count.
+
+The Sandboxes tab shows compute identity, runtime status, preview, recent
+output, selection, and lifecycle actions. A branch appears only as repository
+context.
+
+The Worktrees tab shows task ID, branch, checkout path, Sandbox binding, worker
+run, and Git actions. The Sandbox binding is a relationship, not the Worktree
+identity.
+
+The selected Sandbox drives Control chat commands and preview. When several
+Sandboxes exist, select one before execution. Mogplex must not choose an
+unrelated Sandbox from account order or old activity.
+
+## Isolated coding flow
+
+Use this sequence for a coding task:
+
+```text
+mission
+└── planned task
+    └── selected Sandbox
+        └── persisted Worktree
+            ├── task branch
+            ├── exact checkout path
+            └── worker in that checkout
+```
+
+1. Select the repository for the Control session.
+2. Start or select the Sandbox that will supply compute.
+3. Plan the mission so that each coding unit has a task ID.
+4. Create one Worktree for each task that needs an isolated checkout.
+5. Start the worker only after the Worktree becomes active.
+6. Inspect Diff or Rebase in the same Worktree.
+7. Archive the Worktree when the task becomes inactive.
+8. Prune the archived checkout only when its files are no longer necessary.
+
+Preview-only, inspection-only, and command-only work stops after step 2. These
+requests do not need a task Worktree.
+
+## Lifecycle actions
+
+### Stop Sandbox compute
+
+**Stop compute** removes active compute, snapshots, sessions, and preview. The
+Sandbox record remains in `stopped` state. Worktree records and Git branches
+remain.
+
+Checkout data is unavailable after compute stops. Restart the same Sandbox
+record to recover the resource relationship. Preserve important Git changes
+before Stop.
+
+### Delete a Sandbox record
+
+**Delete sandbox** removes compute, snapshots, sessions, preview, and the
+Sandbox record. Worktree records and Git branches remain, but their checkouts
+become unavailable through that Sandbox.
+
+Delete is not Stop. Use Delete only when the runtime record must disappear.
+
+### Archive a Worktree
+
+**Archive worktree** marks the task checkout inactive. The checkout, branch,
+Worktree record, and Sandbox compute remain.
+
+Use Archive when the task is complete or paused and its files must remain.
+
+### Prune a Worktree
+
+**Prune checkout** removes an archived checkout and releases its task binding.
+The Git branch, pruned Worktree record, and Sandbox compute remain.
+
+Prune never means delete the branch. Archive the Worktree before pruning it.
+
+## What survives each action
+
+| Action | Compute | Sandbox record | Worktree record | Checkout | Branch |
+| --- | --- | --- | --- | --- | --- |
+| Stop | Removed | Kept | Kept | Unavailable | Kept |
+| Delete | Removed | Removed | Kept | Unavailable | Kept |
+| Archive | Unchanged | Kept | Kept | Kept | Kept |
+| Prune | Unchanged | Kept | Kept | Removed | Kept |
+
+## How agents choose tools
+
+Control gives the agent only implemented tools that match the active context.
+The agent follows these resource rules:
+
+- use Sandbox start when the user asks for a runtime or preview
+- use command execution in the selected Sandbox for shell work
+- plan tasks before isolated coding work
+- create a Worktree only for a planned task that needs an isolated checkout
+- start a worker only after an active persisted Worktree exists
+- keep Sandbox lifecycle state separate from Worktree lifecycle state
+
+If exactly one repo-scoped Sandbox is running, command execution can use it as
+a fallback. If none is running, command execution can start one for the active
+repository. The result identifies the resolved Sandbox. Neither path creates a
+Worktree.
+
+## Public API and MCP boundary
+
+The public [REST API](/reference/api#sandboxes) and [Mogplex MCP tools](/mcp/tools)
+currently expose Sandbox and run operations. They do not expose Control's
+internal Worktree lifecycle tools as public MCP calls.
+
+Use the Control Worktrees tab for the shipped Worktree actions described here.
+Do not assume that a similarly named external MCP tool exists.
+
+## Diagnose a mismatch
+
+When work uses the wrong resource, capture these separate values:
+
+- Sandbox record ID
+- provider runtime ID
+- mission and task ID
+- Worktree record ID
+- branch
+- checkout path
+
+Then inspect [Observability](/web/observability). Resource telemetry records the
+selected IDs, the decision source, and rejected mismatch reasons. Operators do
+not have to infer identity from prose.
+
+Use [Worktrees failure recovery](/web/worktrees#failure-recovery) when a
+checkout is stale, archived, pruned, or bound to missing compute.
+
+## Read next
+
+<Cards>
+  <Card title="Worktrees" href="/web/worktrees" />
+  <Card title="Sandboxes" href="/web/sandboxes" />
+  <Card title="Projects" href="/web/spaces" />
+  <Card title="How Mogplex Fits Together" href="/platform/how-mogplex-fits-together" />
+  <Card title="Observability Runbook" href="/guides/observability-runbook" />
+</Cards>

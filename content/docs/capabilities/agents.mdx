@@ -77,6 +77,19 @@ when appropriate.
 - [Mogplex CLI](/platform/cli) can supervise local runs with model, approval,
   diff, memory, and MCP controls.
 
+## How Control agents use execution resources
+
+Control agents select resources from the requested outcome. Preview and shell
+work use Sandbox compute without a Worktree. A planned coding task gets a
+Worktree only when it needs an isolated checkout.
+
+A worker starts after the task has an active persisted Worktree. It uses that
+Worktree's exact Sandbox binding and checkout path. Sandbox lifecycle actions
+do not archive or prune Worktrees.
+
+Read [Control Execution Environments](/guides/control-execution-environments)
+for the complete agent decision contract.
+
 ## Read next
 
 <Cards>
@@ -86,4 +99,5 @@ when appropriate.
   <Card title="Skills, Rules, and Context" href="/web/agents/skills-rules-context" />
   <Card title="Model Selection and Cost" href="/guides/model-selection-and-cost" />
   <Card title="Routing" href="/capabilities/routing" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
 </Cards>

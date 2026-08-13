@@ -10,6 +10,11 @@ This matters because the same request can travel through different surfaces:
 the CLI composer, a GitHub mention, a Trigger, an Assignment, an Automation, or
 a headless run.
 
+For Control work, describe the outcome instead of asking for a resource by
+habit. Preview and shell work use Sandbox compute. A planned coding task gets a
+Worktree only when it needs an isolated checkout. See
+[Control Execution Environments](/guides/control-execution-environments).
+
 ## Give the agent a real job
 
 Start with the outcome, not the implementation detail:
@@ -37,6 +42,7 @@ Add boundaries when they matter:
 - whether tests, lint, typecheck, or build should run
 - whether the agent should open a PR
 - whether the route should stay on the current branch or create a new one
+- whether separate coding tasks need isolated Worktrees
 - whether a GitHub reply should be posted or only local changes should be made
 
 Examples:
@@ -251,5 +257,6 @@ needed.
   <Card title="Common Use Cases" href="/guides/common-use-cases" />
   <Card title="Choose the Right Routing Surface" href="/web/guides/choose-routing-surface" />
   <Card title="GitHub Mention Routing" href="/web/guides/github-mention-routing" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
   <Card title="Slash Commands" href="/cli/guides/slash-commands" />
 </Cards>

@@ -1,6 +1,6 @@
 ---
 title: Platform
-description: Understand the Mogplex app, CLI, headless run surface, projects, sandboxes, and hosted API as one connected platform.
+description: Understand the Mogplex app, CLI, projects, Sandbox compute, Worktree checkouts, headless runs, and hosted API as one platform.
 ---
 
 Mogplex has several product surfaces, but they share one platform: account
@@ -31,9 +31,9 @@ Start here when you need to understand where work should happen.
     description="Script and CI entry points for starting runs and tailing structured events without the interactive cockpit."
   />
   <Card
-    title="Projects and Sandboxes"
+    title="Projects, Sandboxes, and Worktrees"
     href="/platform/projects-and-sandboxes"
-    description="Repo import, workspace launch, repo settings, preview runtimes, pinned workspaces, and stale sandbox cleanup."
+    description="Repo context, workspace launch, Sandbox compute, selected runtimes, task Worktrees, and independent lifecycle actions."
   />
   <Card
     title="Sandbox Setup Checklist"
@@ -60,7 +60,8 @@ Start here when you need to understand where work should happen.
   model choice, cost, export, and attach mode.
 - Headless runs use the same platform API when the job starts from CI, scripts,
   dashboards, or scheduled automation.
-- Projects and sandboxes connect repo identity to execution state.
+- Projects set repo context. Sandboxes supply compute. Worktrees isolate task
+  checkouts inside selected compute.
 
 For the object model behind those surfaces, read
 [How Mogplex Fits Together](/platform/how-mogplex-fits-together).

@@ -1,6 +1,6 @@
 ---
 title: How Mogplex Fits Together
-description: Understand the core Mogplex object model from account state to GitHub coverage, repos, agents, routing, runs, sandboxes, and observability.
+description: Understand the Mogplex object model from account state and routing to missions, tasks, Worktrees, Sandbox compute, runs, and observability.
 ---
 
 Mogplex is easier to debug once the platform objects have clear ownership.
@@ -9,9 +9,16 @@ Most product questions reduce to this chain:
 
 ```text
 account -> GitHub installation -> repo -> agent -> route -> run -> observability
-                                      \
-                                       sandbox
+                                      |
+                                      +-> mission -> task -> Worktree
+                                                               |
+                                                               v
+                                                        Sandbox compute
 ```
+
+A run can use Sandbox compute without a Worktree. A planned coding task uses a
+Worktree when it needs an isolated checkout. The Worktree binds explicitly to
+one Sandbox, branch, task, and checkout path.
 
 Each object answers a different question.
 
@@ -25,7 +32,10 @@ Each object answers a different question.
 | Agent | Reusable behavior, slug, prompt, model, skills, rules, and context | the worker itself behaves wrong or a mention slug does not resolve |
 | Route | The rule that decides what wakes work | the wrong event, repo, or workflow starts work |
 | Run | One execution of Mogplex work | work started and you need status, events, or final state |
-| Sandbox | Runtime and preview environment for repo work | previews, workspace sessions, branches, ports, env, or stale runtimes are involved |
+| Mission | The coordinated objective and its task plan | Control must divide a larger objective into task identities |
+| Task | One planned unit of mission work | a coding unit needs its own branch and checkout |
+| Worktree | One task-specific Git checkout, branch, path, and Sandbox binding | a coding task needs isolation, Diff, Rebase, Archive, or Prune |
+| Sandbox | Remote compute for commands, previews, and Worktree checkouts | runtimes, workspace sessions, ports, env, selection, or stale compute are involved |
 | Observability record | Captured runtime details | you need calls, tools, errors, tokens, cost, pressure, or sandbox linkage |
 
 ## Ownership map
@@ -43,6 +53,7 @@ Each object answers a different question.
 | [CLI](/platform/cli) | local run supervision |
 | [Headless Runs](/platform/headless-runs) | script and CI execution |
 | [Sandboxes](/web/sandboxes) | cross-repo runtime operations |
+| [Worktrees](/web/worktrees) | task checkout identity and Git lifecycle |
 | [Observability](/web/observability) | runtime inspection |
 
 ## The important splits
@@ -67,15 +78,24 @@ Do not create a new agent when the real problem is that the wrong Trigger,
 Assignment, or Automation points at it. Do not edit routing when the real
 problem is an agent slug, model, prompt, skill, rule, or context library.
 
-### Run state vs sandbox state
+### Run, Worktree, and Sandbox state
 
 A run is the unit of work.
 
-A sandbox is the runtime environment the work may use.
+A Worktree is an isolated Git checkout for one planned coding task.
 
-Some failures are run failures. Some are preview/runtime failures. If a run is
-linked to a sandbox, inspect both [Observability](/web/observability) and
-[Sandboxes](/web/sandboxes) before changing prompts or routing.
+A Sandbox is the remote compute environment the work may use. One Sandbox can
+host no Worktrees or multiple Worktrees.
+
+Some failures belong to a run. Some belong to a checkout. Others belong to
+compute or preview. Inspect [Observability](/web/observability),
+[Worktrees](/web/worktrees), and [Sandboxes](/web/sandboxes) before changing
+prompts or routing.
+
+Sandbox lifecycle actions never archive or prune Worktrees. Worktree lifecycle
+actions never stop or delete Sandbox compute. See
+[Control Execution Environments](/guides/control-execution-environments) for
+the complete decision and lifecycle tables.
 
 ### Interactive vs unattended execution
 
@@ -93,8 +113,11 @@ when another system should start work unattended.
 5. Triggers, Assignments, or Automations bind that behavior to events or repos.
 6. Slack channel links can also bind a Slack channel to one repo.
 7. A run starts.
-8. A sandbox may launch or attach.
-9. Observability captures the runtime story.
+8. A mission can create task identities for coordinated Control work.
+9. A Sandbox can launch or attach when the work needs compute.
+10. A planned coding task can create a Worktree in that selected Sandbox.
+11. A worker uses the Worktree's exact checkout path.
+12. Observability captures the runtime and resource story.
 
 If the chain breaks, debug the earliest missing object first.
 
@@ -104,6 +127,8 @@ If the chain breaks, debug the earliest missing object first.
   <Card title="Quickstart" href="/quickstart" />
   <Card title="Routing" href="/capabilities/routing" />
   <Card title="Slack" href="/integrations/slack" />
+  <Card title="Control Execution Environments" href="/guides/control-execution-environments" />
+  <Card title="Worktrees" href="/web/worktrees" />
   <Card title="Troubleshooting" href="/guides/troubleshooting" />
   <Card title="Glossary" href="/reference/glossary" />
 </Cards>
