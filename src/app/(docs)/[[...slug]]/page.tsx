@@ -9,6 +9,7 @@ import {
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
+import { DocsBreadcrumbs } from '@/components/docs-breadcrumbs';
 import { DocsSiteFooter } from '@/components/docs-site-footer';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
@@ -29,11 +30,7 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
       toc={page.data.toc}
       full={page.data.full}
       className="docs-article"
-      breadcrumb={{
-        includeRoot: true,
-        includePage: true,
-        className: 'docs-breadcrumb',
-      }}
+      breadcrumb={{ enabled: false }}
       tableOfContentPopover={{ enabled: false }}
       footer={{ children: <DocsSiteFooter /> }}
       tableOfContent={{
@@ -46,6 +43,7 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
         ),
       }}
     >
+      <DocsBreadcrumbs url={page.url} />
       <DocsTitle className="docs-title">{page.data.title}</DocsTitle>
       <DocsDescription className="docs-lead">{page.data.description}</DocsDescription>
       <DocsBody className="docs-body">
