@@ -2,16 +2,10 @@
 
 import Link from 'next/link';
 import { ChevronDown, Menu } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { useDocsLayout } from 'fumadocs-ui/layouts/docs';
 import { useEffect, useId, useRef, useState } from 'react';
-import { docsSectionItems, MogplexWordmark } from '@/lib/layout.shared';
+import { MogplexWordmark } from '@/lib/layout.shared';
 import { ThemeSwitcher } from '@/components/theme-switcher';
-
-function isActivePath(pathname: string, href: string) {
-  if (href === '/') return pathname === href;
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
 
 function useDisclosureMenu() {
   const [open, setOpen] = useState(false);
@@ -42,51 +36,6 @@ function useDisclosureMenu() {
   }, [open]);
 
   return { containerRef, open, setOpen, triggerRef };
-}
-
-function DocsSectionPicker({ pathname }: { pathname: string }) {
-  const menuId = useId();
-  const { containerRef, open, setOpen, triggerRef } = useDisclosureMenu();
-
-  return (
-    <div className="docs-section-picker" ref={containerRef}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="docs-section-trigger"
-        aria-label="Select documentation section"
-        aria-controls={menuId}
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span>Docs</span>
-        <ChevronDown aria-hidden="true" strokeWidth={1.5} />
-      </button>
-
-      <nav
-        id={menuId}
-        className="docs-header-popover docs-section-popover"
-        aria-label="Documentation sections"
-        hidden={!open}
-      >
-        {docsSectionItems.map((item) => {
-          const active = isActivePath(pathname, item.href);
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              data-active={active}
-              aria-current={active ? 'page' : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-    </div>
-  );
 }
 
 function DashboardMenu() {
@@ -134,7 +83,6 @@ function DashboardMenu() {
 }
 
 export function DocsHeader() {
-  const pathname = usePathname();
   const { isNavTransparent, slots } = useDocsLayout();
   const SidebarTrigger = slots.sidebar.trigger;
   const SearchTrigger = slots.searchTrigger && slots.searchTrigger.sm;
@@ -167,10 +115,6 @@ export function DocsHeader() {
         <Link className="docs-header-brand" href="/" aria-label="Mogplex documentation home">
           <MogplexWordmark />
         </Link>
-
-        <div className="docs-header-center">
-          <DocsSectionPicker pathname={pathname} />
-        </div>
 
         <div className="docs-header-actions">
           <ThemeSwitcher />

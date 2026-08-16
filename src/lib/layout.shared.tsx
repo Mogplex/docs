@@ -10,8 +10,6 @@ export const docsNavItems = [
   { label: 'Reference', href: '/reference' },
 ] as const;
 
-export const docsSectionItems = [{ label: 'Overview', href: '/' }, ...docsNavItems] as const;
-
 export const docsSearchLinks: [string, string][] = [
   ['Overview', '/'],
   ['Quickstart', '/quickstart'],
