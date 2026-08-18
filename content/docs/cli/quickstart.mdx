@@ -90,6 +90,9 @@ See [Concepts → Attach](/cli/concepts/attach).
 
 - Login succeeds but no models available — check [Available Models](/web/models)
   and the account plan. Account-backed login inherits managed hosted access.
+- A run says that the model returned no output — open `/model`. Choose another
+  model, then retry the task. Mogplex does not retry an empty response because
+  the retry can add cost.
 - Header says `transport: offline` — core is unreachable. Check network and retry; the daemon transport surfaces a reconnect banner.
 - A slash command "doesn't work" — check `/help` for the actual registry.
 
