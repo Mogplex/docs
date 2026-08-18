@@ -178,3 +178,10 @@ test('internal links across public docs resolve to existing routes', async () =>
     `expected to check more than 100 internal docs routes, checked ${checkedRoutes}`,
   );
 });
+
+test('support links to the current docs repository', async () => {
+  const support = await read('content/docs/support.mdx');
+
+  assert.doesNotMatch(support, /github\.com\/webrenew\/mogplex-docs/);
+  assert.match(support, /github\.com\/Mogplex\/docs/);
+});
