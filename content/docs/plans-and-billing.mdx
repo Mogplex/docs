@@ -61,6 +61,12 @@ The new balance appears after Stripe confirms the payment.
 Mogplex shows recent usage costs in Billing. These costs use the available
 inference-credit balance.
 
+Mogplex lists each model call after the cost settles. For a code review, the
+entry shows the repository and PR number. Billing rounds the displayed amount
+to the nearest cent. The credit ledger keeps the provider cost to eight decimal
+places. A new entry can take up to 10 minutes to appear while Mogplex confirms
+the final provider cost.
+
 | Usage | Rate |
 | --- | ---: |
 | Model inference | Model provider price, with no markup |
@@ -140,6 +146,8 @@ does not display or store the full card number in the Billing page.
 
 Select **Update payment method** to make changes in Stripe. Mogplex creates an
 invoice for each plan payment, add-on payment, and inference-credit payment.
+Usage charges appear in **Recent usage costs**. They do not produce Stripe
+invoices. They spend credit that is already in the account.
 
 Billing shows the latest 20 invoices. Select an invoice number to open its
 hosted invoice or PDF. Select **View all invoices** to open the complete Stripe
