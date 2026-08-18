@@ -1,44 +1,165 @@
 ---
 title: Plans & Billing
-description: Mogplex plans and billing documentation is coming soon. This page is the stable home for plan, entitlement, usage, invoice, and billing setup docs.
+description: Compare Mogplex plans and costs. Learn how to manage credit, payment methods, and invoices.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-Mogplex plans and billing docs are coming soon.
+Use this guide to choose a plan and understand each charge. For current account
+details, open [Settings → Billing](https://mogplex.com/settings/billing).
 
-This page is a placeholder so pricing, entitlement, usage-limit, invoice, and
-billing setup links have a stable home while the billing surface ships.
+## Individual plans
 
-<Callout title="Coming soon">
-  Detailed plan comparison, account billing, included model usage, managed
-  sandbox access, usage limits, invoices, payment method management, and team
-  billing controls will be documented here when they are available.
+Each Individual plan includes one named user, parallel agent runs, Storage, and
+a monthly inference-credit grant.
+
+| Plan | Monthly price | Annual price | Parallel agent runs | Storage | Inference credit each month |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Pro | $20 | $204 | 5 | 1 GB | $20 |
+| Plus | $100 | $1,020 | 25 | 5 GB | $100 |
+| Max | $200 | $2,040 | 50 | 10 GB | $200 |
+
+Annual plans save 15 percent. Stripe bills the full annual price once each year.
+Mogplex adds the included inference credit each month. This also applies to
+annual plans.
+
+Business and Enterprise plans use custom capacity, invoiced billing, and
+contract terms. Email [enterprise@mogplex.com](mailto:enterprise@mogplex.com)
+to discuss a company plan.
+
+See [Mogplex pricing](https://mogplex.com/pricing) for the public pricing page.
+
+## Inference credit
+
+$1 of inference credit pays for $1 of model usage at the model provider price.
+Included credit resets each month. Purchased credit never expires.
+
+Billing offers these one-time purchases:
+
+- Pay $1 and get $1 of inference credit.
+- Pay $10 and get $10 of inference credit.
+- Pay $25 and get $25 of inference credit.
+- Pay $100 and get $100 of inference credit.
+- Pay $250 and get $250 of inference credit.
+- Pay $500 and get $500 of inference credit.
+- Pay $1,000 and get $1,000 of inference credit.
+
+Mogplex uses included credit before purchased credit. The **Available now**
+amount excludes money reserved for work that is still in progress.
+
+To add credit:
+
+1. Open **Settings → Billing**.
+2. Find **Add inference credit** below the current plan.
+3. Select an amount.
+4. Complete the Stripe checkout.
+
+The new balance appears after Stripe confirms the payment.
+
+## Hosted usage rates
+
+Mogplex shows recent usage costs in Billing. These costs use the available
+inference-credit balance.
+
+| Usage | Rate |
+| --- | ---: |
+| Model inference | Model provider price, with no markup |
+| Managed services | 1.25 times the provider cost |
+| Sandbox runtime | $0.0075 per minute |
+| Sandbox transfer | $0.19 per GB |
+
+Managed services include Trigger.dev, functions, email, storage operations,
+and transfer. Mogplex charges for sandbox runtime only while a hosted sandbox
+runs.
+Snapshots also count toward Storage.
+
+If you add your own AI Gateway or model-provider key, that provider bills the
+model calls. Mogplex still lists non-AI hosting costs separately.
+
+## Parallel agent runs
+
+Parallel agent runs are active runs that work at the same time for one billing
+account. Pending work does not use a run slot.
+
+When all slots are in use, new work waits for a slot. A slot becomes available
+when a run finishes or you stop one.
+
+Billing shows the plan limit as a static entitlement. It does not show a live
+usage meter. Use the active-run surfaces to see current work and find the
+runs that use slots.
+
+If your account can buy more parallel agent runs, Billing shows these recurring
+add-ons:
+
+| Add-on | Price |
+| --- | ---: |
+| 10 more parallel agent runs | $5 per month, per quantity |
+| 50 more parallel agent runs | $15 per month, per quantity |
+
+Some accounts cannot buy new parallel-run add-ons. Billing only shows the
+actions available for the selected account.
+
+## Storage add-ons
+
+Storage add-ons increase retained storage. The plan stays the same.
+
+| Add-on | Price |
+| --- | ---: |
+| 1 GB | $2 per month, per quantity |
+| 10 GB | $15 per month, per quantity |
+| 50 GB | $60 per month, per quantity |
+| 100 GB | $100 per month, per quantity |
+
+For each capacity change, Billing shows the new limit, monthly change, amount
+due now, and effective date before confirmation. Increases take effect after
+payment. Decreases and cancellations take effect at the end of the billing
+period.
+
+## Manage the subscription
+
+The current-plan card shows:
+
+- the monthly plan cost
+- whether Stripe bills the plan monthly or yearly
+- the next due date
+- the plan's parallel-run capacity
+- the protected payment-method summary
+- recent invoices
+
+For an annual plan, **Monthly plan cost** shows the annual price divided by 12.
+Stripe still bills the full annual amount on the due date.
+
+Select **Manage plan** to open the Stripe billing portal. Use the portal to
+change or cancel the plan. Plan changes and cancellations take effect at the
+end of the current billing period.
+
+## Payment methods and invoices
+
+Mogplex shows only the card brand, last four digits, and expiration date. It
+does not display or store the full card number in the Billing page.
+
+Select **Update payment method** to make changes in Stripe. Mogplex creates an
+invoice for each plan payment, add-on payment, and inference-credit payment.
+
+Billing shows the latest 20 invoices. Select an invoice number to open its
+hosted invoice or PDF. Select **View all invoices** to open the complete Stripe
+history.
+
+Only the personal account owner or a company owner or admin can manage billing.
+Other company members cannot view protected card and invoice details.
+
+## Get billing help
+
+Email [support@mogplex.com](mailto:support@mogplex.com) for billing help. Include
+the account name, invoice number, charge date, and charge amount when available.
+Do not send a full card number, security code, password, API key, or access
+token.
+
+<Callout title="Check the selected account">
+  Billing follows the personal or company account selected in Mogplex. Confirm
+  the account name at the top of Billing before you report an invoice that you
+  cannot find or an incorrect balance.
 </Callout>
-
-Mogplex is moving to managed billing for hosted work. That means hosted model
-access and sandbox access come from the Mogplex account plan rather than
-external model credentials or external sandbox accounts.
-
-## What will live here
-
-- plan tiers and included usage
-- how hosted runs, CLI runs, and account usage are counted
-- where admins manage payment methods and invoices
-- how usage limits and overages behave
-- how managed model and sandbox access are included in each plan
-- which roles can view or change billing state
-
-## What to use today
-
-- Use [Settings](/web/settings) for account setup, access tokens,
-  connections, and shared preferences.
-- Use [Available Models](/web/models) for model availability, enabled models,
-  defaults, account access, and CLI sync behavior.
-- Use [Observability](/web/observability) to inspect run health, model calls,
-  tokens, and estimated cost.
-- Use [CLI Cost & Usage](/cli/reference/cost-and-usage) for local cockpit
-  token and cost reporting.
 
 ## Read next
 
@@ -47,4 +168,5 @@ external model credentials or external sandbox accounts.
   <Card title="Available Models" href="/web/models" />
   <Card title="Observability" href="/web/observability" />
   <Card title="CLI Cost & Usage" href="/cli/reference/cost-and-usage" />
+  <Card title="Support" href="/support" />
 </Cards>
