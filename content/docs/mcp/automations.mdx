@@ -12,23 +12,36 @@ a draft, then inspect each run without loading every graph into the listing.
 1. Call `mogplex_list_automations` with a bounded `limit`.
 2. Pass `nextCursor` back as `cursor` when you need another page.
 3. Call `mogplex_get_automation` for the one draft you intend to inspect or change.
-4. Call `mogplex_list_models`, then use `mogplex_set_automation_model` for a narrow model change or `mogplex_update_automation` for a complete graph replacement.
-5. Call `mogplex_publish_automation` after the draft is ready.
-6. Call `mogplex_trigger_automation` with the automation id and repo id.
+4. Call `mogplex_get_automation_schema` for the graph fields and supported combinations. Use `mogplex_set_automation_model` for a model change or `mogplex_update_automation` for a complete graph replacement.
+5. Call `mogplex_validate_automation` with `installationId` and the complete graph. Then save and publish the draft.
+6. After the user authorizes a real run, call `mogplex_trigger_automation` with the automation id and repo id. This is not a dry run. It can incur charges and change the repository.
 7. Inspect execution with `mogplex_list_automation_runs` and `mogplex_get_automation_run_logs`.
 
 ## Create an automation
 
 Call `mogplex_list_repos` first and use the returned positive
 `installation_id`. Call `mogplex_list_agents` before binding an agent node. Then
-call `mogplex_create_automation` with metadata and, optionally, a complete Flow
-graph.
+call `mogplex_list_models` for enabled, available model IDs. Get the graph
+schema and examples from `mogplex_get_automation_schema`.
+
+Validate the graph, then call `mogplex_create_automation`.
+
+Use agent IDs exactly as returned. `preset:NAME` IDs are valid. Mogplex creates
+a private agent copy when you save a draft with a preset.
+
+No separate create-agent tool is necessary. For the native Mogplex harness, set `harness: "mogplex"`,
+`agentId`, and `modelOverride`. Claude Code and Codex use their own harnesses
+and credentials. Do not switch harnesses to avoid an agent binding.
 
 If create receives no graph, Mogplex builds a simple Start → Agent → End draft
 when an agent is available. Set `publish: true` only when the graph should be
 validated and activated immediately.
 
 ## Graph contract
+
+`mogplex_get_automation_schema` returns the supported node types, fields,
+validation rules, and a complete scheduled-task example. Create and update
+also expose the graph schema in their MCP input definitions.
 
 Create and update accept a complete graph object:
 
@@ -59,19 +72,67 @@ execution checks:
 
 - exactly one start node
 - exactly one end node
-- at least one bound agent node
+- at least one agent node
 - valid graph connections and node configuration
-- an enabled model wherever an explicit override is set
+- owned installation, repositories, and agent bindings
+- an enabled, available model for each native Mogplex agent node
 
-Publishing creates an active version. Triggering always runs the published
-version, not an unpublished draft.
+`mogplex_validate_automation` checks these rules. It does not save data,
+create an agent, launch a sandbox, or call a model. Validation is not a check
+of live sandbox capacity or provider credentials.
+
+Publish creates an active version. Trigger always runs the published version,
+not an unpublished draft.
+
+An active version proves publication, not successful execution. Read the run
+and node results before you report that it works.
+
+## Scheduled tasks
+
+Automations support cron directly. Use the `scheduledTask` example returned by
+`mogplex_get_automation_schema` and replace its installation, repository,
+agent, model, and instructions. The start node needs:
+
+```json
+{
+  "label": "Daily maintenance",
+  "event": "schedule",
+  "scheduleCron": "10 7 * * *",
+  "scheduleTimezone": "UTC",
+  "filter": {
+    "scope": "org",
+    "installationIds": [123],
+    "repos": ["owner/repository"]
+  }
+}
+```
+
+Use exactly one repository, identified by `full_name` from
+`mogplex_list_repos`. Connect Start to an agent with `role: "task"`, then End.
+Put the requested work and checks in `systemPromptOverride`.
+
+Task nodes start
+on a new branch from the default branch and can run commands and open a PR.
+Keep `autofix`, `autoMerge`, and `autoRevert` false. Per-tool
+`requireApproval` requires the native Mogplex harness.
+
+The `edit` role fixes an existing PR. It cannot create the first PR for a
+scheduled task, even with a review node before it. A task needs no review
+predecessor. Add one only when a separate analysis step helps.
+
+Include a check for existing PRs in the instructions. This is not an atomic
+duplicate-prevention guarantee. Pause other schedulers that own the same job
+before the handover.
+
+A test run can still create a PR. An expected
+`NO_ACTION` result does not make the run read-only.
 
 ## Change one model safely
 
 Prefer `mogplex_set_automation_model` when only one agent node needs a model
-change. Pass an enabled `modelId`, or `null` to clear the override and inherit
-the default. This avoids sending and replacing the entire graph for a narrow
-edit.
+change. Pass an enabled `modelId`. A native Mogplex node without a model is
+incomplete. Publication rejects that state. This tool changes the model
+without a complete graph replacement.
 
 ## Inspect runs and logs
 
