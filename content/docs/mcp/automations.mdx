@@ -20,8 +20,8 @@ a draft, then inspect each run without loading every graph into the listing.
 ## Create an automation
 
 Call `mogplex_list_repos` first and use the returned positive
-`installation_id`. Call `mogplex_list_agents` before binding an agent node. Then
-call `mogplex_list_models` for enabled, available model IDs. Get the graph
+`installation_id`. Call `mogplex_list_agents` before binding an agent node. Call
+`mogplex_list_models` only when you need an explicit model override. Get the graph
 schema and examples from `mogplex_get_automation_schema`.
 
 Validate the graph, then call `mogplex_create_automation`.
@@ -30,7 +30,11 @@ Use agent IDs exactly as returned. `preset:NAME` IDs are valid. Mogplex creates
 a private agent copy when you save a draft with a preset.
 
 No separate create-agent tool is necessary. For the native Mogplex harness, set `harness: "mogplex"`,
-`agentId`, and `modelOverride`. Claude Code and Codex use their own harnesses
+and `agentId`. Leave `modelOverride` unset or null to use your configured
+Agent/API/MCP default, then your global default and the available-model fallback.
+Mogplex resolves the default when each run starts; it does not pin it in the graph.
+An explicit `modelOverride` takes precedence and remains unchanged when settings change.
+Claude Code and Codex use their own harnesses
 and credentials. Do not switch harnesses to avoid an agent binding.
 
 If create receives no graph, Mogplex builds a simple Start → Agent → End draft
@@ -91,7 +95,7 @@ and node results before you report that it works.
 
 Automations support cron directly. Use the `scheduledTask` example returned by
 `mogplex_get_automation_schema` and replace its installation, repository,
-agent, model, and instructions. The start node needs:
+agent, and instructions. Set a model override only when needed. The start node needs:
 
 ```json
 {
@@ -134,9 +138,21 @@ human review before a merge. Task instructions alone do not enforce that rule.
 ## Change one model safely
 
 Prefer `mogplex_set_automation_model` when only one agent node needs a model
-change. Pass an enabled `modelId`. A native Mogplex node without a model is
-incomplete. Publication rejects that state. This tool changes the model
-without a complete graph replacement.
+change. Pass an enabled `modelId`, or null to return to the configured default.
+Publication checks that an enabled, available model can be resolved, whether
+inherited or explicit. This tool changes the model without a complete graph replacement.
+
+## Cancel a Flow run
+
+Call `mogplex_cancel_automation_run` with `automationId` and the job `runId`
+from `mogplex_list_automation_runs`. Do not pass a Trigger.dev runtime ID.
+This tool requires write scope and applies only to runs of an automation you own.
+`mogplex_cancel_run` cancels one-off agent runs, not Flow runs.
+
+Cancellation stops active work and pending waits. It does not disable the
+schedule or undo completed repository changes. Other queued jobs can start
+when cancellation releases capacity. A run that has already finished returns
+a conflict; inspect its logs before taking another action.
 
 ## Inspect runs and logs
 
@@ -144,3 +160,7 @@ without a complete graph replacement.
 `mogplex_get_automation_run_logs` returns the detailed node runs, dispatch
 events, AI calls, errors, token usage, and review findings for one run. Use the
 run id from the list response rather than repeatedly listing the automation.
+
+Agent node output stores the complete response in `text` and a short preview in
+`text_summary`. Downstream nodes receive the complete response, including decisions
+at the end. Existing run records are not rewritten by this change.
