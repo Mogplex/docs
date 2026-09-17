@@ -19,7 +19,7 @@ For the full decision model, read [Routing](/capabilities/routing) and
 | Review should optionally fix code | Automation |
 | New issues need triage | Assignment for one repo, Trigger for one installation |
 | CI failures need investigation | Assignment or Automation |
-| Scheduled maintenance | Assignment with cron or cron refactor type |
+| Scheduled maintenance | Automation with a schedule trigger and Task node, or a cron assignment |
 | CI should start Mogplex directly | Headless run or v1 API |
 
 ## Bare mention route
@@ -109,7 +109,9 @@ for model calls, tool calls, sandbox linkage, errors, tokens, and cost.
 
 ## Scheduled work
 
-Use [Assignments](/web/assignments) when recurring work belongs to one repo.
+Use an [automation through MCP](/mcp/automations#scheduled-tasks) with a
+schedule trigger and Task node for repository checks and new pull requests.
+[Assignments](/web/assignments) also support recurring work for one repo.
 
 Good examples:
 
