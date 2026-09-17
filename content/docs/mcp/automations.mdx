@@ -166,10 +166,64 @@ Inspect its logs before another action.
 events, AI calls, errors, token usage, and review findings for one run. Use the
 run id from the list response rather than repeatedly listing the automation.
 
-Agent node output stores the complete response in `text` and a short preview in
-`text_summary`. Downstream nodes receive the complete response, even a final
-line such as `DECISION: NO_ACTION`. Older records that contain truncated text keep
-that text. Mogplex cannot restore the omitted output.
+Agent node output stores the complete report in `text` and a short preview in
+`text_summary`. Downstream agents receive a separate `handoff`: a decision,
+summary, report ID, and report length. Full reports do not enter downstream
+prompts or Flow output state.
 
-Keep node reports concise to reduce storage and model input costs. Full output
-can exceed a model's context window. The handoff does not truncate it to fit.
+If Mogplex cannot save the report, the node fails
+before downstream agents start.
+
+### Report a decision
+
+Flow agents receive instructions to include exactly one structured declaration:
+
+```text
+MOGPLEX_FLOW_HANDOFF: {"decision":"NO_ACTION","summary":"Both changes already have open PRs."}
+```
+
+Use the task's decision code, such as `PROCEED`, `NO_ACTION`, or `ESCALATE`.
+Codes use uppercase letters, digits, and underscores, with a maximum of 64
+characters. Summaries contain at most 2,000 characters. These bounds apply to the handoff,
+not the full report.
+
+For CLI review nodes, place the declaration before the
+final `MOGPLEX_REVIEW_RESULT` line.
+
+Mogplex parses the declaration before it builds the preview. The declaration
+can appear after a long report without losing the decision. Plain prose such
+as `DECISION: NO_ACTION` is not a structured declaration.
+
+Absent declarations have status `missing`. Malformed or duplicate declarations
+have status `invalid`. Neither status grants approval to act.
+
+Use If nodes to gate actions on both `decisions.<nodeId>.status` equal to
+`reported` and `decisions.<nodeId>.value` equal to the required code.
+Decision codes do not automatically change graph routing. Do not use summary
+text as the action gate.
+
+### Read the evidence
+
+Native Flow agents receive `listFlowReports(offset)` and
+`readFlowReport(reportId, offset)` tools. These are internal agent tools, not
+additional MCP tools. Reads check the current job, owner, and upstream report
+references.
+
+Each read returns up to 20,000 characters and a `nextOffset`.
+Offsets use JavaScript string positions. Reads are repeatable, with no lifetime
+read limit.
+
+Claude Code and Codex receive full report files plus an `index.jsonl` file under
+`/tmp/mogplex-flow-reports/<jobRunId>/`. The prompt names the index. Agents can
+read file ranges as needed.
+
+These files stay outside the repository checkout.
+The node-run record remains the durable source.
+
+The inline report context contains at most 16,000 characters across all reports. If some
+reports do not fit, the prompt explicitly directs the agent to the complete
+index. An omitted report does not mean `NO_ACTION`.
+
+Older records that contain truncated text keep that text. Mogplex cannot
+restore the omitted output. Full reports still consume storage, and evidence
+reads still consume model input tokens.
