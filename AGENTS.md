@@ -4,6 +4,12 @@
 
 Fumadocs site for Mogplex CLI and Mogplex documentation.
 
+## Pull Requests
+
+- Open ready-for-review pull requests, not drafts. Use a draft only when the user explicitly requests one.
+- Do not use `gh pr create --draft` by default. Verify `isDraft` is `false` after creating a PR.
+- Record dependencies or deployment ordering in the PR description instead of making the PR a draft. Ready for review does not authorize merging or deployment.
+
 ## Local Development
 
 ```bash
