@@ -31,7 +31,8 @@ a private agent copy when you save a draft with a preset.
 
 No separate create-agent tool is necessary. For the native Mogplex harness, set `harness: "mogplex"`,
 and `agentId`. Leave `modelOverride` unset or null to use your configured
-Agent/API/MCP default, then your global default and the available-model fallback.
+Agent/API/MCP default, or your global default when no surface default is set.
+If that model is unavailable, Mogplex applies its available-model fallback policy.
 Mogplex resolves the default when each run starts; it does not pin it in the graph.
 An explicit `modelOverride` takes precedence and remains unchanged when settings change.
 Claude Code and Codex use their own harnesses
@@ -144,15 +145,19 @@ inherited or explicit. This tool changes the model without a complete graph repl
 
 ## Cancel a Flow run
 
-Call `mogplex_cancel_automation_run` with `automationId` and the job `runId`
-from `mogplex_list_automation_runs`. Do not pass a Trigger.dev runtime ID.
-This tool requires write scope and applies only to runs of an automation you own.
+Call `mogplex_cancel_automation_run` with `automationId` and `runId`.
+For `runId`, use the run's `id` from `mogplex_list_automation_runs`, or
+`run.jobRunId` from `mogplex_trigger_automation`.
+Do not use `runtime_run_id` or `run.runtime.runId`. These fields refer to the Trigger.dev runtime, not the Flow job.
+
+This tool needs write scope. It checks ownership of the automation and checks that the job belongs to that automation.
+A trigger also needs access to the target repository.
 `mogplex_cancel_run` cancels one-off agent runs, not Flow runs.
 
 Cancellation stops active work and pending waits. It does not disable the
 schedule or undo completed repository changes. Other queued jobs can start
-when cancellation releases capacity. A run that has already finished returns
-a conflict; inspect its logs before taking another action.
+when cancellation releases capacity. A finished run returns `CONFLICT` (HTTP 409).
+Inspect its logs before another action.
 
 ## Inspect runs and logs
 
@@ -162,5 +167,9 @@ events, AI calls, errors, token usage, and review findings for one run. Use the
 run id from the list response rather than repeatedly listing the automation.
 
 Agent node output stores the complete response in `text` and a short preview in
-`text_summary`. Downstream nodes receive the complete response, including decisions
-at the end. Existing run records are not rewritten by this change.
+`text_summary`. Downstream nodes receive the complete response, even a final
+line such as `DECISION: NO_ACTION`. Older records that contain truncated text keep
+that text. Mogplex cannot restore the omitted output.
+
+Keep node reports concise to reduce storage and model input costs. Full output
+can exceed a model's context window. The handoff does not truncate it to fit.
