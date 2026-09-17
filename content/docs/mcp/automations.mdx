@@ -127,6 +127,10 @@ before the handover.
 A test run can still create a PR. An expected
 `NO_ACTION` result does not make the run read-only.
 
+Task commands have repository write access. `autoMerge: false` disables
+built-in auto-merge, not shell permissions. Use GitHub branch rules to enforce
+human review before a merge. Task instructions alone do not enforce that rule.
+
 ## Change one model safely
 
 Prefer `mogplex_set_automation_model` when only one agent node needs a model
