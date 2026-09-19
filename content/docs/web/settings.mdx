@@ -48,6 +48,8 @@ Settings currently groups together:
 - **Access Tokens** for CLI, API, and script authentication
 - **Preferences** for theme and default model
 - **Models** for the hosted model catalog your account can actually use
+- **Run checks**, one switch for the automatic judgments Mogplex makes about
+  agent work
 
 For the model-specific operating guide, see
 [Available Models](/web/models).
@@ -91,6 +93,43 @@ Two distinctions matter here:
 If a repo shows up in [Projects](/web/spaces) but still cannot participate in
 [Triggers](/web/triggers) or automation, the usual cause is missing App
 coverage for that owner.
+
+## Run checks
+
+While an agent works, a small evaluation model judges what it is doing:
+
+- whether a shell command would destroy something remote, such as a force
+  push or a dropped database
+- whether a command that reported success actually failed
+- whether the agent's final claims, such as "tests pass" or "PR opened", match
+  what its tools did
+
+The same model answers Classify nodes in [Automations](/web/automations).
+
+**Run checks** turns all of that on or off with one switch. It is on by
+default.
+
+| Where the work runs | Who decides | Where the switch is |
+| --- | --- | --- |
+| Inside a team | A team owner or admin | Team Settings, **Models** tab |
+| Outside a team | You | Settings, **Account** tab |
+
+Work inside a team always follows the team's setting, never a member's own.
+Every change to a team's setting is written to the team audit log.
+
+When it is on, short excerpts of commands, tool output, and the agent's final
+message are sent to the evaluation model with secrets removed.
+
+When it is off:
+
+- nothing is sent, and nothing about those judgments is stored
+- a destructive command no longer pauses for approval through this check;
+  your other approval rules and the shell guard still apply
+- a Classify node fails with a message that names this setting, so wire its
+  error path if the flow must keep going
+
+A change can take up to 30 seconds to reach runs that are already in
+progress.
 
 ## Billing and Access
 
