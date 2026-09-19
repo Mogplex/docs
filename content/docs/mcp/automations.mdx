@@ -159,6 +159,22 @@ schedule or undo completed repository changes. Other queued jobs can start
 when cancellation releases capacity. A finished run returns `CONFLICT` (HTTP 409).
 Inspect its logs before another action.
 
+## Delete an automation
+
+Call `mogplex_delete_automation` with `automationId`. This tool needs write
+scope and checks ownership of the automation. Deletion is permanent.
+
+It removes the schedule, the draft, every published version, and the per-node
+run records. Job runs are kept with no automation attached.
+
+An automation with pending or running job runs returns `CONFLICT` (HTTP 409)
+and names those runs. Cancel each one with `mogplex_cancel_automation_run`,
+then delete again. A second delete of the same automation returns `NOT_FOUND`.
+
+Agents should delete only an automation you asked them to remove, or one they
+created as a test. Give a test automation a name that says so, and have the
+agent delete it after it reads the run logs.
+
 ## Inspect runs and logs
 
 `mogplex_list_automation_runs` returns recent execution summaries.
