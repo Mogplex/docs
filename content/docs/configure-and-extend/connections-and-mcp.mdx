@@ -54,28 +54,91 @@ Settings includes MCP presets for common tool providers:
 Some presets use direct credentials. Some use OAuth, including managed auth
 where Mogplex brokers the provider flow.
 
-### Presets that run next to your code
+### How the Trigger preset works
 
-Trigger.dev publishes its MCP server as a local command, not a hosted URL, and
-tools such as `deploy` and `start_dev_server` need your project files. Mogplex
-starts it where the code is:
+One Trigger.dev Personal Access Token gives agents two things.
+
+**API tools that need no sandbox.** Control's coordinator, workspace chat, the
+Slack agent, and runs on the native Mogplex harness get the Trigger.dev
+management API as tools, read and write, called directly from Mogplex servers:
+
+| Area | What agents can do |
+| --- | --- |
+| Projects and tasks | List projects, inspect the deployed worker and each task's payload schema, trigger a task, batch trigger, read batches, reset an idempotency key. |
+| Runs | List and filter runs, read one run with its trace and events, cancel, replay, reschedule, tag, update metadata. |
+| Bulk actions | Cancel or replay many runs by id or filter, then follow or abort the action. |
+| Schedules | List, create, update, activate, deactivate, and delete schedules; list timezones. |
+| Queues | List queues, pause and resume them, override or reset concurrency. |
+| Environment variables | List names, create, update, delete, and import. |
+| Deployments | List deployments, read one, read the current one, promote a version. |
+| Errors | List error groups, read one, resolve, ignore, or reopen it. |
+| Query | Read the schema, run TRQL queries, list dashboards. |
+| Waitpoint tokens and sessions | List, read, create, complete, update, and close. |
+| Docs | Search the Trigger.dev documentation. |
+
+Three things are deliberate:
+
+- Every write names its environment. Reads default to `prod`, but a task never
+  fires, and a schedule never changes, in production because a field was left
+  out.
+- Environment variable values are never returned. Agents see names and can set
+  values, but a value you stored in Trigger.dev does not come back into a
+  conversation.
+- Your token stays on Mogplex servers. Where Trigger.dev accepts one, a call uses
+  a short-lived token scoped to that single operation, the same exchange the
+  official MCP server performs. The remaining management routes only accept an
+  environment key, which Mogplex reads with your token for the length of the
+  turn and never shows to the agent.
+
+**The full MCP server next to your code.** Trigger.dev publishes its MCP server
+as a local command, not a hosted URL, and tools such as `deploy` and
+`start_dev_server` need your project files. Mogplex starts it where the code is:
 
 - In a sandbox, the Claude Code harness launches `npx -y trigger.dev@latest mcp`
   with your token set as `TRIGGER_ACCESS_TOKEN`.
 - In the Mogplex CLI, the same command arrives with your other synced MCP
   servers.
 
-Chat turns that run on Mogplex servers have no filesystem to launch it in, so
-they do not load this preset. Hand Trigger.dev work to a sandbox agent.
-
 To add it, create a Personal Access Token at
 [cloud.trigger.dev/account/tokens](https://cloud.trigger.dev/account/tokens)
-and paste it into the preset. It starts with `tr_pat_`. **Test** confirms that
-Trigger.dev accepts the token; it does not start the server. Mogplex fixes the
-command in the preset, so nothing you type is ever executed.
+(the preset links there) and paste it in. It starts with `tr_pat_`. **Test**
+confirms that Trigger.dev accepts the token and reports the API tool count; it
+does not start the MCP server. Mogplex fixes the command in the preset, so
+nothing you type is ever executed.
 
 Use presets first when one exists. Use manual Add Connection for advanced MCPs
 or REST APIs that do not have a preset yet.
+
+## Where connection tools load
+
+| Surface | Connection tools |
+| --- | --- |
+| Control's coordinator | Every enabled connection in scope for the selected repo. |
+| Workspace chat, Slack agent, native-harness runs | The same set. |
+| Claude Code sandbox runs, Mogplex CLI | MCP connections, synced as MCP config. |
+| Codex sandbox runs | None yet. |
+
+The Control row is the coordinator, the agent you talk to. A worker it delegates
+to is a sandbox run, so it follows the row for its harness.
+
+Control waits up to eight seconds for remote MCP servers when a turn starts. If
+one is slow or down, the turn runs without connection tools instead of hanging.
+
+## Asking before a connection's tools run
+
+By default a connection's tools run without asking, on every surface. You can
+change that per connection: open the connection's menu in **Settings →
+Connections** (or the `auto` control on a row in the Connections pane) and choose
+**Ask before running tools**. The row then shows `asks first`.
+
+| Surface | What "ask" does |
+| --- | --- |
+| Control's coordinator | Each call pauses on an approval card. Approve to run it, deny to skip it. Every request is recorded with your decision. |
+| Workspace chat, Slack agent, native-harness runs | These cannot ask, so they do not load the connection. The agent is told why and points you to Control. |
+| Claude Code sandbox runs, including Control's workers | These cannot ask either, so the connection is left out of the run's MCP config. |
+| Mogplex CLI | The connection still syncs. The CLI runs on your machine and asks through its own permission prompts. |
+
+Choose **Run tools without asking** to switch back.
 
 ## Scope resolution
 
