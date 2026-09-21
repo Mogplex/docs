@@ -54,25 +54,45 @@ Settings includes MCP presets for common tool providers:
 Some presets use direct credentials. Some use OAuth, including managed auth
 where Mogplex brokers the provider flow.
 
-### Presets that run next to your code
+### How the Trigger preset works
 
-Trigger.dev publishes its MCP server as a local command, not a hosted URL, and
-tools such as `deploy` and `start_dev_server` need your project files. Mogplex
-starts it where the code is:
+One Trigger.dev Personal Access Token gives agents two things.
+
+**API tools in every chat and run.** Control, chat, and automations get eight
+tools that call the Trigger.dev API directly from Mogplex servers, so they work
+with no sandbox:
+
+| Tool | What it does |
+| --- | --- |
+| `list_projects` | Projects the token can reach, with the project ref the other tools need. |
+| `get_current_worker` | The deployed worker for an environment and every task with its payload schema. |
+| `trigger_task` | Start a run. The environment is required, so a task never fires in production by default. |
+| `list_runs` | Runs filtered by status, task, tag, version, or period. |
+| `get_run_details` | One run with payload, output, error, and a trimmed trace. |
+| `cancel_run` | Cancel a queued or executing run. |
+| `list_deploys` | Deployments with version, status, and git details. |
+| `search_docs` | Search the Trigger.dev documentation. |
+
+Your token never goes to the run and deployment endpoints. For each call
+Mogplex exchanges it for a short-lived token scoped to that one operation, for
+example `read:runs` to list runs or `write:runs:<run id>` to cancel one run.
+This is the same exchange the official Trigger.dev MCP server performs.
+
+**The full MCP server next to your code.** Trigger.dev publishes its MCP server
+as a local command, not a hosted URL, and tools such as `deploy` and
+`start_dev_server` need your project files. Mogplex starts it where the code is:
 
 - In a sandbox, the Claude Code harness launches `npx -y trigger.dev@latest mcp`
   with your token set as `TRIGGER_ACCESS_TOKEN`.
 - In the Mogplex CLI, the same command arrives with your other synced MCP
   servers.
 
-Chat turns that run on Mogplex servers have no filesystem to launch it in, so
-they do not load this preset. Hand Trigger.dev work to a sandbox agent.
-
 To add it, create a Personal Access Token at
 [cloud.trigger.dev/account/tokens](https://cloud.trigger.dev/account/tokens)
-and paste it into the preset. It starts with `tr_pat_`. **Test** confirms that
-Trigger.dev accepts the token; it does not start the server. Mogplex fixes the
-command in the preset, so nothing you type is ever executed.
+(the preset links there) and paste it in. It starts with `tr_pat_`. **Test**
+confirms that Trigger.dev accepts the token and reports the API tool count; it
+does not start the MCP server. Mogplex fixes the command in the preset, so
+nothing you type is ever executed.
 
 Use presets first when one exists. Use manual Add Connection for advanced MCPs
 or REST APIs that do not have a preset yet.
