@@ -55,9 +55,12 @@ of rotating local shell credentials.
 ## Run Checks
 
 Mogplex judges agent work as it happens with a small evaluation model: command
-risk, hidden command failures, and whether final claims match the tool log.
-Those judgments need short excerpts of commands, tool output, and the agent's
-final message. Secrets are removed before anything is sent or stored.
+risk, hidden command failures, whether final claims match the tool log, and
+which of the memories loaded for a request, and which of the skills available
+to it, the request needed. Those judgments need short excerpts of commands,
+tool output, and the agent's final message, plus your request with the
+memories loaded for it and summaries of the skills available to it. Secrets
+are removed before anything is sent or stored.
 
 This is a choice. A team owner or admin can turn **Run checks** off for the
 team, and any person can turn it off for their work outside a team. With it

@@ -3,7 +3,7 @@ title: MCP tools
 description: Reference the repo, env var, sandbox, automation, model, log, and agent-run tools exposed by the Mogplex MCP endpoint.
 ---
 
-Mogplex exposes 26 user-scoped tools. The client loads their current JSON
+Mogplex exposes 29 user-scoped tools. The client loads their current JSON
 schemas through `tools/list`, validates arguments locally when supported, and
 sends each call to the same service layer used by the v1 API.
 
@@ -13,10 +13,16 @@ sends each call to the same service layer used by the v1 API.
 | --- | --- | --- |
 | `mogplex_list_repos` | `read` | List accessible repos and the GitHub installation id used by automations. |
 | `mogplex_list_agents` | `read` | List user-owned and preset agents available to Flow nodes. |
+| `mogplex_list_skills` | `read` | Search the user's skills. Returns handle, name, and description. |
+| `mogplex_get_skill` | `read` | Read one skill's full instructions by handle. |
 | `mogplex_list_models` | `read` | List enabled model ids. |
 | `mogplex_list_sandboxes` | `read` | List active or recent sandboxes, optionally by repo or status. |
 | `mogplex_create_sandbox` | `write` | Create or reuse a repo and branch sandbox. |
 | `mogplex_get_sandbox_logs` | `read` | Read install logs, dev-server logs, errors, and lifecycle events. |
+
+A run prompt can invoke a skill without fetching it: write `$handle` in the
+`prompt` of `mogplex_start_agent_run`. See
+[Using Skills](/web/agents/using-skills).
 
 `mogplex_create_sandbox` consumes the existing launch event stream and returns
 when the launch succeeds or fails. It does not create a separate status-polling

@@ -103,6 +103,10 @@ While an agent works, a small evaluation model judges what it is doing:
 - whether a command that reported success actually failed
 - whether the agent's final claims, such as "tests pass" or "PR opened", match
   what its tools did
+- which of the memories loaded for a request, and which of the skills
+  available to it, the request actually needed. Skills here means the ones
+  attached to the agent and the ones in your own library. This is recorded
+  only and does not change what is loaded.
 
 The same model answers Classify nodes in [Automations](/web/automations).
 
@@ -118,7 +122,9 @@ Work inside a team always follows the team's setting, never a member's own.
 Every change to a team's setting is written to the team audit log.
 
 When it is on, short excerpts of commands, tool output, and the agent's final
-message are sent to the evaluation model with secrets removed.
+message are sent to the evaluation model with secrets removed. So is your
+request, together with the memories loaded for it and summaries of the skills
+available to it.
 
 When it is off:
 
