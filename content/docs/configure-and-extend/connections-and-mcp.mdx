@@ -59,24 +59,36 @@ where Mogplex brokers the provider flow.
 One Trigger.dev Personal Access Token gives agents two things.
 
 **API tools that need no sandbox.** Workspace chat, the Slack agent, and runs on
-the native Mogplex harness get eight tools that call the Trigger.dev API directly
-from Mogplex servers:
+the native Mogplex harness get the Trigger.dev management API as tools, read and
+write, called directly from Mogplex servers:
 
-| Tool | What it does |
+| Area | What agents can do |
 | --- | --- |
-| `list_projects` | Projects the token can reach, with the project ref the other tools need. |
-| `get_current_worker` | The deployed worker for an environment and every task with its payload schema. |
-| `trigger_task` | Start a run. The environment is required, so a task never fires in production by default. |
-| `list_runs` | Runs filtered by status, task, tag, version, or period. |
-| `get_run_details` | One run with payload, output, error, and a trimmed trace. |
-| `cancel_run` | Cancel a queued or executing run. |
-| `list_deploys` | Deployments with version, status, and git details. |
-| `search_docs` | Search the Trigger.dev documentation. |
+| Projects and tasks | List projects, inspect the deployed worker and each task's payload schema, trigger a task, batch trigger, read batches, reset an idempotency key. |
+| Runs | List and filter runs, read one run with its trace and events, cancel, replay, reschedule, tag, update metadata. |
+| Bulk actions | Cancel or replay many runs by id or filter, then follow or abort the action. |
+| Schedules | List, create, update, activate, deactivate, and delete schedules; list timezones. |
+| Queues | List queues, pause and resume them, override or reset concurrency. |
+| Environment variables | List names, create, update, delete, and import. |
+| Deployments | List deployments, read one, read the current one, promote a version. |
+| Errors | List error groups, read one, resolve, ignore, or reopen it. |
+| Query | Read the schema, run TRQL queries, list dashboards. |
+| Waitpoint tokens and sessions | List, read, create, complete, update, and close. |
+| Docs | Search the Trigger.dev documentation. |
 
-Your token never goes to the run and deployment endpoints. For each call
-Mogplex exchanges it for a short-lived token scoped to that one operation, for
-example `read:runs` to list runs or `write:runs:<run id>` to cancel one run.
-This is the same exchange the official Trigger.dev MCP server performs.
+Three things are deliberate:
+
+- Every write names its environment. Reads default to `prod`, but a task never
+  fires, and a schedule never changes, in production because a field was left
+  out.
+- Environment variable values are never returned. Agents see names and can set
+  values, but a value you stored in Trigger.dev does not come back into a
+  conversation.
+- Your token stays on Mogplex servers. Where Trigger.dev accepts one, a call uses
+  a short-lived token scoped to that single operation, the same exchange the
+  official MCP server performs. The remaining management routes only accept an
+  environment key, which Mogplex reads with your token for the length of the
+  turn and never shows to the agent.
 
 **The full MCP server next to your code.** Trigger.dev publishes its MCP server
 as a local command, not a hosted URL, and tools such as `deploy` and
