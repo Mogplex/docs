@@ -1,0 +1,122 @@
+---
+title: Using Skills
+description: Invoke a skill by name from any Mogplex surface, or let the agent find the right one on its own.
+---
+
+A skill in your library is more than reference text. Any agent working for
+you can use it, on every surface where you talk to Mogplex: Control, the
+workspace, Slack, agent runs started through the API or MCP, and automations.
+
+There are two ways a skill reaches an agent.
+
+## Invoke a skill by name
+
+Every skill has a handle made from its name. `Deploy Checklist (v2)` becomes
+`deploy-checklist-v2`. The Installed tab of **Agents → Skills** shows each
+skill's handle.
+
+Type the handle in your message in either spelling:
+
+| Spelling | Where it works | Example |
+| --- | --- | --- |
+| `/handle` | As the first word of a message | `/deploy-checklist ship staging` |
+| `$handle` | Anywhere in a message | `Ship staging with $deploy-checklist` |
+
+Mogplex hands the agent that skill's full instructions for the request. Your
+message is sent exactly as you typed it.
+
+A few details:
+
+- Handles ignore case, and an underscore works as a hyphen, so
+  `$Deploy_Checklist` finds `deploy-checklist`.
+- A token only counts when it names one of your skills. `$HOME` in a sentence
+  stays ordinary text.
+- Text inside backticks or a fenced code block never invokes a skill, so shell
+  snippets are safe to paste.
+- In a conversation, a skill you invoke stays in force for the turns that
+  follow. You do not need to repeat it.
+- If two skills would share a handle, the older one keeps it and the newer one
+  gets a number: `release-notes`, `release-notes-2`.
+
+Control and the workspace complete handles as you type. Start a message with
+`/`, or type `$` anywhere, then pick with the arrow keys and Tab or Enter.
+
+## Let the agent find a skill
+
+You do not have to name a skill. Agents see a short index of your skills, one
+line each, and can search and load them:
+
+- `find_skills` searches your library by what the task involves.
+- `load_skill` loads one skill's full instructions.
+
+Only the index travels with every request. A skill's instructions are loaded
+when the agent decides the task calls for them, so a large library does not
+crowd the prompt. Good names and one-line descriptions are what the agent
+matches against, so they are worth writing carefully.
+
+Agents running in a sandbox through a CLI harness get the same skills as
+files under `.mogplex/skills/` in the checkout. That directory is ignored by
+git, so skill files never end up in a commit.
+
+## Where it works
+
+| Surface | Invoke by name | Agent finds skills |
+| --- | --- | --- |
+| Control | Yes | Yes |
+| Workspace chat | Yes | Yes |
+| Workspace with a CLI harness | Yes | Yes, as files |
+| Slack conversations | Yes, with `$handle` | Yes |
+| Slack repo-agent runs | Yes, with `$handle` | Yes |
+| Agent runs from the API, MCP, or the roster | Yes | Yes |
+| Automation agent nodes | Yes, in the node's instructions | Yes |
+| GitHub `@mogplex` mentions | Yes, in the comment | Yes |
+
+Two surface notes:
+
+- **Slack** treats a message that starts with `/` as one of its own commands,
+  so use `$handle` there.
+- **CLI harnesses** keep their own slash commands. `/compact` stays the
+  harness's command even if you have a skill named Compact. `$compact` always
+  reaches your skill.
+
+### Automations
+
+In an automation, the agent node's instructions are where you speak to the
+agent. Write `$handle` there and every run of that node follows the skill.
+A comment that @mentions Mogplex and the prompt of a signed webhook can invoke
+skills the same way. Other event content, such as a pull request description
+or a diff, is treated as data and never invokes a skill.
+
+A node that uses a roster agent also gets the skills and rules attached to
+that agent.
+
+## Skills for one repository
+
+A repository can narrow your library. In the repository's settings you can
+exclude library skills that do not apply there and add skills that only exist
+for that repository. When you work in that repository, agents see the narrowed
+set. A repository skill takes the plain handle ahead of a library skill with
+the same name.
+
+These settings belong to the repository's owner.
+
+## Skills attached to an agent
+
+Attaching a skill to a roster agent is separate from invoking it. Attached
+skills always travel with that agent, whoever runs it. Your own library is
+what you bring to a request, with any agent or none. See
+[Skills, Rules, and Context](/web/agents/skills-rules-context) for how to
+divide work between the three.
+
+## For external agents
+
+The [Mogplex MCP](/mcp/tools) exposes `mogplex_list_skills` and
+`mogplex_get_skill`, and the v1 API has matching `GET /api/v1/mogplex/skills`
+routes. A client starting a run does not need to fetch skill text first:
+writing `$handle` in the prompt of `mogplex_start_agent_run` is enough.
+
+## Usage counts
+
+The Installed tab shows how many times each skill has been used. A use is
+counted when you invoke the skill or when an agent loads it. Searching does
+not count.
