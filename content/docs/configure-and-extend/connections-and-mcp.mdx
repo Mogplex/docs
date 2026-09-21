@@ -58,9 +58,9 @@ where Mogplex brokers the provider flow.
 
 One Trigger.dev Personal Access Token gives agents two things.
 
-**API tools that need no sandbox.** Workspace chat, the Slack agent, and runs on
-the native Mogplex harness get the Trigger.dev management API as tools, read and
-write, called directly from Mogplex servers:
+**API tools that need no sandbox.** Control, workspace chat, the Slack agent, and
+runs on the native Mogplex harness get the Trigger.dev management API as tools,
+read and write, called directly from Mogplex servers:
 
 | Area | What agents can do |
 | --- | --- |
@@ -99,10 +99,6 @@ as a local command, not a hosted URL, and tools such as `deploy` and
 - In the Mogplex CLI, the same command arrives with your other synced MCP
   servers.
 
-Control's coordinator does not load connection tools yet. From Control, hand
-Trigger.dev work to a subagent: a native one gets the API tools, and a Claude
-Code one gets the MCP server.
-
 To add it, create a Personal Access Token at
 [cloud.trigger.dev/account/tokens](https://cloud.trigger.dev/account/tokens)
 (the preset links there) and paste it in. It starts with `tr_pat_`. **Test**
@@ -112,6 +108,31 @@ nothing you type is ever executed.
 
 Use presets first when one exists. Use manual Add Connection for advanced MCPs
 or REST APIs that do not have a preset yet.
+
+## Where connection tools load
+
+| Surface | Connection tools |
+| --- | --- |
+| Control | Every enabled connection in scope for the selected repo. |
+| Workspace chat, Slack agent, native-harness runs | The same set. |
+| Claude Code sandbox runs, Mogplex CLI | MCP connections, synced as MCP config. |
+
+Control waits up to eight seconds for remote MCP servers when a turn starts. If
+one is slow or down, the turn runs without connection tools instead of hanging.
+
+## Asking before a connection's tools run
+
+By default a connection's tools run without asking, on every surface. You can
+change that per connection: open the connection's menu in **Settings →
+Connections** (or the `auto` control on a row in the Connections pane) and choose
+**Ask before running tools**. The row then shows `asks first`.
+
+| Surface | What "ask" does |
+| --- | --- |
+| Control | Each call pauses on an approval card. Approve to run it, deny to skip it. Every request is recorded with your decision. |
+| Workspace chat, Slack agent, native-harness runs | These cannot ask, so they do not load the connection. The agent is told why and points you to Control. |
+
+Choose **Run tools without asking** to switch back.
 
 ## Scope resolution
 
