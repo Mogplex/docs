@@ -58,9 +58,9 @@ where Mogplex brokers the provider flow.
 
 One Trigger.dev Personal Access Token gives agents two things.
 
-**API tools that need no sandbox.** Control, workspace chat, the Slack agent, and
-runs on the native Mogplex harness get the Trigger.dev management API as tools,
-read and write, called directly from Mogplex servers:
+**API tools that need no sandbox.** Control's coordinator, workspace chat, the
+Slack agent, and runs on the native Mogplex harness get the Trigger.dev
+management API as tools, read and write, called directly from Mogplex servers:
 
 | Area | What agents can do |
 | --- | --- |
@@ -113,9 +113,13 @@ or REST APIs that do not have a preset yet.
 
 | Surface | Connection tools |
 | --- | --- |
-| Control | Every enabled connection in scope for the selected repo. |
+| Control's coordinator | Every enabled connection in scope for the selected repo. |
 | Workspace chat, Slack agent, native-harness runs | The same set. |
 | Claude Code sandbox runs, Mogplex CLI | MCP connections, synced as MCP config. |
+| Codex sandbox runs | None yet. |
+
+The Control row is the coordinator, the agent you talk to. A worker it delegates
+to is a sandbox run, so it follows the row for its harness.
 
 Control waits up to eight seconds for remote MCP servers when a turn starts. If
 one is slow or down, the turn runs without connection tools instead of hanging.
@@ -129,8 +133,10 @@ Connections** (or the `auto` control on a row in the Connections pane) and choos
 
 | Surface | What "ask" does |
 | --- | --- |
-| Control | Each call pauses on an approval card. Approve to run it, deny to skip it. Every request is recorded with your decision. |
+| Control's coordinator | Each call pauses on an approval card. Approve to run it, deny to skip it. Every request is recorded with your decision. |
 | Workspace chat, Slack agent, native-harness runs | These cannot ask, so they do not load the connection. The agent is told why and points you to Control. |
+| Claude Code sandbox runs, including Control's workers | These cannot ask either, so the connection is left out of the run's MCP config. |
+| Mogplex CLI | The connection still syncs. The CLI runs on your machine and asks through its own permission prompts. |
 
 Choose **Run tools without asking** to switch back.
 
