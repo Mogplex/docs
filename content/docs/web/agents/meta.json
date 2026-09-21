@@ -1,4 +1,9 @@
 {
   "title": "Agents",
-  "pages": ["index", "roster-and-slugs", "skills-rules-context"]
+  "pages": [
+    "index",
+    "roster-and-slugs",
+    "skills-rules-context",
+    "using-skills"
+  ]
 }
