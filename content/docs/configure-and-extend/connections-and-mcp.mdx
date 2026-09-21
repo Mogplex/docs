@@ -58,9 +58,9 @@ where Mogplex brokers the provider flow.
 
 One Trigger.dev Personal Access Token gives agents two things.
 
-**API tools in every chat and run.** Control, chat, and automations get eight
-tools that call the Trigger.dev API directly from Mogplex servers, so they work
-with no sandbox:
+**API tools that need no sandbox.** Workspace chat, the Slack agent, and runs on
+the native Mogplex harness get eight tools that call the Trigger.dev API directly
+from Mogplex servers:
 
 | Tool | What it does |
 | --- | --- |
@@ -86,6 +86,10 @@ as a local command, not a hosted URL, and tools such as `deploy` and
   with your token set as `TRIGGER_ACCESS_TOKEN`.
 - In the Mogplex CLI, the same command arrives with your other synced MCP
   servers.
+
+Control's coordinator does not load connection tools yet. From Control, hand
+Trigger.dev work to a subagent: a native one gets the API tools, and a Claude
+Code one gets the MCP server.
 
 To add it, create a Personal Access Token at
 [cloud.trigger.dev/account/tokens](https://cloud.trigger.dev/account/tokens)
