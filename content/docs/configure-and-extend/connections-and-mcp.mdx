@@ -49,9 +49,30 @@ Settings includes MCP presets for common tool providers:
 | Sentry | Error tracking, performance, and session replay. |
 | Sanity CMS | Structured content, media, and releases. |
 | Linear | Issues, projects, cycles, and team workflows. |
+| Trigger.dev | Tasks, runs, deploys, and Trigger.dev docs search. |
 
 Some presets use direct credentials. Some use OAuth, including managed auth
 where Mogplex brokers the provider flow.
+
+### Presets that run next to your code
+
+Trigger.dev publishes its MCP server as a local command, not a hosted URL, and
+tools such as `deploy` and `start_dev_server` need your project files. Mogplex
+starts it where the code is:
+
+- In a sandbox, the Claude Code harness launches `npx -y trigger.dev@latest mcp`
+  with your token set as `TRIGGER_ACCESS_TOKEN`.
+- In the Mogplex CLI, the same command arrives with your other synced MCP
+  servers.
+
+Chat turns that run on Mogplex servers have no filesystem to launch it in, so
+they do not load this preset. Hand Trigger.dev work to a sandbox agent.
+
+To add it, create a Personal Access Token at
+[cloud.trigger.dev/account/tokens](https://cloud.trigger.dev/account/tokens)
+and paste it into the preset. It starts with `tr_pat_`. **Test** confirms that
+Trigger.dev accepts the token; it does not start the server. Mogplex fixes the
+command in the preset, so nothing you type is ever executed.
 
 Use presets first when one exists. Use manual Add Connection for advanced MCPs
 or REST APIs that do not have a preset yet.
