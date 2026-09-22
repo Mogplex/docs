@@ -1,11 +1,11 @@
 ---
 title: Settings
-description: Manage GitHub identity, App coverage, connections, access tokens, models, account billing state, and shared preferences.
+description: Manage GitHub identity, App coverage, access keys, account preferences, and billing.
 ---
 
 Settings is the account-level control plane for Mogplex.
 
-If something about your identity, repo coverage, model access, shared tools, or
+If something about your identity, repo coverage, model access, or
 CLI sync looks wrong, this is the first page to inspect.
 
 ## Use this page to fix account problems, not routing logic
@@ -14,7 +14,6 @@ Settings is where you answer questions like:
 
 - can Mogplex actually act on behalf of this GitHub user or org?
 - does the account plan include hosted model and sandbox access?
-- are the shared MCP or REST connections healthy?
 - why did the CLI sign in, but not inherit the hosted state I expected?
 
 If the question is “what should run for this repo?”, use
@@ -42,17 +41,13 @@ Settings currently groups together:
 
 - **Account** state for GitHub identity, GitHub App coverage, and account
   readiness
-- **Connections** for REST APIs and MCP servers your agents can use
-- **Slack** for workspace install, channel-to-repo links, and repo-agent
-  controls
 - **Access Tokens** for CLI, API, and script authentication
 - **Preferences** for theme and default model
-- **Models** for the hosted model catalog your account can actually use
 - **Run checks**, one switch for the automatic judgments Mogplex makes about
   agent work
 
-For the model-specific operating guide, see
-[Available Models](/web/models).
+**Models** and **Connections** have their own sidebar destinations.
+For model setup, see [Available Models](/web/models).
 
 For the connection-specific operating guide, see
 [Connections and MCP](/configure-and-extend/connections-and-mcp).
@@ -177,7 +172,9 @@ work?**
 
 ## Connections
 
-Connections are where you register the non-model systems agents can call.
+Open **Connections** from the app sidebar to add or manage external services.
+This page now lives at `/<scope>/connections`, outside Settings.
+Old Settings links still redirect to it.
 
 <Callout>
 Connections is about **inbound** integrations — Mogplex calling external
@@ -200,10 +197,10 @@ The page supports:
 
 The operational rule here is simple:
 
-configure and test the integration in Settings first, then debug agent prompts
+configure and test the integration in Connections first, then debug agent prompts
 or routing only after the connection itself is known-good.
 
-Settings is also only part of the story.
+The account-level Connections page is only part of the story.
 
 When you are inside an active repo workspace, Mogplex can resolve connections
 with repo context:
@@ -213,7 +210,7 @@ with repo context:
 - one repo can explicitly exclude a global connection without deleting it
   account-wide
 
-Use Settings to onboard and validate the integration itself. Use the repo
+Use Connections to add and test the integration itself. Use the repo
 context when one codebase needs a different tool surface. For the full
 configuration model, see
 [Connections and MCP](/configure-and-extend/connections-and-mcp) and
@@ -226,6 +223,7 @@ The built-in MCP presets currently include:
 - Zapier
 - Notion
 - Supabase
+- Neon
 - Browserbase
 - Sentry
 - Sanity CMS
@@ -235,14 +233,14 @@ The built-in MCP presets currently include:
 Some presets use direct credentials, while others use an OAuth flow. Trigger.dev
 gives agents API tools that need no sandbox and also runs its MCP server inside
 sandboxes and the CLI; see
-[How the Trigger preset works](/configure-and-extend/connections-and-mcp#how-the-trigger-preset-works). Settings
+[How the Trigger preset works](/configure-and-extend/connections-and-mcp#how-the-trigger-preset-works). Connections
 surfaces the connection health state and last-tested metadata so you can fix the
 integration before debugging agent prompts.
 
 ## Slack
 
-The Slack section installs the Mogplex Slack app and manages workspace-level
-Slack behavior.
+Open **Connections** from the sidebar, then find the **Slack** section.
+It installs the Mogplex Slack app and manages workspace-level Slack behavior.
 
 Use it to:
 
@@ -302,11 +300,11 @@ models, and repo-level exclusions.
 - **The CLI signs in but no shared models or MCP entries appear**: the Mogplex
   account exists, but the hosted account may still lack model access or shared
   connection setup.
-- **A connection exists but agent calls still fail**: test the connection here
+- **A connection exists but agent calls still fail**: test the connection in **Connections**
   before debugging prompts or routing.
 - **Slack replies but does not start repo work**: check channel-to-repo links,
   repo-agent enabled state, Slack user mapping, and monthly/user limits in the
-  Slack section.
+  Slack section of **Connections**.
 - **Sandbox launch says access is unavailable**: check the account plan and
   entitlement state before changing repo settings.
 - **The repo is visible, but webhook-backed work still does not fire**:

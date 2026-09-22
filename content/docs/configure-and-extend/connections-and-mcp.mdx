@@ -8,6 +8,19 @@ Connections are how Mogplex agents reach external systems.
 They are separate from managed model access, GitHub App coverage, Slack channel
 links, and the live endpoint where other MCP clients call into Mogplex.
 
+## Open Connections
+
+Select **Connections** in the app sidebar. The page lives at
+`/<scope>/connections` and contains service presets, saved connections,
+the custom connection form, and Slack setup.
+
+Connections belong to your personal account. Shared team connections are not
+available yet. In a team scope, select **Open personal connections** to manage
+your own services.
+
+Old Settings links with `?tab=connections` or `#connections` still work.
+OAuth and Slack return messages follow the redirect to the new page.
+
 ## Direction matters
 
 There are three MCP-related surfaces with different directionality:
@@ -127,8 +140,7 @@ one is slow or down, the turn runs without connection tools instead of hanging.
 ## Asking before a connection's tools run
 
 By default a connection's tools run without asking, on every surface. You can
-change that per connection: open the connection's menu in **Settings →
-Connections** (or the `auto` control on a row in the Connections pane) and choose
+change that per connection: open the connection's menu in **Connections** (or the `auto` control on a row in the Connections pane) and choose
 **Ask before running tools**. The row then shows `asks first`.
 
 | Surface | What "ask" does |
@@ -203,7 +215,7 @@ Use `/mcp` in the CLI to inspect MCP state during a session.
   repo.
 - Exclude global MCPs from repos where the tool surface would be unsafe or
   distracting.
-- Reconnect OAuth-backed presets from Settings when authorization expires.
+- Reconnect OAuth-backed presets from Connections when authorization expires.
 
 ## Troubleshooting
 
@@ -212,7 +224,7 @@ Use `/mcp` in the CLI to inspect MCP state during a session.
 | Tool missing in a hosted run | Confirm the connection is enabled and included in the repo's resolved set. |
 | Tool works globally but not in one repo | Check for a project exclusion or a project-specific connection cap. |
 | CLI does not show cloud MCP servers | Confirm CLI token login, then inspect `/mcp` and the remote cache file. |
-| OAuth preset stopped working | Reconnect it from Settings and retest before changing prompts. |
+| OAuth preset stopped working | Reconnect it from Connections and retest before changing prompts. |
 | MCP response leaks secrets in logs | Rotate the exposed credential and stop logging MCP config output. |
 
 ## Read next
