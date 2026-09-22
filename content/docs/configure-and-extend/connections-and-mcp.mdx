@@ -41,7 +41,7 @@ Saved secret headers stay hidden in the browser. Mogplex sends them to the confi
 Local HTTP addresses also remain CLI-only. Web chat cannot reach your computer's local servers.
 
 Disable or delete a saved server to exclude its tools from subsequent turns.
-Servers remain personal. In team scope, owners, admins, and developers can use them. Viewers cannot use connection tools.
+Servers stay private to the account that created them. In team scope, owners, admins, and developers can use their own saved servers. Viewers cannot use connection tools.
 Saved `enabled_tools`, `disabled_tools`, and per-tool restrictions in **Extra JSON** also apply to chat.
 Tools with an explicit `prompt` approval mode require Control, which can ask before a call.
 Workspace chat, the Slack agent, and native-harness runs withhold these tools because they cannot ask.
@@ -65,9 +65,11 @@ Replace these example names with the tool names your server exposes.
 }
 ```
 
+`delete` appears in both lists to show that the blocklist wins.
 The allowlist limits which tools can load. The blocklist and per-tool `enabled: false` exclude tools even if the allowlist includes them.
 A per-tool approval mode overrides the default. `auto` and `approve` both allow automatic calls.
-Per-tool `deny` excludes a tool. `prompt` requires a Control approval card and withholds the tool on other web chat surfaces.
+A server-level default of `prompt` makes every tool without a per-tool override Control-only.
+Per-tool `deny` excludes a tool. `prompt` requires a Control approval card. Workspace chat, the Slack agent, and native-harness runs withhold these tools.
 
 ## Direction matters
 
