@@ -167,6 +167,8 @@ These saved servers belong to the user and apply across repos. Integration scope
 
 Control waits up to eight seconds for remote MCP servers, including saved servers, when a turn starts. If
 one is slow or down, the turn runs without connection tools instead of hanging.
+Saved-server discovery in workspace chat also uses an eight-second startup budget.
+A server that misses that deadline is left out. The deadline does not cancel later tool calls on servers that loaded successfully.
 
 ## Asking before a connection's tools run
 
