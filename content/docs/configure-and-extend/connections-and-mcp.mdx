@@ -34,7 +34,8 @@ Here, web chat means workspace chat and Control in the app.
 
 Choose **Add server** and leave **Streamable HTTP** selected. Enter the server URL and any required headers.
 Save the server with **Enabled** on. Its tools become available on the next web chat or Control turn without a separate Integration.
-The server must support Streamable HTTP and have a public URL. Saved secret headers stay on the server.
+The server must support Streamable HTTP and have a public URL.
+Saved secret headers stay hidden in the browser. Mogplex sends them to the configured MCP server when it connects.
 
 **Local (CLI only)** uses stdio to start a process on your computer.
 Local HTTP addresses also remain CLI-only. Web chat cannot reach your computer's local servers.
@@ -209,7 +210,7 @@ for the full operating model.
 ## MCP limits
 
 Mogplex caps enabled MCP server connections from **Integrations** at five per resolved scope.
-This existing cap does not apply to the **MCP Servers** catalog.
+The **MCP Servers** catalog has no server-count cap.
 
 The cap protects runs from receiving an oversized or noisy tool surface. If a
 repo reaches the cap, decide whether to:
