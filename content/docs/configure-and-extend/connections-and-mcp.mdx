@@ -1,6 +1,6 @@
 ---
 title: External connections
-description: Configure external REST and MCP connections, understand scope resolution, sync saved server definitions, and distinguish them from the Mogplex MCP endpoint.
+description: Configure external tools, use saved MCP servers in web chat and the CLI, and understand connection scope and permissions.
 ---
 
 Connections are how Mogplex agents reach external systems.
@@ -19,7 +19,16 @@ Select **Connections** in the app sidebar. The page lives at
 The MCP Servers tab uses `/<scope>/connections?tab=mcp`.
 Reloads and browser Back preserve the selected tab.
 
-### Use a saved server in web chat
+Connections belong to your personal account. Shared team connections are not
+available yet. In a team scope, select **Open personal connections** to manage
+your own services.
+
+Old Settings links with `?tab=connections` or `#connections` still work.
+OAuth and Slack return messages follow the redirect to the new page.
+The old `/<scope>/settings/mcp` page and Settings links with `?tab=mcp` or
+`#mcp` open the MCP Servers tab.
+
+## Use a saved server in web chat
 
 Choose **Add server** and leave **Streamable HTTP** selected. Enter the server URL and any required headers.
 Save the server with **Enabled** on. Its tools become available on the next web chat or Control turn without a separate Integration.
@@ -29,20 +38,15 @@ The server must support Streamable HTTP and have a public URL. Saved secret head
 Local HTTP addresses also remain CLI-only. Web chat cannot reach your computer's local servers.
 
 Disable or delete a saved server to exclude its tools from subsequent turns.
-Team capability checks still apply. Saved `enabled_tools`, `disabled_tools`, and per-tool restrictions in **Extra JSON** also apply to chat.
-Tools with an explicit `prompt` approval mode require Control, which can ask before a call. Other chat surfaces withhold them.
+The team's `connections.create` capability still controls access to these tools.
+Saved `enabled_tools`, `disabled_tools`, and per-tool restrictions in **Extra JSON** also apply to chat.
+Tools with an explicit `prompt` approval mode require Control, which can ask before a call.
+Workspace chat, the Slack agent, and native-harness runs withhold these tools because they cannot ask.
+
+The **Integrations** approval menu applies only to Integration entries. Saved servers use their own **Extra JSON** settings.
 
 Without an explicit approval mode, saved tools run automatically, like Integrations in web chat.
 CLI approval defaults remain unchanged. Other CLI-specific extra options do not configure web chat.
-
-Connections belong to your personal account. Shared team connections are not
-available yet. In a team scope, select **Open personal connections** to manage
-your own services.
-
-Old Settings links with `?tab=connections` or `#connections` still work.
-OAuth and Slack return messages follow the redirect to the new page.
-The old `/<scope>/settings/mcp` page and Settings links with `?tab=mcp` or
-`#mcp` open the MCP Servers tab.
 
 ## Direction matters
 
@@ -161,7 +165,7 @@ to is a sandbox run, so it follows the row for its harness.
 Enabled public HTTP servers from **MCP Servers** also load in Control, workspace chat, the Slack agent, and native-harness runs.
 These saved servers belong to the user and apply across repos. Integration scope exclusions do not apply to this separate catalog.
 
-Control waits up to eight seconds for remote MCP servers when a turn starts. If
+Control waits up to eight seconds for remote MCP servers, including saved servers, when a turn starts. If
 one is slow or down, the turn runs without connection tools instead of hanging.
 
 ## Asking before a connection's tools run
