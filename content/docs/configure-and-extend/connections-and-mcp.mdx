@@ -41,7 +41,7 @@ Saved secret headers stay hidden in the browser. Mogplex sends them to the confi
 Local HTTP addresses also remain CLI-only. Web chat cannot reach your computer's local servers.
 
 Disable or delete a saved server to exclude its tools from subsequent turns.
-Servers remain personal. When a turn runs in team scope, the caller also needs the team's `connections.create` capability.
+Servers remain personal. In team scope, owners, admins, and developers can use them. Viewers cannot use connection tools.
 Saved `enabled_tools`, `disabled_tools`, and per-tool restrictions in **Extra JSON** also apply to chat.
 Tools with an explicit `prompt` approval mode require Control, which can ask before a call.
 Workspace chat, the Slack agent, and native-harness runs withhold these tools because they cannot ask.
@@ -50,6 +50,24 @@ The **Integrations** approval menu applies only to Integration entries. Saved se
 
 Without an explicit approval mode, saved tools run automatically, like Integrations in web chat.
 CLI approval defaults remain unchanged. Other CLI-specific extra options do not configure web chat.
+
+For example, this **Extra JSON** allows `search` and `publish`, blocks `delete`, and asks before `publish` in Control.
+Replace these example names with the tool names your server exposes.
+
+```json
+{
+  "enabled_tools": ["search", "publish", "delete"],
+  "disabled_tools": ["delete"],
+  "default_tools_approval_mode": "auto",
+  "tools": {
+    "publish": { "approval_mode": "prompt" }
+  }
+}
+```
+
+The allowlist limits which tools can load. The blocklist and per-tool `enabled: false` exclude tools even if the allowlist includes them.
+A per-tool approval mode overrides the default. `auto` and `approve` both allow automatic calls.
+Per-tool `deny` excludes a tool. `prompt` requires a Control approval card and withholds the tool on other web chat surfaces.
 
 ## Direction matters
 
@@ -170,7 +188,7 @@ These saved servers belong to the user and apply across repos. Integration scope
 
 Control waits up to eight seconds for remote MCP servers, including saved servers, when a turn starts. If
 one is slow or down, the turn runs without connection tools instead of hanging.
-Saved-server discovery in workspace chat also uses an eight-second startup budget.
+Saved-server discovery uses a six-second startup budget, leaving time to return healthy tools before Control's deadline.
 A server that misses that deadline is left out. The deadline does not cancel later tool calls on servers that loaded successfully.
 
 ## Asking before a connection's tools run
