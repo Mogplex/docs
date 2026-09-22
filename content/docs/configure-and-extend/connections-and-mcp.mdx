@@ -11,8 +11,13 @@ links, and the live endpoint where other MCP clients call into Mogplex.
 ## Open Connections
 
 Select **Connections** in the app sidebar. The page lives at
-`/<scope>/connections` and contains service presets, saved connections,
-the custom connection form, and Slack setup.
+`/<scope>/connections` and has two tabs:
+
+- **Integrations** contains service presets, saved connections, the custom connection form, and Slack setup.
+- **MCP Servers** manages server definitions that sync with the Mogplex CLI.
+
+The MCP Servers tab uses `/<scope>/connections?tab=mcp`.
+Reloads and browser Back preserve the selected tab.
 
 Connections belong to your personal account. Shared team connections are not
 available yet. In a team scope, select **Open personal connections** to manage
@@ -20,6 +25,8 @@ your own services.
 
 Old Settings links with `?tab=connections` or `#connections` still work.
 OAuth and Slack return messages follow the redirect to the new page.
+The old `/<scope>/settings/mcp` page and Settings links with `?tab=mcp` or
+`#mcp` open the MCP Servers tab.
 
 ## Direction matters
 
