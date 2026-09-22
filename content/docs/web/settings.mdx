@@ -270,42 +270,24 @@ reply conversationally. In a linked channel, a real instruction after
 
 For the full Slack model, see [Slack](/integrations/slack).
 
-## Access Tokens
+## Provider Keys
 
-Access tokens are for authenticating Mogplex clients and scripts. They are not
-model-provider credentials.
+Open **Settings → Provider Keys** to add or remove your own model-provider credentials.
+This page supports AI Gateway, Anthropic, OpenAI, and OpenRouter.
+Personal keys belong to your account. Team keys use the selected team's permissions.
 
-Use them when the CLI or another Mogplex-aware script needs to authenticate as
-you against Mogplex itself.
+<span id="access-tokens" />
 
-The section supports:
+## Mogplex Keys
 
-- naming each token
-- optional expiration windows
-- one-time token display at creation
-- copy-on-create flow
-- last-used metadata
-- revocation
-
-Hosted model and sandbox access comes from the account plan, not from
-user-supplied provider or sandbox credentials.
+Open **Settings → Mogplex Keys** to manage access tokens for Mogplex clients and scripts.
+These tokens authenticate with Mogplex itself.
 
 ## Preferences and Models
 
-Settings owns account preferences. Open **Models** in the sidebar to manage
-model access and defaults.
-
-The important split is:
-
-- **Models page** controls what models are available to the account
-- **Agent settings** choose which available model a specific agent should use
-
-If an agent cannot select the model you expect, check **Models** before you
-edit the agent itself.
-
-Use [Available Models](/web/models) when you need the fuller model-access
-mental model: enabled state, defaults, plan access, CLI sync, hidden legacy
-models, and repo-level exclusions.
+Open the user menu to change the theme.
+Open **Models** in the main sidebar to manage model access.
+Use **Models → Configuration** to set the primary model and fallbacks.
 
 ## Fast troubleshooting map
 

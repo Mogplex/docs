@@ -13,6 +13,7 @@ surfaces.
 
 | Older route | Current destination | Best doc page |
 | --- | --- | --- |
+| `/settings/billing` | The signed-in user's `/<scope>/settings/billing` page | [Settings](/web/settings) |
 | `/<scope>/settings` | Personal **Account** or team **Members** page | [Settings](/web/settings) |
 | `/<scope>/settings?tab=account`, `?tab=teams`, or `?tab=keys` | The matching `/<scope>/settings/<section>` page | [Settings](/web/settings) |
 | `/<scope>/settings?tab=keys&sub=cli` | `/<scope>/settings/mogplex-keys` for personal accounts | [Settings](/web/settings) |
@@ -22,6 +23,9 @@ surfaces.
 | `/flows` | `/automations` | [Flows](/web/flows) or [Automations](/web/automations) |
 | `/library` | `/agents/skills` by default, with tab-specific redirects for rules, context, and models | [Library](/web/library) |
 | `/primitives` | `/agents/skills` by default, with tab-specific redirects for rules and context | [Primitives](/web/primitives) |
+
+**MCP Servers** keeps its route at `/<scope>/settings/mcp`.
+It now has a link in the personal Settings sidebar.
 
 ## When the old route names still matter
 

@@ -24,7 +24,7 @@ the Supabase `ai_models` table by `pnpm gen:models`.
 
 ## Where to see models
 
-Open [Settings](/web/settings) and use the **Models** section.
+Open **Models** in the main sidebar.
 
 That section is the product-facing model catalog. It shows the models Mogplex
 can currently present to the signed-in account, including:
@@ -122,14 +122,14 @@ provider, model family, or cost profile.
 
 That scope split is:
 
-- global enabled state in **Settings → Models**
+- global enabled state in **Models**
 - repo-specific exclusions in the repo or space settings
 
 ## Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
-| No models appear in an agent picker | Open Settings → Models and confirm at least one model is enabled. |
+| No models appear in an agent picker | Open Models and confirm at least one model is enabled. |
 | A model appears but a run fails with access errors | Check the account plan, entitlement state, and model availability. |
 | The CLI signs in but no shared model list appears | Confirm the web account has model access and that the CLI is using account-backed login. |
 | A saved agent references a hidden or stale model | Move it to a visible enabled model in the agent editor. |
@@ -137,7 +137,7 @@ That scope split is:
 
 ## Read next
 
-- [Settings](/web/settings) for account preferences, access tokens, and models
+- [Settings](/web/settings) for account access and Mogplex Keys
 - [API → Models](/reference/api#models) for the route contract behind the catalog
 - [Agents](/web/agents) for model choice on reusable agents
 - [CLI → Authentication](/cli/guides/authentication) for account-backed model
