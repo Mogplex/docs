@@ -3,10 +3,43 @@ title: Settings
 description: Manage GitHub identity, App coverage, access keys, account preferences, and billing.
 ---
 
-Settings is the account-level control plane for Mogplex.
+Open **Settings** in the sidebar to manage your account or team.
 
-If something about your identity, repo coverage, model access, or
-CLI sync looks wrong, this is the first page to inspect.
+Settings opens a secondary sidebar. Select a section to open its page.
+Use the back arrow beside **Settings** to return to the main navigation.
+On mobile, open the navigation menu to select a Settings page.
+
+## Settings pages
+
+Each section has its own URL. Reloads and bookmarks open the same section.
+
+| Personal page | Route |
+| --- | --- |
+| Account | `/<scope>/settings/account` |
+| Teams | `/<scope>/settings/teams` |
+| Provider Keys | `/<scope>/settings/keys` |
+| Mogplex Keys | `/<scope>/settings/mogplex-keys` |
+| MCP Servers | `/<scope>/settings/mcp` |
+| Billing | `/<scope>/settings/billing` |
+
+Team Settings includes **Members**, **Provider Keys**, **Models**, and **Billing**.
+Owners and admins also see **Audit**.
+Each uses the same route pattern, such as `/<team>/settings/models`.
+Personal keys and account preferences stay in the personal scope.
+
+Old Settings tab links redirect to the matching page.
+For example, `?tab=keys&sub=cli` opens **Mogplex Keys**.
+
+## Billing
+
+Open **Settings → Billing** for two tabs:
+
+- **Billing Settings**: manage the plan, payment method, invoices, inference credit, and available add-ons.
+- **Usage**: view the inference balance and recent usage costs.
+
+The Usage tab uses `/<scope>/settings/billing?tab=usage`.
+Reloads and browser Back preserve the selected tab.
+Team billing follows the current team scope and its existing permissions.
 
 ## Use this page to fix account problems, not routing logic
 
@@ -37,14 +70,12 @@ actually support them.
 
 ## What lives here
 
-Settings currently groups together:
-
-- **Account** state for GitHub identity, GitHub App coverage, and account
-  readiness
-- **Access Tokens** for CLI, API, and script authentication
-- **Preferences** for theme and default model
-- **Run checks**, one switch for the automatic judgments Mogplex makes about
-  agent work
+- **Account** shows GitHub identity, App coverage, account access, and **Run checks**.
+- **Teams** lists team memberships and controls.
+- **Provider Keys** stores keys for model providers.
+- **Mogplex Keys** manages tokens for CLI, API, and script access.
+- **MCP Servers** manages server definitions for CLI sync.
+- **Billing** contains **Billing Settings** and **Usage**.
 
 **Models** and **Connections** have their own sidebar destinations.
 For model setup, see [Available Models](/web/models).
@@ -52,26 +83,9 @@ For model setup, see [Available Models](/web/models).
 For the connection-specific operating guide, see
 [Connections and MCP](/configure-and-extend/connections-and-mcp).
 
-## Start at the top of the page first
-
-The top of Settings is intentionally opinionated.
-
-It is the part of the product that tells you:
-
-- whether GitHub is connected at all
-- whether the GitHub App is installed on the right owner
-- whether synced repos exist yet
-- whether billing, model access, or sandbox access still needs action
-- what the next most likely setup step is
-
-Treat that top block as the “what is missing?” answer before you debug any
-deeper form.
-
 ## Account section
 
-The top of Settings is intentionally operational, not decorative.
-
-It shows:
+The **Account** page shows:
 
 - current GitHub connection mode and status
 - GitHub App coverage and synced repo counts
@@ -110,8 +124,8 @@ default.
 
 | Where the work runs | Who decides | Where the switch is |
 | --- | --- | --- |
-| Inside a team | A team owner or admin | Team Settings, **Models** tab |
-| Outside a team | You | Settings, **Account** tab |
+| Inside a team | A team owner or admin | Team Settings, **Models** page |
+| Outside a team | You | Settings, **Account** page |
 
 Work inside a team always follows the team's setting, never a member's own.
 Every change to a team's setting is written to the team audit log.
