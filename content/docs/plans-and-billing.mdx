@@ -8,6 +8,9 @@ import { Callout } from 'fumadocs-ui/components/callout';
 Use this guide to choose a plan and understand each charge. For current account
 details, open [Settings → Billing](https://mogplex.com/settings/billing).
 
+Use **Billing Settings** for the plan, payments, invoices, and credit purchases.
+Use **Usage** for the inference balance and recent usage costs.
+
 ## Individual plans
 
 Each Individual plan includes one named user, parallel agent runs, Storage, and
@@ -34,7 +37,7 @@ See [Mogplex pricing](https://mogplex.com/pricing) for the public pricing page.
 $1 of inference credit pays for $1 of model usage at the model provider price.
 Included credit resets each month. Purchased credit never expires.
 
-Billing offers these one-time purchases:
+**Billing Settings** offers these one-time purchases:
 
 - Pay $1 and get $1 of inference credit.
 - Pay $10 and get $10 of inference credit.
@@ -49,7 +52,7 @@ amount excludes money reserved for work that is still in progress.
 
 To add credit:
 
-1. Open **Settings → Billing**.
+1. Open **Settings → Billing → Billing Settings**.
 2. Find **Add inference credit** below the current plan.
 3. Select an amount.
 4. Complete the Stripe checkout.
@@ -58,7 +61,7 @@ The new balance appears after Stripe confirms the payment.
 
 ## Hosted usage rates
 
-Mogplex shows recent usage costs in Billing. These costs use the available
+Mogplex shows recent usage costs in **Billing → Usage**. These costs use the available
 inference-credit balance.
 
 Mogplex lists each model call after the cost settles. For a code review, the
@@ -90,11 +93,11 @@ account. Pending work does not use a run slot.
 When all slots are in use, new work waits for a slot. A slot becomes available
 when a run finishes or you stop one.
 
-Billing shows the plan limit as a static entitlement. It does not show a live
+**Billing Settings** shows the plan limit as a static entitlement. It does not show a live
 usage meter. Use the active-run surfaces to see current work and find the
 runs that use slots.
 
-If your account can buy more parallel agent runs, Billing shows these recurring
+If your account can buy more parallel agent runs, **Billing Settings** shows these recurring
 add-ons:
 
 | Add-on | Price |
@@ -102,7 +105,7 @@ add-ons:
 | 10 more parallel agent runs | $5 per month, per quantity |
 | 50 more parallel agent runs | $15 per month, per quantity |
 
-Some accounts cannot buy new parallel-run add-ons. Billing only shows the
+Some accounts cannot buy new parallel-run add-ons. **Billing Settings** only shows the
 actions available for the selected account.
 
 ## Storage add-ons
@@ -116,7 +119,7 @@ Storage add-ons increase retained storage. The plan stays the same.
 | 50 GB | $60 per month, per quantity |
 | 100 GB | $100 per month, per quantity |
 
-For each capacity change, Billing shows the new limit, monthly change, amount
+For each capacity change, **Billing Settings** shows the new limit, monthly change, amount
 due now, and effective date before confirmation. Increases take effect after
 payment. Decreases and cancellations take effect at the end of the billing
 period.
@@ -146,10 +149,10 @@ does not display or store the full card number in the Billing page.
 
 Select **Update payment method** to make changes in Stripe. Mogplex creates an
 invoice for each plan payment, add-on payment, and inference-credit payment.
-Usage charges appear in **Recent usage costs**. They do not produce Stripe
+Usage charges appear in **Usage → Recent usage costs**. They do not produce Stripe
 invoices. They spend credit that is already in the account.
 
-Billing shows the latest 20 invoices. Select an invoice number to open its
+**Billing Settings** shows the latest 20 invoices. Select an invoice number to open its
 hosted invoice or PDF. Select **View all invoices** to open the complete Stripe
 history.
 
@@ -165,7 +168,7 @@ token.
 
 <Callout title="Check the selected account">
   Billing follows the personal or company account selected in Mogplex. Confirm
-  the account name at the top of Billing before you report an invoice that you
+  the account name on **Billing Settings** before you report an invoice that you
   cannot find or an incorrect balance.
 </Callout>
 
