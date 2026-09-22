@@ -53,7 +53,8 @@ The result shows the tool count, workspace chat availability, tools that require
 Expand **Discovered tools** to inspect each tool's effective permission.
 
 An error explains whether to check the public URL, authorization headers, missing secrets, tool permissions, or server response time.
-The test has a six-second deadline. A successful connection with no tools shows a count of zero.
+Tool discovery has a six-second deadline. Closing the connection can take up to two more seconds and does not hide a successful result.
+A successful connection with no tools shows a count of zero.
 The test also checks disabled servers. Enable a server before its allowed tools become available.
 Test local stdio servers through the CLI.
 
@@ -79,7 +80,7 @@ Test the saved connection before an edit to populate its tool names. **Add tool 
 For a tool marked **Disabled in saved settings**, turn on the switch beside that label to enable it. Other block rules still apply.
 
 Save changes to apply them on the next turn. The controls preserve unrelated CLI fields and permissions.
-The app rejects invalid permissions. Correct invalid permission fields in **Extra JSON**. Invalid policies never become permissive defaults.
+The permission controls reject invalid values on save. If an earlier CLI or manual edit left invalid permission fields, fix them in **Extra JSON**. Invalid policies never become permissive defaults.
 
 Without an explicit approval mode, saved tools run automatically, like Integrations in web chat.
 CLI approval defaults remain unchanged. Other CLI-specific extra options do not configure web chat.
@@ -315,7 +316,7 @@ Use `/mcp` in the CLI to inspect MCP state during a session.
 | Symptom | Check |
 | --- | --- |
 | Integration tool missing in a hosted run | Confirm the connection is enabled and included in the repo's resolved set. |
-| Saved MCP tool missing in web chat | Choose Test connection. Check the result and each tool's permission. Enable the server to use its allowed tools. |
+| Saved MCP tool missing in web chat | Choose Test connection. Check the result and each tool's permission. Enable the server to use its allowed tools. A server that misses the startup deadline stays out of that turn, even when an earlier test succeeded. |
 | Saved MCP tool needs approval | Use Control for tools set to Ask in Control (`prompt` in Extra JSON). Other hosted chat surfaces withhold them. |
 | Integration tool works globally but not in one repo | Check for a project exclusion or a project-specific connection cap. |
 | CLI does not show cloud MCP servers | Confirm CLI token login, then inspect `/mcp` and the remote cache file. |
