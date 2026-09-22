@@ -35,6 +35,7 @@ function resolveMetadataBase() {
 export const metadata: Metadata = {
   metadataBase: resolveMetadataBase(),
   applicationName: appName,
+  icons: { icon: [{ url: '/favicon.ico', type: 'image/x-icon', sizes: '32x32' }] },
   title: {
     default: appName,
     template: `%s | ${appName}`,

@@ -20,13 +20,13 @@ the same choice on every other repo you work on.
 
 | Scope | Where you usually create it | What it applies to | Best fit |
 | --- | --- | --- | --- |
-| Global | [Settings](/web/settings) or the general Connections pane | Every repo unless one repo excludes it | Shared integrations you want almost everywhere |
+| Global | [Connections](/configure-and-extend/connections-and-mcp) or the general Connections pane | Every repo unless one repo excludes it | Shared integrations you want almost everywhere |
 | Project (`This Project` in the UI) | The Connections pane while a repo is active | One repo only | Repo-specific tools, credentials, or experimental integrations |
 | Exclusion override | The Connections pane while a repo is active | Removes one global connection from one repo | Preventing a shared connection from appearing in the wrong repo |
 
 ## Where each connection surface lives
 
-Use [Settings](/web/settings) when you want to:
+Open **Connections** in the app sidebar to:
 
 - connect a provider for the first time
 - run the initial health check
@@ -42,7 +42,7 @@ Use the repo-aware Connections pane inside a workspace when you want to:
 
 The practical rule is:
 
-configure the integration in Settings first when you are onboarding it, then
+configure the integration in Connections first when you are onboarding it, then
 switch to the repo context only if one project should behave differently.
 
 ## How resolution works inside a repo
@@ -131,7 +131,7 @@ the same bug.
 
 - [Connections and MCP](/configure-and-extend/connections-and-mcp) for the
   full connection and MCP operating model
-- [Settings](/web/settings) for the account-level connections surface
+- [Settings](/web/settings) for account identity, keys, and billing
 - [Project Workflow](/web/guides/project-workflow) for the order of GitHub,
   Projects, sandboxes, and repo setup
 - [API Quickstart](/reference/api#quickstart) if you need to inspect the
