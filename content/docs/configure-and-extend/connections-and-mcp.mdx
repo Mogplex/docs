@@ -1,6 +1,6 @@
 ---
 title: External connections
-description: Configure external REST and MCP connections, understand scope resolution, sync saved server definitions, and distinguish them from the Mogplex MCP endpoint.
+description: Configure external tools, use saved MCP servers in web chat and the CLI, and understand connection scope and permissions.
 ---
 
 Connections are how Mogplex agents reach external systems.
@@ -14,7 +14,7 @@ Select **Connections** in the app sidebar. The page lives at
 `/<scope>/connections` and has two tabs:
 
 - **Integrations** contains service presets, saved connections, the custom connection form, and Slack setup.
-- **MCP Servers** manages server definitions that sync with the Mogplex CLI.
+- **MCP Servers** manages saved servers for web chat and the Mogplex CLI.
 
 The MCP Servers tab uses `/<scope>/connections?tab=mcp`.
 Reloads and browser Back preserve the selected tab.
@@ -27,6 +27,49 @@ Old Settings links with `?tab=connections` or `#connections` still work.
 OAuth and Slack return messages follow the redirect to the new page.
 The old `/<scope>/settings/mcp` page and Settings links with `?tab=mcp` or
 `#mcp` open the MCP Servers tab.
+
+## Use a saved server in web chat
+
+Here, web chat means workspace chat and Control in the app.
+
+Choose **Add server** and leave **Streamable HTTP** selected. Enter the server URL and any required headers.
+Save the server with **Enabled** on. Its tools become available on the next web chat or Control turn without a separate Integration.
+The server must support Streamable HTTP and have a public URL.
+Saved secret headers stay hidden in the browser. Mogplex sends them to the configured MCP server when it connects.
+
+**Local (CLI only)** uses stdio to start a process on your computer.
+Local HTTP addresses also remain CLI-only. Web chat cannot reach your computer's local servers.
+
+Disable or delete a saved server to exclude its tools from subsequent turns.
+Servers stay private to the account that created them. In team scope, owners, admins, and developers can use their own saved servers. Viewers cannot use connection tools.
+Saved `enabled_tools`, `disabled_tools`, and per-tool restrictions in **Extra JSON** also apply to chat.
+Tools with an explicit `prompt` approval mode require Control, which can ask before a call.
+Workspace chat, the Slack agent, and native-harness runs withhold these tools because they cannot ask.
+
+The **Integrations** approval menu applies only to Integration entries. Saved servers use their own **Extra JSON** settings.
+
+Without an explicit approval mode, saved tools run automatically, like Integrations in web chat.
+CLI approval defaults remain unchanged. Other CLI-specific extra options do not configure web chat.
+
+For example, this **Extra JSON** allows `search` and `publish`, blocks `delete`, and asks before `publish` in Control.
+Replace these example names with the tool names your server exposes.
+
+```json
+{
+  "enabled_tools": ["search", "publish", "delete"],
+  "disabled_tools": ["delete"],
+  "default_tools_approval_mode": "auto",
+  "tools": {
+    "publish": { "approval_mode": "prompt" }
+  }
+}
+```
+
+`delete` appears in both lists to show that the blocklist wins.
+The allowlist limits which tools can load. The blocklist and per-tool `enabled: false` exclude tools even if the allowlist includes them.
+A per-tool approval mode overrides the default. `auto` and `approve` both allow automatic calls.
+A server-level default of `prompt` makes every tool without a per-tool override Control-only.
+Per-tool `deny` excludes a tool. `prompt` requires a Control approval card. Workspace chat, the Slack agent, and native-harness runs withhold these tools.
 
 ## Direction matters
 
@@ -132,22 +175,29 @@ or REST APIs that do not have a preset yet.
 
 ## Where connection tools load
 
-| Surface | Connection tools |
-| --- | --- |
-| Control's coordinator | Every enabled connection in scope for the selected repo. |
-| Workspace chat, Slack agent, native-harness runs | The same set. |
-| Claude Code sandbox runs, Mogplex CLI | MCP connections, synced as MCP config. |
-| Codex sandbox runs | None yet. |
+| Surface | Integrations | Saved MCP Servers |
+| --- | --- | --- |
+| Control's coordinator | Enabled connections in scope for the selected repo. | Enabled public HTTP servers, with approval cards when requested. |
+| Workspace chat, Slack agent, native-harness runs | The same connection set. | Enabled public HTTP servers, except tools that require a prompt. |
+| Claude Code sandbox runs | MCP connections, supplied as MCP config. | Not loaded from this catalog. |
+| Mogplex CLI | MCP connections, synced as MCP config. | Enabled HTTP and stdio servers through catalog sync. |
+| Codex sandbox runs | None yet. | None yet. |
 
 The Control row is the coordinator, the agent you talk to. A worker it delegates
 to is a sandbox run, so it follows the row for its harness.
 
-Control waits up to eight seconds for remote MCP servers when a turn starts. If
+These saved servers belong to the user and apply across repos. Integration scope exclusions do not apply to this separate catalog.
+
+Control waits up to eight seconds for remote MCP servers, including saved servers, when a turn starts. If
 one is slow or down, the turn runs without connection tools instead of hanging.
+Saved-server discovery uses a six-second startup budget, leaving time to return healthy tools before Control's deadline.
+A server that misses that deadline is left out. The deadline does not cancel later tool calls on servers that loaded successfully.
 
 ## Asking before a connection's tools run
 
-By default a connection's tools run without asking, on every surface. You can
+This section describes **Integrations**. For saved MCP Servers, use the [Extra JSON permissions described above](#use-a-saved-server-in-web-chat).
+
+By default, tools from Integrations run without asking. You can
 change that per connection: open the connection's menu in **Connections** (or the `auto` control on a row in the Connections pane) and choose
 **Ask before running tools**. The row then shows `asks first`.
 
@@ -162,7 +212,7 @@ Choose **Run tools without asking** to switch back.
 
 ## Scope resolution
 
-Connections can be global or project-scoped.
+Integrations can be global or project-scoped. Saved MCP Servers apply across repos and do not use these scope settings.
 
 | Scope | Behavior |
 | --- | --- |
@@ -179,7 +229,8 @@ for the full operating model.
 
 ## MCP limits
 
-Mogplex caps enabled MCP server connections at five per resolved scope.
+Mogplex caps enabled MCP server connections from **Integrations** at five per resolved scope.
+The **MCP Servers** catalog has no server-count cap.
 
 The cap protects runs from receiving an oversized or noisy tool surface. If a
 repo reaches the cap, decide whether to:
@@ -229,8 +280,10 @@ Use `/mcp` in the CLI to inspect MCP state during a session.
 
 | Symptom | Check |
 | --- | --- |
-| Tool missing in a hosted run | Confirm the connection is enabled and included in the repo's resolved set. |
-| Tool works globally but not in one repo | Check for a project exclusion or a project-specific connection cap. |
+| Integration tool missing in a hosted run | Confirm the connection is enabled and included in the repo's resolved set. |
+| Saved MCP tool missing in web chat | Confirm Enabled is on, the URL is public, and the server supports Streamable HTTP. Check saved tool restrictions and the startup deadline. |
+| Saved MCP tool needs approval | Use Control for tools with an explicit `prompt` approval mode. Other hosted chat surfaces withhold them. |
+| Integration tool works globally but not in one repo | Check for a project exclusion or a project-specific connection cap. |
 | CLI does not show cloud MCP servers | Confirm CLI token login, then inspect `/mcp` and the remote cache file. |
 | OAuth preset stopped working | Reconnect it from Connections and retest before changing prompts. |
 | MCP response leaks secrets in logs | Rotate the exposed credential and stop logging MCP config output. |
