@@ -53,7 +53,8 @@ The result shows the tool count, workspace chat availability, tools that require
 Expand **Discovered tools** to inspect each tool's effective permission.
 
 An error explains whether to check the public URL, authorization headers, missing secrets, tool permissions, or server response time.
-Tool discovery has a six-second deadline. Closing the connection can take up to two more seconds and does not hide a successful result.
+A manual test allows six seconds for discovery. Closing its connection can add up to two seconds and does not hide a successful result.
+This cleanup budget applies only to the manual test, not chat startup.
 A successful connection with no tools shows a count of zero.
 The test also checks disabled servers. Enable a server before its allowed tools become available.
 Test local stdio servers through the CLI.
@@ -80,7 +81,8 @@ Test the saved connection before an edit to populate its tool names. **Add tool 
 For a tool marked **Disabled in saved settings**, turn on the switch beside that label to enable it. Other block rules still apply.
 
 Save changes to apply them on the next turn. The controls preserve unrelated CLI fields and permissions.
-The permission controls reject invalid values on save. If an earlier CLI or manual edit left invalid permission fields, fix them in **Extra JSON**. Invalid policies never become permissive defaults.
+The form only saves valid permission values. If an earlier CLI or manual edit left an invalid policy, the structured controls cannot edit it.
+Open **Extra JSON**, correct the invalid fields, then save. Mogplex withholds tools from invalid policies until you fix them.
 
 Without an explicit approval mode, saved tools run automatically, like Integrations in web chat.
 CLI approval defaults remain unchanged. Other CLI-specific extra options do not configure web chat.
