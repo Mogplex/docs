@@ -158,6 +158,9 @@ or REST APIs that do not have a preset yet.
 The Control row is the coordinator, the agent you talk to. A worker it delegates
 to is a sandbox run, so it follows the row for its harness.
 
+Enabled public HTTP servers from **MCP Servers** also load in Control, workspace chat, the Slack agent, and native-harness runs.
+These saved servers belong to the user and apply across repos. Integration scope exclusions do not apply to this separate catalog.
+
 Control waits up to eight seconds for remote MCP servers when a turn starts. If
 one is slow or down, the turn runs without connection tools instead of hanging.
 
@@ -195,7 +198,8 @@ for the full operating model.
 
 ## MCP limits
 
-Mogplex caps enabled MCP server connections at five per resolved scope.
+Mogplex caps enabled MCP server connections from **Integrations** at five per resolved scope.
+This existing cap does not apply to the **MCP Servers** catalog.
 
 The cap protects runs from receiving an oversized or noisy tool surface. If a
 repo reaches the cap, decide whether to:
