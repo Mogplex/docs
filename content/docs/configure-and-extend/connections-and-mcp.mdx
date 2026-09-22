@@ -52,8 +52,8 @@ Choose **Test connection** on a saved HTTP server. The test reads its saved URL 
 The result shows the tool count, workspace chat availability, tools that require Control approval, and blocked tools.
 Expand **Discovered tools** to inspect each tool's effective permission.
 
-An error explains whether to check the public URL, authorization headers, missing secrets, tool permissions, or server response time.
-A manual test allows six seconds for discovery. Closing its connection can add up to two seconds and does not hide a successful result.
+An error explains whether to check the public URL, authorization headers, missing secrets, invalid permission fields, or server response time.
+A manual test allows six seconds for discovery. Closing the connection can add up to two seconds. A slow close does not turn a successful test into a failure.
 This cleanup budget applies only to the manual test, not chat startup.
 A successful connection with no tools shows a count of zero.
 The test also checks disabled servers. Enable a server before its allowed tools become available.
@@ -88,6 +88,8 @@ Without an explicit approval mode, saved tools run automatically, like Integrati
 CLI approval defaults remain unchanged. Other CLI-specific extra options do not configure web chat.
 
 The controls use the same fields as **Extra JSON**. Advanced edits remain available.
+**Run automatically** maps to `auto`, **Ask in Control** to `prompt`, and per-tool **Block** to `deny`.
+**Allowed tools** sets `enabled_tools`. **Blocked tools** sets `disabled_tools`.
 For example, this JSON allows `search` and `publish`, blocks `delete`, and asks before `publish` in Control.
 Replace these example names with the tool names your server exposes.
 
