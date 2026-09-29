@@ -157,7 +157,7 @@ type MogplexApiError = {
 | `GET` | [`/automations/{automationId}/runs`](#list-automation-runs) | `read` | List recent automation runs. |
 | `GET` | [`/automations/{automationId}/runs/{runId}`](#read-automation-run-logs) | `read` | Read detailed automation run logs. |
 | `POST` | [`/pr-reviews/rerun`](#rerun-a-pr-review) | `write` | Queue a fresh Mogplex PR review. |
-| `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex or Claude Code run. |
+| `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex, Claude Code, or Mogplex agent run. |
 | `GET` | [`/runs/{runId}`](#get-a-run) | `read` | Read run state. |
 | `GET` | [`/runs/{runId}/events`](#list-run-events) | `read` | Read structured run events. |
 | `POST` | [`/runs/{runId}/cancel`](#cancel-a-run) | `write` | Cancel an active run. |
@@ -717,9 +717,11 @@ type MogplexApiRunDetail = {
     createBranch: boolean;
   };
   rootDirectory: string | null;
-  // The mode the run started with, upper-cased. null: the default, AUTO, or a
-  // Mogplex-harness run, which takes no mode. Typed as a string because runs
-  // started by older Mogplex CLIs can carry other values.
+  // The mode the request named, upper-cased: an explicit "AUTO" reports
+  // "AUTO". null when the request omitted mode (AUTO applies) and for a
+  // Mogplex-harness run, which takes no mode. Typed as a string because the
+  // Mogplex CLI's cloud runs report the CLI's own run mode (such as "single"),
+  // which runs as AUTO.
   mode: string | null;
   eventsUrl: string;
   cancelUrl: string;
