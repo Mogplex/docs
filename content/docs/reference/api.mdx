@@ -717,11 +717,11 @@ type MogplexApiRunDetail = {
     createBranch: boolean;
   };
   rootDirectory: string | null;
-  // The mode the request named, upper-cased: an explicit "AUTO" reports
-  // "AUTO". null when the request omitted mode (AUTO applies) and for a
-  // Mogplex-harness run, which takes no mode. Typed as a string because the
-  // Mogplex CLI's cloud runs report the CLI's own run mode (such as "single"),
-  // which runs as AUTO.
+  // The mode the request named. SAFE, AUTO, and YOLO are reported upper-cased
+  // (a request with "auto" reports "AUTO"). null when the request omitted mode
+  // (AUTO applies) and for a Mogplex-harness run, which takes no mode. Typed
+  // as a string because the Mogplex CLI's Codex cloud runs report the CLI's
+  // own run mode as sent (such as "single"), which runs as AUTO.
   mode: string | null;
   eventsUrl: string;
   cancelUrl: string;
@@ -773,9 +773,9 @@ The response is `202 Accepted` with
   files.
 
 Any other value returns `400 BAD_REQUEST`, except the run modes released
-Mogplex CLIs send for their cloud runs (such as `single`). Those are accepted
-for compatibility, stored as sent, and run as `AUTO`. New callers should send
-one of the three values above.
+Mogplex CLIs send for their cloud runs (such as `single`). Those runs use the
+`codex` harness, and those modes are accepted for compatibility, stored as sent,
+and run as `AUTO`. New callers should send one of the three values above.
 
 `harness: "mogplex"` runs Mogplex's own agent instead of a CLI. It takes no
 `mode` (sending one returns `400`), always works on its own branch (it creates
