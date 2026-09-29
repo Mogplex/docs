@@ -157,7 +157,7 @@ type MogplexApiError = {
 | `GET` | [`/automations/{automationId}/runs`](#list-automation-runs) | `read` | List recent automation runs. |
 | `GET` | [`/automations/{automationId}/runs/{runId}`](#read-automation-run-logs) | `read` | Read detailed automation run logs. |
 | `POST` | [`/pr-reviews/rerun`](#rerun-a-pr-review) | `write` | Queue a fresh Mogplex PR review. |
-| `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex or Claude Code run. |
+| `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex, Claude Code, or Mogplex agent run. |
 | `GET` | [`/runs/{runId}`](#get-a-run) | `read` | Read run state. |
 | `GET` | [`/runs/{runId}/events`](#list-run-events) | `read` | Read structured run events. |
 | `POST` | [`/runs/{runId}/cancel`](#cancel-a-run) | `write` | Cancel an active run. |
@@ -709,7 +709,7 @@ type MogplexApiRunDetail = {
   sandboxRecordId: string | null;
   sandboxId: string | null;
   repoId: string;
-  harness: "codex" | "claude-code";
+  harness: "codex" | "claude-code" | "mogplex";
   status: MogplexApiRunStatus;
   branch: {
     base: string;
@@ -717,6 +717,12 @@ type MogplexApiRunDetail = {
     createBranch: boolean;
   };
   rootDirectory: string | null;
+  // The mode the request named. SAFE, AUTO, and YOLO are reported upper-cased
+  // (a request with "auto" reports "AUTO"). null when the request omitted mode
+  // (AUTO applies) and for a Mogplex-harness run, which takes no mode. Typed
+  // as a string because the Mogplex CLI's Codex cloud runs report the CLI's
+  // own run mode as sent (such as "single"), which runs as AUTO.
+  mode: string | null;
   eventsUrl: string;
   cancelUrl: string;
   createdAt: string;
@@ -741,19 +747,40 @@ Request body:
 type StartRunRequest = {
   repoId: string;
   prompt: string; // At most 100,000 characters.
-  harness?: "codex" | "claude-code"; // Default: codex.
+  harness?: "codex" | "claude-code" | "mogplex"; // Default: codex.
   baseBranch?: string;
   workingBranch?: string;
   createBranch?: boolean;
   rootDirectory?: string | null;
   conversationId?: string;
   workspaceSessionId?: string;
-  mode?: string;
+  mode?: "SAFE" | "AUTO" | "YOLO"; // Case-insensitive. Default: AUTO.
 };
 ```
 
 The response is `202 Accepted` with
 `MogplexApiRunDetail & { replayed: boolean }` inside `data`.
+
+`mode` sets what the harness may do in its sandbox:
+
+- `SAFE`: the harness doesn't change the checkout. Claude Code plans instead
+  of editing, and Codex runs read-only. MCP tools are not screened, so a
+  connection or Mogplex tool that writes (a GitHub issue, a memory, a stdio
+  server with filesystem access) can still make changes.
+- `AUTO`: the harness edits files and runs commands in the sandbox.
+- `YOLO`: the harness runs without approval prompts. Claude Code still blocks
+  its deny-listed tools and commands, such as `curl`, `ssh`, and reading `.env`
+  files.
+
+Any other value returns `400 BAD_REQUEST`, except the run modes released
+Mogplex CLIs send for their cloud runs (such as `single`). Those runs use the
+`codex` harness, and those modes are accepted for compatibility, stored as sent,
+and run as `AUTO`. New callers should send one of the three values above.
+
+`harness: "mogplex"` runs Mogplex's own agent instead of a CLI. It takes no
+`mode` (sending one returns `400`), always works on its own branch (it creates
+one unless `workingBranch` names a branch other than the base), and reports
+`mode: null`.
 
 When `createBranch` is true and `workingBranch` is omitted, Mogplex creates a
 deterministic branch name from the idempotency key and request. If supplied,
@@ -872,7 +899,7 @@ https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 Use [Install Mogplex MCP](/mcp/install) for client setup and OAuth. Use
-[MCP tools](/mcp/tools) for all 23 tool argument schemas.
+[MCP tools](/mcp/tools) for all 29 tool argument schemas.
 
 Request envelope:
 
