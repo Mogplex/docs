@@ -717,6 +717,7 @@ type MogplexApiRunDetail = {
     createBranch: boolean;
   };
   rootDirectory: string | null;
+  mode: string | null; // The mode the run started with, upper-cased. null: AUTO.
   eventsUrl: string;
   cancelUrl: string;
   createdAt: string;
