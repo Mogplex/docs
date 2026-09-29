@@ -763,7 +763,9 @@ The response is `202 Accepted` with
   connection or Mogplex tool that writes (a GitHub issue, a memory, a stdio
   server with filesystem access) can still make changes.
 - `AUTO`: the harness edits files and runs commands in the sandbox.
-- `YOLO`: the harness skips every permission check.
+- `YOLO`: the harness runs without approval prompts. Claude Code still blocks
+  its deny-listed tools and commands, such as `curl`, `ssh`, and reading `.env`
+  files.
 
 Any other value returns `400 BAD_REQUEST`. `mode` isn't accepted for runs that
 use the Mogplex harness.
