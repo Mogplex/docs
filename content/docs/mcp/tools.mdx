@@ -24,6 +24,10 @@ A run prompt can invoke a skill without fetching it: write `$handle` in the
 `prompt` of `mogplex_start_agent_run`. See
 [Using Skills](/web/agents/using-skills).
 
+`mogplex_start_agent_run` also takes `mode` (`SAFE`, `AUTO`, or `YOLO`) for
+Codex and Claude Code runs. See [Start a run](/reference/api#start-a-run) for
+what each mode allows. MCP tools aren't screened in `SAFE` and stay callable.
+
 `mogplex_create_sandbox` consumes the existing launch event stream and returns
 when the launch succeeds or fails. It does not create a separate status-polling
 loop.
@@ -82,7 +86,7 @@ published graph.
 
 | Tool | Scope | What it does |
 | --- | --- | --- |
-| `mogplex_start_agent_run` | `write` | Start a Codex or Claude Code run in a repo sandbox. |
+| `mogplex_start_agent_run` | `write` | Start a Codex, Claude Code, or Mogplex agent run in a repo sandbox. |
 | `mogplex_get_run` | `read` | Read current run state and metadata. |
 | `mogplex_get_run_events` | `read` | Read append-only run events. |
 | `mogplex_cancel_run` | `write` | Request cancellation of a one-off agent run, not a Flow job. |
