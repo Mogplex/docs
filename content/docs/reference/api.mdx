@@ -748,12 +748,24 @@ type StartRunRequest = {
   rootDirectory?: string | null;
   conversationId?: string;
   workspaceSessionId?: string;
-  mode?: string;
+  mode?: "SAFE" | "AUTO" | "YOLO"; // Case-insensitive. Default: AUTO.
 };
 ```
 
 The response is `202 Accepted` with
 `MogplexApiRunDetail & { replayed: boolean }` inside `data`.
+
+`mode` sets what the harness may do in its sandbox:
+
+- `SAFE`: the harness doesn't change the checkout. Claude Code plans instead
+  of editing, and Codex runs read-only. MCP tools are not screened, so a
+  connection or Mogplex tool that writes (a GitHub issue, a memory, a stdio
+  server with filesystem access) can still make changes.
+- `AUTO`: the harness edits files and runs commands in the sandbox.
+- `YOLO`: the harness skips every permission check.
+
+Any other value returns `400 BAD_REQUEST`. `mode` isn't accepted for runs that
+use the Mogplex harness.
 
 When `createBranch` is true and `workingBranch` is omitted, Mogplex creates a
 deterministic branch name from the idempotency key and request. If supplied,

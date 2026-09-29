@@ -24,6 +24,10 @@ A run prompt can invoke a skill without fetching it: write `$handle` in the
 `prompt` of `mogplex_start_agent_run`. See
 [Using Skills](/web/agents/using-skills).
 
+`mogplex_start_agent_run` also takes `mode` (`SAFE`, `AUTO`, or `YOLO`) for
+Codex and Claude Code runs. See [Start a run](/reference/api#start-a-run) for
+what each mode allows, including the MCP tools that stay callable in `SAFE`.
+
 `mogplex_create_sandbox` consumes the existing launch event stream and returns
 when the launch succeeds or fails. It does not create a separate status-polling
 loop.
