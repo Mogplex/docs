@@ -709,7 +709,7 @@ type MogplexApiRunDetail = {
   sandboxRecordId: string | null;
   sandboxId: string | null;
   repoId: string;
-  harness: "codex" | "claude-code";
+  harness: "codex" | "claude-code" | "mogplex";
   status: MogplexApiRunStatus;
   branch: {
     base: string;
@@ -717,7 +717,10 @@ type MogplexApiRunDetail = {
     createBranch: boolean;
   };
   rootDirectory: string | null;
-  mode: string | null; // The mode the run started with, upper-cased. null: AUTO.
+  // The mode the run started with, upper-cased. null: the default, AUTO, or a
+  // Mogplex-harness run, which takes no mode. Typed as a string because runs
+  // started by older Mogplex CLIs can carry other values.
+  mode: string | null;
   eventsUrl: string;
   cancelUrl: string;
   createdAt: string;
@@ -742,7 +745,7 @@ Request body:
 type StartRunRequest = {
   repoId: string;
   prompt: string; // At most 100,000 characters.
-  harness?: "codex" | "claude-code"; // Default: codex.
+  harness?: "codex" | "claude-code" | "mogplex"; // Default: codex.
   baseBranch?: string;
   workingBranch?: string;
   createBranch?: boolean;
@@ -767,8 +770,12 @@ The response is `202 Accepted` with
   its deny-listed tools and commands, such as `curl`, `ssh`, and reading `.env`
   files.
 
-Any other value returns `400 BAD_REQUEST`. `mode` isn't accepted for runs that
-use the Mogplex harness.
+Any other value returns `400 BAD_REQUEST`.
+
+`harness: "mogplex"` runs Mogplex's own agent instead of a CLI. It takes no
+`mode` (sending one returns `400`), always works on its own branch (it creates
+one unless `workingBranch` names a branch other than the base), and reports
+`mode: null`.
 
 When `createBranch` is true and `workingBranch` is omitted, Mogplex creates a
 deterministic branch name from the idempotency key and request. If supplied,
@@ -887,7 +894,7 @@ https://mogplex.com/api/v1/mogplex/mcp
 ```
 
 Use [Install Mogplex MCP](/mcp/install) for client setup and OAuth. Use
-[MCP tools](/mcp/tools) for all 23 tool argument schemas.
+[MCP tools](/mcp/tools) for all 29 tool argument schemas.
 
 Request envelope:
 
