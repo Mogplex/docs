@@ -772,7 +772,10 @@ The response is `202 Accepted` with
   its deny-listed tools and commands, such as `curl`, `ssh`, and reading `.env`
   files.
 
-Any other value returns `400 BAD_REQUEST`.
+Any other value returns `400 BAD_REQUEST`, except the run modes released
+Mogplex CLIs send for their cloud runs (such as `single`). Those are accepted
+for compatibility, stored as sent, and run as `AUTO`. New callers should send
+one of the three values above.
 
 `harness: "mogplex"` runs Mogplex's own agent instead of a CLI. It takes no
 `mode` (sending one returns `400`), always works on its own branch (it creates
