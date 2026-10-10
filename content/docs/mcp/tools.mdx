@@ -75,6 +75,7 @@ manual variables do not inherit these changes.
 | `mogplex_cancel_automation_run` | `write` | Cancel a Flow job using its automation ID and job run ID. |
 | `mogplex_list_automation_runs` | `read` | List recent executions and node or dispatch summaries. |
 | `mogplex_get_automation_run_logs` | `read` | Read node runs, dispatch events, AI calls, errors, usage, and review findings. |
+| `mogplex_get_automation_run_artifact` | `read` | Read a JSON file an API-triggered run committed under `.mogplex/artifacts/`. |
 | `mogplex_rerun_pr_review` | `write` | Queue another Mogplex PR Review run for a pull request. |
 
 Automation listing defaults to 50 records and accepts a maximum `limit` of
