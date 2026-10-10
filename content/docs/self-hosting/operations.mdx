@@ -1,0 +1,123 @@
+---
+title: Operations
+description: Upgrade a self-hosted Mogplex safely, manage its secrets, expose the MCP endpoint, and understand the known constraints.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Upgrades
+
+Release notes on the [releases page](https://github.com/Mogplex/mogplex/releases)
+list breaking changes to env vars and migrations. For each upgrade:
+
+1. Pull `main` or a tagged release into your fork.
+2. Add any new variables to the app **and** to Trigger.dev.
+3. Apply migrations:
+   `pnpm exec tsx scripts/apply-neon-migrations.ts`.
+4. Deploy the app.
+5. Deploy the Trigger.dev tasks from the same commit: `pnpm trigger:deploy`.
+
+Migrations stay compatible with the previous app release, so apply them
+**before** you deploy the new code. Production uses the same order.
+
+<Callout title="Production does this in CI">
+  `.github/workflows/deploy-production.yml` is a working example. It applies
+  migrations, deploys with the Vercel CLI, and then calls
+  `/api/cron/production-smoke` to detect schema drift. Point its secrets at your
+  own accounts to reuse it.
+</Callout>
+
+## Secrets
+
+| Secret | Rotation |
+| --- | --- |
+| `BETTER_AUTH_SECRET` | Rotating it signs out every user. |
+| `CRON_SECRET`, `INTERNAL_API_SECRET` | Rotate freely. On Docker, update your cron jobs at the same time. |
+| `EMAIL_UNSUBSCRIBE_SECRET` | Rotating it invalidates unsubscribe links already sent. |
+| `CONNECTIONS_ENCRYPTION_KEY` | Encrypts saved connection tokens and API keys. **Re-encrypt before you rotate** (below). |
+| `GITHUB_WEBHOOK_SECRET`, `SLACK_SIGNING_SECRET` | Change the value in GitHub or Slack and in your env at the same time. |
+
+Store secrets in your platform's secret store. Never commit them.
+
+### Rotate `CONNECTIONS_ENCRYPTION_KEY`
+
+If you change the key without re-encrypting, every saved connection becomes
+unreadable. Use the rotation script. It runs a dry run by default and backs up
+the original ciphertexts.
+
+```bash
+OLD_CONNECTIONS_ENCRYPTION_KEY=<old> \
+NEW_CONNECTIONS_ENCRYPTION_KEY=$(openssl rand -hex 32) \
+DATABASE_URL=<owner connection> \
+  pnpm exec tsx scripts/rotate-connections-encryption-key.ts            # dry run
+# Review the counts, then run again with --execute
+```
+
+Take a database snapshot first, and rotate during low traffic. Switch the env
+var and redeploy right after the script finishes. Then run the script once more
+to re-encrypt rows that were written in between.
+
+## Hosted API and MCP endpoint
+
+Your deployment serves the same [hosted API](/reference/api) and
+[MCP endpoint](/mcp) as mogplex.com, at
+`https://<domain>/api/v1/mogplex/mcp`. Users authenticate with a Mogplex key
+from **Settings → Mogplex Keys**, or through OAuth.
+
+Better Auth is the OAuth authorization server. It supports dynamic client
+registration, PKCE, and refresh tokens. No extra setup is needed when the
+public URL is `NEXT_PUBLIC_APP_URL`. Verify it:
+
+```bash
+curl https://<domain>/.well-known/oauth-protected-resource/api/v1/mogplex/mcp
+curl https://<domain>/.well-known/oauth-authorization-server
+```
+
+The first response must name your domain as both the resource and the
+authorization server.
+
+- Set `MOGPLEX_MCP_RESOURCE_URL` only when the MCP endpoint is served from a
+  different URL than `NEXT_PUBLIC_APP_URL`.
+- Set `MOGPLEX_MCP_ALLOWED_ORIGINS` for browser-based MCP clients.
+
+When you [install MCP clients](/mcp/install), replace `mogplex.com` with your
+domain.
+
+## Mogplex CLI
+
+To point the [Mogplex CLI](/cli) at your deployment instead of mogplex.com, set
+`MOGPLEX_URL`:
+
+```bash
+export MOGPLEX_URL="https://mogplex.example.com"
+```
+
+See [CLI automation](/cli/automation#base-url).
+
+## Known constraints
+
+- **Sandboxes require Vercel Sandbox.** No other sandbox backend exists yet. A
+  pluggable backend would be a welcome contribution. Open a
+  [discussion](https://github.com/Mogplex/mogplex/discussions) before you start
+  so the interface is agreed first.
+- **The Docker image has no health check.** Probe `/` or `/login` from your
+  orchestrator.
+- **Cron routes are not self-scheduling.** Outside Vercel, you must
+  [schedule them](/self-hosting/background-jobs#cron-routes).
+- **Bring-your-own Vercel compute for end users is not available.** Sandboxes
+  always bill to the deployment's `PLATFORM_VERCEL_*` account.
+- **Team-shared connections are not available yet.** Connections belong to
+  personal accounts.
+
+## Troubleshooting
+
+| Symptom | Likely cause |
+| --- | --- |
+| Runs fail with "requires a positive billing balance" | The user is not in the [access allowlist](/self-hosting/sandboxes-and-models#give-users-access). |
+| "Sandbox service not configured" | `PLATFORM_VERCEL_TOKEN` or the project ID is missing. |
+| Automations and Slack runs never start | Trigger.dev is not configured, the tasks are not deployed, or the tasks are missing env vars. |
+| `pnpm trigger:deploy` targets the wrong project | `TRIGGER_PROJECT_REF` is unset. |
+| GitHub deliveries return `401` | `GITHUB_WEBHOOK_SECRET` does not match the App. |
+| A changed `NEXT_PUBLIC_*` value has no effect | Rebuild. These values are fixed at build time. |
+| Auth routes return errors | `DATABASE_URL` and `MOGPLEX_RUNTIME_DATABASE_URL` are both unset, or migrations have not run. |
+| Email sign-up never completes | `RESEND_API_KEY` is missing, or the sender domain is not verified. |

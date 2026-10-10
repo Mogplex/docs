@@ -1,0 +1,157 @@
+---
+title: Environment Variables
+description: Every environment variable a self-hosted Mogplex reads, grouped by feature, with required, build-time, and default values marked.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+`.env.example` in the repository is the starting template. Copy it to
+`.env.local` for local development, or to `.env` for Docker.
+
+<Callout type="warn" title="NEXT_PUBLIC_* values are build-time">
+  Next.js compiles every `NEXT_PUBLIC_*` value into the client bundle when it
+  builds. Changing one at runtime has no effect. Rebuild after each change. With
+  Docker, pass them as `--build-arg`.
+</Callout>
+
+Trigger.dev tasks need the same **server** variables as the app. See
+[Background jobs](/self-hosting/background-jobs#3-give-the-tasks-their-environment).
+
+## Required
+
+| Variable | Notes |
+| --- | --- |
+| `MOGPLEX_DATA_BACKEND` | `neon`. |
+| `NEXT_PUBLIC_MOGPLEX_DATA_BACKEND` | `neon`. Must match `MOGPLEX_DATA_BACKEND`. Build-time. |
+| `NEXT_PUBLIC_APP_URL` | Public URL of the deployment, such as `https://mogplex.example.com`. Build-time. |
+| `DATABASE_URL` | Owner connection. Migrations use it, and the app falls back to it. |
+| `DATABASE_URL_UNPOOLED` | Direct connection, for `pg LISTEN`. |
+| `BETTER_AUTH_SECRET` | `openssl rand -base64 32`. |
+| `CRON_SECRET` | Bearer token for `/api/cron/*` and machine-only routes. |
+| `INTERNAL_API_SECRET` | Server-to-server sandbox actions. |
+| `CONNECTIONS_ENCRYPTION_KEY` | 32-byte hex key (`openssl rand -hex 32`) that encrypts saved connection credentials. Do not rotate without a plan: see [Operations](/self-hosting/operations#secrets). |
+| `EMAIL_UNSUBSCRIBE_SECRET` | Signs unsubscribe links. The app throws in production without it. |
+| One sign-in provider | `AUTH_GITHUB_*`, `AUTH_GOOGLE_*`, `AUTH_MICROSOFT_*`, or Resend for email and password. |
+
+## Database
+
+| Variable | Notes |
+| --- | --- |
+| `MOGPLEX_RUNTIME_DATABASE_URL` | Preferred app connection, as the least-privilege `service_role`. |
+| `MOGPLEX_RUNTIME_DATABASE_URL_UNPOOLED` | Direct URL for `service_role`. |
+
+See [Database and auth](/self-hosting/database-and-auth#use-a-least-privilege-runtime-role).
+
+## Auth and email
+
+| Variable | Notes |
+| --- | --- |
+| `BETTER_AUTH_URL` | Defaults to `NEXT_PUBLIC_APP_URL`. |
+| `BETTER_AUTH_API_KEY` | Optional. Connects the better-auth.com dashboard. |
+| `AUTH_GITHUB_CLIENT_ID`, `AUTH_GITHUB_CLIENT_SECRET` | GitHub sign-in. Callback: `/api/auth/callback/github`. |
+| `AUTH_GOOGLE_CLIENT_ID`, `AUTH_GOOGLE_CLIENT_SECRET` | Google sign-in. Callback: `/api/auth/callback/google`. |
+| `AUTH_MICROSOFT_CLIENT_ID`, `AUTH_MICROSOFT_CLIENT_SECRET` | Microsoft sign-in. Callback: `/api/auth/callback/microsoft`. |
+| `AUTH_MICROSOFT_TENANT_ID` | Default `common` (any Microsoft account). |
+| `RESEND_API_KEY` | Required for email and password sign-up (verification email). |
+| `WAITLIST_FROM_EMAIL` | Default sender, on a domain verified in Resend. |
+| `AUTH_FROM_EMAIL`, `BILLING_FROM_EMAIL` | Optional senders. Fall back to `WAITLIST_FROM_EMAIL`. |
+
+## GitHub
+
+| Variable | Notes |
+| --- | --- |
+| `GITHUB_APP_ID` | GitHub App ID. |
+| `GITHUB_APP_NAME` | GitHub App slug, as in `github.com/apps/<slug>`. |
+| `GITHUB_APP_PRIVATE_KEY` | PEM. Write newlines as `\n` in single-line env files. |
+| `GITHUB_WEBHOOK_SECRET` | Must match the App's webhook secret. |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub OAuth app for repository listing and reauthorization. Not in `.env.example`. |
+
+See [GitHub App](/self-hosting/github-app).
+
+## Background jobs
+
+| Variable | Notes |
+| --- | --- |
+| `TRIGGER_PROJECT_REF` | Your Trigger.dev project ref. Always set it. |
+| `TRIGGER_SECRET_KEY` | Secret key for the Trigger.dev environment. |
+| `TRIGGER_API_URL` | Only for a self-hosted Trigger.dev instance. |
+| `TRIGGER_CLI_ENV_FILES` | Optional. Extra comma-separated env files for `pnpm trigger:deploy`. |
+
+## Sandboxes
+
+| Variable | Notes |
+| --- | --- |
+| `PLATFORM_VERCEL_TOKEN` | Vercel token that creates sandboxes. |
+| `PLATFORM_VERCEL_TEAM_ID` | Vercel team that owns the sandboxes. |
+| `VERCEL_PROJECT_ID` or `PLATFORM_VERCEL_PROJECT_ID` | Vercel project for the sandboxes. |
+| `PLATFORM_SANDBOX_COST_CENTS_PER_SECOND` | Optional. Cost-reporting rate. Default `0.0028`. |
+
+## Models and agent features
+
+| Variable | Notes |
+| --- | --- |
+| `AI_GATEWAY_API_KEY` | Platform model access through Vercel AI Gateway. |
+| `OPENROUTER_API_KEY` | Optional. Model catalog sync. |
+| `OPENAI_API_KEY` | Optional. Memory embeddings. Without it, memory search uses plain text matching. |
+| `EXA_API_KEY` | Optional. Agent web search and page extraction. Server-side only. |
+| `EXA_RESEARCH_SECRET` | Optional. Lets Trigger.dev workers use web search through the app. |
+| `AUTOMATION_GATEWAY_CACHING` | Optional. `off` turns off prompt caching for automation jobs. |
+| `AUTOMATION_GATEWAY_FALLBACK_MODELS` | Optional. Comma-separated fallback models for automation jobs. |
+| `DECISION_MODES`, `DECISIONS_DISABLED` | Optional. Overrides for the decision layer. |
+| `MOGPLEX_HARNESS_ACP` | Optional. `off` runs Codex through its CLI instead of the Agent Client Protocol. |
+
+## User access
+
+| Variable | Notes |
+| --- | --- |
+| `PLATFORM_ACCESS_EMAILS` | Comma-separated emails with platform AI and sandbox access. |
+| `PLATFORM_ACCESS_EMAIL_DOMAINS` | Comma-separated domains, such as `example.com`. |
+| `PLATFORM_ACCESS_USER_IDS` | Comma-separated Mogplex user IDs. |
+
+See [Give users access](/self-hosting/sandboxes-and-models#give-users-access).
+
+## Slack
+
+| Variable | Notes |
+| --- | --- |
+| `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET` | Slack app OAuth credentials. |
+| `SLACK_SIGNING_SECRET` | Verifies requests to `/api/webhooks/slack`. |
+| `SLACK_REDIRECT_URI` | Optional. Default `${NEXT_PUBLIC_APP_URL}/api/integrations/slack/callback`. |
+
+## Public API and MCP
+
+| Variable | Notes |
+| --- | --- |
+| `MOGPLEX_API_URL` | Optional. Overrides the host for the app's calls to its own API. |
+| `MOGPLEX_MCP_RESOURCE_URL` | Optional. OAuth protected-resource URL. Default `${NEXT_PUBLIC_APP_URL}/api/v1/mogplex/mcp`. |
+| `MOGPLEX_MCP_ALLOWED_ORIGINS` | Optional. Comma-separated browser origins that may call the MCP endpoint. Server-side MCP clients do not need it. |
+
+## Observability
+
+| Variable | Notes |
+| --- | --- |
+| `NEXT_PUBLIC_SENTRY_DSN` | Browser DSN. Build-time. |
+| `SENTRY_DSN` | Server DSN. Defaults to `NEXT_PUBLIC_SENTRY_DSN`. |
+| `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` | Source map upload during builds. |
+| `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE` | Optional overrides. |
+| `NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE`, `NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE`, `NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE` | Optional browser sampling. Build-time. |
+
+## Billing (optional)
+
+Leave these unset to run without billing. Then grant access with the
+[allowlists](#user-access).
+
+| Variable | Notes |
+| --- | --- |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Your Stripe account. Webhook: `/api/webhooks/stripe`. |
+| `CAPACITY_BILLING_OPERATIONS_ENABLED` | Default `false`. Turns on capacity billing operations. |
+| `CAPACITY_BILLING_LIVE_WRITES_ENABLED` | Default `false`. Required with a live Stripe key. |
+| `CAPACITY_BILLING_PILOT_ACCOUNT_IDS` | Comma-separated billing account IDs for the reserved-concurrency pilot. |
+
+## Other
+
+| Variable | Notes |
+| --- | --- |
+| `NEXT_PUBLIC_C15T_URL` | Optional. Hosted cookie-consent backend. If unset, consent is stored only in the browser. Build-time. |
+| `NEXT_PUBLIC_VERCEL_APP_CLIENT_ID`, `VERCEL_APP_CLIENT_SECRET` | Optional. **Sign in with Vercel** (identity only). Callback: `/api/auth/vercel/callback`. Build-time client ID. |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Legacy Supabase deployments only. Leave them empty for Neon. |

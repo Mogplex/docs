@@ -1,0 +1,122 @@
+---
+title: Slack App
+description: Create the Slack app for a self-hosted Mogplex, with a ready-to-paste manifest, the scopes, events, slash commands, and environment variables.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Slack is optional. A self-hosted deployment needs its own Slack app, because the
+hosted app sends its events to mogplex.com. One app can be installed in many
+workspaces. Users install it from **Connections → Slack** in your deployment.
+
+## 1. Create the app from a manifest
+
+Open [api.slack.com/apps](https://api.slack.com/apps), select **Create New App →
+From a manifest**, and paste the manifest below. Replace `mogplex.example.com`
+with your domain.
+
+```yaml
+display_information:
+  name: Mogplex
+  description: Run Mogplex agents from Slack
+features:
+  app_home:
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: mogplex
+    always_online: true
+  slash_commands:
+    - command: /mogplex
+      url: https://mogplex.example.com/api/webhooks/slack
+      description: Mogplex commands
+      usage_hint: help | status | cancel | repo | prs | issues | usage | model | harness | agent
+      should_escape: false
+    - command: /mogplex-cancel
+      url: https://mogplex.example.com/api/webhooks/slack
+      description: Cancel your active Mogplex run in this channel
+      usage_hint: "[run-id]"
+      should_escape: false
+    - command: /harness
+      url: https://mogplex.example.com/api/webhooks/slack
+      description: View or choose your repository runner
+      usage_hint: "[mogplex|codex|claude-code]"
+      should_escape: false
+oauth_config:
+  redirect_urls:
+    - https://mogplex.example.com/api/integrations/slack/callback
+  scopes:
+    bot:
+      - app_mentions:read
+      - channels:history
+      - channels:read
+      - chat:write
+      - commands
+      - files:read
+      - groups:history
+      - groups:read
+      - im:history
+      - im:read
+      - mpim:history
+      - mpim:read
+      - users:read
+      - users:read.email
+settings:
+  event_subscriptions:
+    request_url: https://mogplex.example.com/api/webhooks/slack
+    bot_events:
+      - app_mention
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+  interactivity:
+    is_enabled: true
+    request_url: https://mogplex.example.com/api/webhooks/slack
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
+```
+
+One endpoint, `/api/webhooks/slack`, receives events, slash commands, and
+interactivity. Deploy the app with the Slack variables set **before** you save
+the manifest, so that Slack's URL verification succeeds.
+
+To distribute the app to workspaces other than the one that created it, turn on
+**Manage Distribution → Public Distribution**.
+
+## 2. Set the environment variables
+
+From **Basic Information → App Credentials**:
+
+```bash
+SLACK_CLIENT_ID=...
+SLACK_CLIENT_SECRET=...
+SLACK_SIGNING_SECRET=...
+# Optional. Defaults to ${NEXT_PUBLIC_APP_URL}/api/integrations/slack/callback
+SLACK_REDIRECT_URI=
+```
+
+Set the same variables in your [Trigger.dev environment](/self-hosting/background-jobs#3-give-the-tasks-their-environment).
+Slack runs execute as Trigger.dev tasks.
+
+## 3. Install and verify
+
+1. In your deployment, open **Connections**, find **Slack**, and select
+   **Install to Slack**.
+2. Link a channel to a repository, and turn on repo-agent runs.
+3. In Slack, run `/mogplex help`. It responds without a linked account.
+4. Mention `@mogplex` with a real instruction in the linked channel. Confirm
+   that a run appears in [Observability](/web/observability).
+
+For channel links, user mapping, and run controls, see
+[Slack](/integrations/slack).
+
+## Scope changes
+
+<Callout>
+  Changing code cannot expand an existing Slack OAuth grant. When a release adds
+  a scope, add it to the app, then reconnect each workspace from
+  **Connections → Slack**. For example, `files:read` lets agents read images
+  attached to thread messages, and older installs must reconnect to get it.
+</Callout>
