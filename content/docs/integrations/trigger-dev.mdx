@@ -1,0 +1,50 @@
+---
+title: Trigger.dev
+description: Connect Trigger.dev so Mogplex agents can inspect and manage tasks, runs, schedules, and deploys in your Trigger.dev projects.
+---
+
+Connect Trigger.dev to let agents investigate failed runs, replay or cancel
+them, manage schedules, and check deploys in **your** Trigger.dev projects.
+
+| | |
+| --- | --- |
+| Type | Server-side API tools, plus the Trigger.dev MCP server in sandboxes and the CLI |
+| Credential | Trigger.dev personal access token (`tr_pat_…`) |
+| Where tools load | API tools in Control, workspace chat, the Slack agent, and native-harness runs. MCP server in Claude Code sandbox runs and the Mogplex CLI. |
+
+## Connect
+
+1. In Trigger.dev, create a personal access token under
+   [**Account → Tokens**](https://cloud.trigger.dev/account/tokens). The
+   preset's **Get a token** link opens this page.
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Trigger.dev**.
+4. Paste the token, then select **Add**.
+5. Test the saved connection. The test confirms that Trigger.dev accepts the
+   token and reports how many API tools are available.
+
+## How it works
+
+One token gives agents two tool sets:
+
+- **API tools that need no sandbox.** Mogplex calls the Trigger.dev management
+  API directly, so the tools work in chat and Slack without a running sandbox.
+- **The Trigger.dev MCP server.** In sandboxes and the CLI, Mogplex starts
+  `npx -y trigger.dev@latest mcp` with your token. The command is fixed in the
+  preset, so nothing you type is ever executed.
+
+See [How the Trigger preset works](/configure-and-extend/connections-and-mcp#how-the-trigger-preset-works)
+for the full list of API tool areas.
+
+## Use it
+
+- "Why did the `sync-orders` task fail in prod in the last hour? Show the error
+  and the run IDs."
+- "Pause the `nightly-report` schedule until Monday."
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Test fails | The token was revoked, or it is a project secret key (`tr_prod_…`) instead of a personal access token (`tr_pat_…`). |
+| A project is missing | The token's account is not a member of that organization. |

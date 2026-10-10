@@ -1,0 +1,72 @@
+---
+title: Signed Webhooks
+description: Start a Mogplex automation from any system that can send an HTTP POST, using an HMAC-signed webhook.
+---
+
+A signed webhook lets any system start a Mogplex automation, including CI,
+monitoring alerts, internal tools, Zapier, or a cron job. The system sends JSON
+to a URL unique to the workflow. Mogplex verifies the signature and starts the
+published workflow with the payload.
+
+## Set up the workflow
+
+1. Open [Automations](/web/automations) and select the workflow's start node.
+2. Set the trigger event to **Signed webhook**.
+3. Select the repository that runs should use.
+4. Copy the **Endpoint**:
+   `https://mogplex.com/api/webhooks/flows/<workflow-id>`.
+5. Select **Generate signing secret** and copy the secret. Mogplex shows it
+   only once. **Rotate signing secret** replaces it.
+6. Write each agent node's instructions. Use the test payload field to try it.
+7. Publish the workflow. Webhooks start only active, published workflows.
+
+## Send a request
+
+Every request must:
+
+- Use `POST` with a JSON **object** body, at most 1 MB.
+- Include `x-mogplex-delivery`: a unique ID for this event, at most 200
+  characters. Mogplex starts at most one run per delivery ID, so retries are
+  safe.
+- Include `x-mogplex-signature`: `sha256=` followed by the hex HMAC-SHA256 of
+  the raw request body, keyed with the signing secret.
+
+```bash
+BODY='{"prompt":"Investigate the failing checkout test","build":"4821"}'
+SIG="sha256=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$MOGPLEX_WEBHOOK_SECRET" -hex | sed 's/^.* //')"
+
+curl -X POST "https://mogplex.com/api/webhooks/flows/$WORKFLOW_ID" \
+  -H "content-type: application/json" \
+  -H "x-mogplex-delivery: build-4821" \
+  -H "x-mogplex-signature: $SIG" \
+  --data "$BODY"
+```
+
+Sign the exact bytes you send. Re-serializing the JSON after signing changes
+the body and fails verification.
+
+```ts
+import { createHmac } from 'node:crypto';
+
+const body = JSON.stringify(payload);
+const signature = `sha256=${createHmac('sha256', secret).update(body).digest('hex')}`;
+```
+
+## Use the payload
+
+The payload is available to the workflow under `metadata.webhook`. Refer to
+its fields in agent instructions and branch conditions.
+
+## Responses
+
+| Status | Meaning |
+| --- | --- |
+| `202` | Accepted. A run was queued. |
+| `200` | Accepted, but no new run started. The response `reason` explains why, for example `REPO_NOT_FOUND` or a delivery ID that was already used. |
+| `400` | The `x-mogplex-delivery` header is missing or too long, or the body is not a JSON object. |
+| `401` | The signature is invalid. |
+| `404` | The workflow has no signing secret, is not active and published, or its start node is not **Signed webhook**. |
+| `413` | The body is larger than 1 MB. |
+
+Treat the signing secret like a password. Store it in your sender's secret
+store, and rotate it if it leaks.

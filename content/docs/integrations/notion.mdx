@@ -1,0 +1,38 @@
+---
+title: Notion
+description: Connect Notion through OAuth so Mogplex agents can search and update pages, databases, and comments.
+---
+
+Connect Notion to let agents read specs and runbooks, search the workspace, and
+write results back to pages and databases.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.notion.com/mcp` |
+| Credential | OAuth. You sign in to Notion and choose which pages to share. |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. Open **Connections → Integrations**.
+2. Under **Quick Add — MCP Presets**, select **+ Add** on **Notion**, then
+   **Connect**.
+3. Sign in to Notion, select the workspace and pages to share, and approve.
+4. Back in Mogplex, test the saved connection and confirm that it lists tools.
+
+Mogplex registers itself with Notion automatically (dynamic client
+registration with PKCE). You do not need a Notion integration token.
+
+## Use it
+
+- "Read the 'Checkout v2' spec in Notion and list what the current code is
+  missing."
+- "After the PR merges, add a row to the Releases database with the PR link and
+  a summary."
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| A page is not found | The page was not shared during the OAuth consent step. Reconnect and include it. |
+| Tools stopped working | The authorization expired or was revoked in Notion. Reconnect from **Connections**. |

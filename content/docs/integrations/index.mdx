@@ -1,62 +1,63 @@
 ---
 title: Integrations
-description: Connect Mogplex to GitHub, Vercel, Slack, CI, the hosted API, MCP clients, and local agent hosts.
+description: Every system Mogplex connects to, including GitHub, Slack, Linear, Notion, Sentry, Supabase, Neon, model providers, agent harnesses, webhooks, the API, and MCP clients.
 ---
 
-Integrations connect Mogplex to the systems that own source code, identity,
-runtime credentials, automation, and external tools.
+Integrations connect Mogplex to the systems that own your code, your
+conversations, your tools, and your models. Start with GitHub. Add the others
+when a workflow needs them.
+
+## Source control and chat
 
 <Cards>
-  <Card
-    title="GitHub"
-    href="/integrations/github"
-    description="Connect identity, confirm App coverage, import repos, and route GitHub comments, PRs, issues, and reviews."
-  />
-  <Card
-    title="Vercel"
-    href="/integrations/vercel"
-    description="Understand repo-linked Vercel project metadata, env sync, and preview troubleshooting."
-  />
-  <Card
-    title="Slack"
-    href="/integrations/slack"
-    description="Install Mogplex in Slack, link channels to repos, control repo-agent runs, and debug DMs, threads, and attachments."
-  />
-  <Card
-    title="CI Integration"
-    href="/cli/automation/ci-integration"
-    description="Run Mogplex from GitHub Actions or another CI system and tail structured run events."
-  />
-  <Card
-    title="Hosted API"
-    href="/reference/api"
-    description="Use the versioned public API for repositories, agents, models, sandboxes, automations, runs, and MCP."
-  />
-  <Card
-    title="GitHub App Coverage"
-    href="/web/guides/github-app-coverage"
-    description="Deep dive on OAuth visibility versus App-backed triggerability."
-  />
-  <Card
-    title="GitHub Mention Routing"
-    href="/web/guides/github-mention-routing"
-    description="Route bare and targeted `@mogplex` mentions through Triggers or Automations without ambiguity."
-  />
-  <Card
-    title="External Connections"
-    href="/configure-and-extend/connections-and-mcp"
-    description="Configure external REST and MCP tools, repo scope resolution, and CLI MCP sync."
-  />
-  <Card
-    title="Mogplex MCP Clients"
-    href="/mcp/install"
-    description="Connect Cursor, Codex, Claude Code, or OpenCode to the live hosted MCP endpoint."
-  />
+  <Card title="GitHub" href="/integrations/github" description="Repo access, App coverage, PR reviews, @mogplex mentions, triggers, and automations." />
+  <Card title="Dependabot" href="/integrations/dependabot" description="Open a reviewed fix PR when GitHub reports a new Dependabot alert." />
+  <Card title="Slack" href="/integrations/slack" description="DM the bot, @mention it in channels, link channels to repos, and control runs with /mogplex." />
+</Cards>
+
+## Tool connections
+
+Agents call these services as tools during chat, Control, Slack, and sandbox
+runs. Add them from **Connections → Integrations**.
+
+<Cards>
+  <Card title="Linear" href="/integrations/linear" description="Issues, projects, cycles, and comments." />
+  <Card title="Notion" href="/integrations/notion" description="Search and update pages, databases, and comments." />
+  <Card title="Sentry" href="/integrations/sentry" description="Issues, events, and stack traces." />
+  <Card title="Supabase" href="/integrations/supabase" description="Databases, auth, storage, and edge functions." />
+  <Card title="Neon" href="/integrations/neon" description="Postgres projects, branches, and SQL." />
+  <Card title="Browserbase" href="/integrations/browserbase" description="Cloud browsers for testing and scraping." />
+  <Card title="Sanity" href="/integrations/sanity" description="Structured content, media, and releases." />
+  <Card title="Zapier" href="/integrations/zapier" description="Actions across thousands of apps." />
+  <Card title="Trigger.dev" href="/integrations/trigger-dev" description="Tasks, runs, schedules, and deploys." />
+  <Card title="Custom REST or MCP" href="/configure-and-extend/connections-and-mcp" description="Connect any REST API or MCP server that has no preset." />
+</Cards>
+
+## Models and agents
+
+<Cards>
+  <Card title="AI provider keys" href="/integrations/ai-provider-keys" description="Bring your own Vercel AI Gateway, Anthropic, OpenAI, or OpenRouter key." />
+  <Card title="Claude Code and Codex" href="/integrations/claude-code-and-codex" description="Run Anthropic's or OpenAI's coding agent as the harness for a run." />
+  <Card title="Vercel" href="/integrations/vercel" description="Sandbox compute, repo runtime settings, and env vars." />
+</Cards>
+
+## Start work from anywhere
+
+<Cards>
+  <Card title="Signed webhooks" href="/integrations/webhooks" description="Start an automation from any system that can send an HTTP POST." />
+  <Card title="CI" href="/cli/automation/ci-integration" description="Run Mogplex from GitHub Actions or another CI system." />
+  <Card title="Hosted API" href="/reference/api" description="Repositories, agents, models, sandboxes, automations, and runs over REST." />
+  <Card title="MCP clients" href="/mcp/install" description="Let Claude Code, Codex, Cursor, or OpenCode call Mogplex over MCP." />
 </Cards>
 
 ## Integration order
 
-Start with GitHub identity, GitHub App coverage, and managed account access
-before debugging webhook routing. Add optional Vercel metadata, Slack, MCP
-servers, and CI entry points only after the account can see and cover the repo
-that should run.
+1. Connect GitHub and install the Mogplex GitHub App. Confirm coverage in
+   [Installations](/web/installations) before you debug webhook routing.
+2. Add Slack if your team requests work in chat.
+3. Add tool connections for the services agents must read or change.
+4. Add provider keys only if you want usage billed to your own provider
+   account.
+
+Running Mogplex on your own infrastructure? Each integration needs your own
+app or credentials. See [Self-hosting](/self-hosting).

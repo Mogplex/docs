@@ -1,0 +1,39 @@
+---
+title: Sentry
+description: Connect Sentry through OAuth so Mogplex agents can read issues, events, and traces and fix the errors they find.
+---
+
+Connect Sentry to let agents look up the error behind a bug report, read stack
+traces and events, and then fix the code in the same run.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.sentry.dev/mcp` |
+| Credential | OAuth. Requested scopes: `org:read`, `project:write`, `team:write`, `event:write`. |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. Open **Connections → Integrations**.
+2. Under **Quick Add — MCP Presets**, select **+ Add** on **Sentry**, then
+   **Connect**.
+3. Sign in to Sentry, choose the organization, and approve.
+4. Back in Mogplex, test the saved connection and confirm that it lists tools.
+
+The write scopes let agents update issues, for example to resolve or assign
+them. To keep agents read-only, set the connection to
+[**Ask before running tools**](/configure-and-extend/connections-and-mcp#asking-before-a-connections-tools-run)
+and approve calls in Control.
+
+## Use it
+
+- "Find the top unresolved Sentry issue in `web-app` from the last 24 hours,
+  reproduce it, and open a fix PR."
+- "Read the stack trace for this Sentry issue URL and explain the root cause."
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| The organization is missing | The Sentry account that approved the connection is not a member of it. Reconnect with the right account. |
+| Tools stopped working | The authorization expired or was revoked. Reconnect from **Connections**. |

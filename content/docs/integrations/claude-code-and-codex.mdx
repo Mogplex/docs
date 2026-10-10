@@ -1,0 +1,59 @@
+---
+title: Claude Code and Codex
+description: Run Anthropic's Claude Code or OpenAI's Codex as the agent harness for Mogplex runs, automations, and Slack tasks.
+---
+
+A harness is the agent program that does the work inside a sandbox. Mogplex
+runs three harnesses:
+
+| Harness | ID | What runs |
+| --- | --- | --- |
+| Mogplex | `mogplex` | Mogplex's native agent. It is always available and uses any model in your catalog. |
+| Claude Code | `claude-code` | Anthropic's `claude` CLI, in the sandbox. |
+| Codex | `codex` | OpenAI's Codex, in the sandbox. It runs through the Agent Client Protocol (ACP). |
+
+Mogplex installs a pinned version of Claude Code or Codex in the sandbox for each
+run, gives it the repository checkout, and streams its events into
+[Observability](/web/observability). Claude Code runs also receive your MCP
+connections; see [where connection tools load](/configure-and-extend/connections-and-mcp#where-connection-tools-load).
+
+## Requirements
+
+Claude Code and Codex need model access. Each harness is available when you have
+one of these:
+
+- **Claude Code:** an AI Gateway key, Mogplex platform AI on your plan, or an
+  Anthropic key.
+- **Codex:** an AI Gateway key, Mogplex platform AI on your plan, or an OpenAI
+  key.
+
+Add keys in **Settings → Provider Keys**. See
+[AI provider keys](/integrations/ai-provider-keys) for the order in which keys
+are used.
+
+## Choose a harness
+
+| Where | How |
+| --- | --- |
+| [Automations](/web/automations) | Select the agent node, then choose **Harness** in the inspector. Unavailable harnesses are disabled. |
+| Slack | `/mogplex harness claude-code`, `/mogplex harness codex`, or `/mogplex harness mogplex`. The choice applies to your future repository runs in that channel. |
+| [Hosted API](/reference/api) and [MCP](/mcp) | Pass `harness` when you start a run. The API defaults to `codex`. |
+
+## Run modes
+
+Claude Code and Codex runs accept a mode that controls what the harness can do
+in the sandbox:
+
+- `SAFE`: the harness does not change the checkout.
+- `AUTO` (default): the harness edits files and runs commands.
+- `YOLO`: the harness runs without approval prompts. Claude Code still blocks
+  its deny-listed tools and commands.
+
+The Mogplex harness takes no mode. See [Start a run](/reference/api#start-a-run)
+for the details.
+
+## Use Mogplex from Claude Code or Codex on your machine
+
+This page covers Claude Code and Codex running **inside** Mogplex. To let a
+local Claude Code, Codex, Cursor, or OpenCode session call Mogplex, install the
+[Mogplex MCP endpoint](/mcp/install).

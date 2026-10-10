@@ -1,0 +1,42 @@
+---
+title: Browserbase
+description: Connect Browserbase so Mogplex agents can drive cloud browsers to test pages, scrape content, and automate web flows.
+---
+
+Connect Browserbase to give agents a real cloud browser. Agents can load pages,
+click through flows, take screenshots, and extract content.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.browserbase.com/mcp` |
+| Credential | Browserbase API key (`bb_live_…`) |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. In Browserbase, copy an API key from the dashboard. See
+   [Browserbase MCP setup](https://docs.browserbase.com/integrations/mcp/setup).
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Browserbase**.
+4. Paste the key, then select **Add**.
+5. Test the saved connection and confirm that it lists tools.
+
+Mogplex sends the key to Browserbase as the `browserbaseApiKey` query parameter.
+The key is stored encrypted and is not shown again.
+
+## Use it
+
+- "Open the preview URL for this PR, sign up with a test account, and report
+  any step that fails."
+- "Capture the pricing page on staging and production and list the
+  differences."
+
+Browser sessions use your Browserbase plan and bill to your Browserbase
+account.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Test fails | The key is invalid or the Browserbase account has no remaining sessions. |
+| The agent cannot reach a preview URL | The preview is protected. Give the agent a URL it can open without signing in, or a bypass token. |
