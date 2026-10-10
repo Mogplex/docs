@@ -80,6 +80,26 @@ installing the [Mogplex MCP server](/mcp/install) in a supported local client.
 
 A valid token without the required scope returns `403 FORBIDDEN`.
 
+### Key access
+
+Each PAT also has an access level, set by its owner in
+[Settings → Mogplex Keys](/web/settings#key-access):
+
+| Access | Effect |
+| --- | --- |
+| Full access | The scopes above apply unchanged. This is the default. |
+| Automations only | `read` endpoints work. Of the `write` endpoints, only triggering an automation with an [API trigger](/integrations/api-triggers) is allowed. |
+
+A team owner can also hold every member's PAT to automations on the team's
+repositories ([Team key access](/web/settings#team-key-access)).
+
+A PAT held to automations gets `403 AUTOMATION_REQUIRED` from `POST /runs`,
+`POST /sandboxes`, `POST /pr-reviews/rerun`, and the automation create,
+update, publish, model, and delete endpoints, before anything is created.
+Cancelling a run is still allowed. Triggering an automation whose
+start node is not an API trigger returns the same error. OAuth access tokens
+are not affected.
+
 ### Rate limits
 
 PAT requests are limited to 60 requests per 60 seconds. Run starts also use
@@ -583,6 +603,12 @@ type TriggerAutomationRequest = {
 };
 ```
 
+For an automation with an [API trigger](/integrations/api-triggers), `input`
+must match the start node's declared fields. Undeclared keys and invalid values
+return `400 BAD_REQUEST`, and a repository outside the start node's repository
+scope returns `403 FORBIDDEN`. Reusing an `Idempotency-Key` with the same input
+returns the original run with `replayed: true`.
+
 Example payload:
 
 ```json
@@ -601,9 +627,13 @@ the same GitHub installation. The response is `202 Accepted`:
 type TriggerAutomationData = {
   run: {
     automationId: string;
+    versionId: string;
+    versionNumber: number;
     jobRunId: string | null;
+    workingBranch: string | null; // Set for API-trigger automations.
     outcome: string;
     reason: string | null;
+    replayed: boolean;
     started: boolean;
     status: string;
     runtime: {
@@ -1055,7 +1085,8 @@ Send `Accept: application/json, text/event-stream`. The endpoint also accepts
 | --- | --- | --- | --- |
 | `BAD_REQUEST` | 400 | JSON, query, graph, branch, or field validation failed. | Correct the request before retrying. |
 | `UNAUTHORIZED` | 401 | Bearer token is missing, invalid, expired, revoked, or has the wrong OAuth audience. | Authenticate again or replace the token. |
-| `FORBIDDEN` | 403 | The token lacks the required scope. | Issue a token with the required scope. |
+| `FORBIDDEN` | 403 | The token lacks the required scope, or the repository is outside the automation's repository scope. | Issue a token with the required scope, or use an allowed repository. |
+| `AUTOMATION_REQUIRED` | 403 | The PAT is held to automations, by its own access or its team's. | Trigger an automation with an API trigger, or ask the key's owner or team owner for full access. |
 | `NOT_FOUND` | 404 | The user does not own the requested resource, or it does not exist. | Verify the id using a list endpoint. |
 | `CONFLICT` | 409 | Current resource state prevents the operation. | Read the resource, then decide whether the operation still applies. |
 | `IDEMPOTENCY_CONFLICT` | 409 | The key was already used for a different request. | Use the original body or a new key. |

@@ -279,6 +279,20 @@ Open **Settings → Provider Keys** to add or remove your own model-provider cre
 This page supports AI Gateway, Anthropic, OpenAI, and OpenRouter.
 Personal keys belong to your account. Team keys use the selected team's permissions.
 
+### Team key access
+
+Team Settings → **Provider Keys** also has a **Mogplex API keys** setting for
+the team's repositories:
+
+- **Each key's own access**: a member's key can do what its owner allows. This
+  is the default.
+- **Automations only**: every member's key is held to the
+  [automations-only rule](#key-access) on the team's repositories, whatever
+  the key itself allows.
+
+Only a team owner can change it. Admins and other members see it read-only.
+Every change is written to the team audit log.
+
 <span id="access-tokens" />
 
 ## Mogplex Keys
@@ -293,7 +307,33 @@ The page supports:
 - one-time token display at creation
 - copy-on-create flow
 - last-used metadata
+- an access level for each key
 - revocation
+
+### Key access
+
+Every key has one of two access levels. You choose it when you create the key,
+it is shown on the key, and **Limit to automations** or **Allow full access**
+changes it later. A change applies to the key's next request.
+
+| Access | What the key can do |
+| --- | --- |
+| **Full access** | Everything its scopes allow. This is the default, and every key created before access levels existed has it. |
+| **Automations only** | Read, and start work only by triggering an automation with an [API trigger](/integrations/api-triggers). |
+
+An automations-only key gets `403 AUTOMATION_REQUIRED` before anything is
+created when it tries to start runs or sandboxes, rerun a PR review, create,
+edit, publish, or delete automations, change a model override or repository
+environment variables, use hosted CLI inference, or change settings and saved
+MCP servers.
+MCP tools follow the same rules because they call the API with the key.
+
+Use **Automations only** for a key held by another system, such as a build
+service that should start one named automation and nothing else. Keep **Full
+access** for CI jobs and scripts that start runs directly.
+
+Signing in to Mogplex, and the CLI and MCP clients signed in with OAuth, do not
+use these keys and are not affected.
 
 Hosted model and sandbox access comes from the account plan, not from
 user-supplied provider or sandbox credentials.
