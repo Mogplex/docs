@@ -1,0 +1,63 @@
+---
+title: Dependabot
+description: Have Mogplex open a reviewed fix PR when GitHub reports a new Dependabot alert, using the Dependabot autopilot workflow template.
+---
+
+When GitHub creates a Dependabot alert, Mogplex can start an agent that prepares
+the smallest safe dependency fix and opens a PR for review. GitHub still detects
+vulnerabilities and decides when an alert is fixed.
+
+## Requirements
+
+- The [GitHub](/integrations/github) integration is connected, and the Mogplex
+  GitHub App is installed on the repository.
+- **Dependabot alerts** are turned on for the repository in GitHub.
+- The GitHub App has the **Dependabot alerts: Read-only** permission and
+  subscribes to the **Dependabot alert** event. The hosted Mogplex App already
+  has both. For a self-hosted App, see
+  [GitHub App setup](/self-hosting/github-app). Each installation must accept
+  new permissions.
+
+## Set it up
+
+1. Open [Automations](/web/automations) and create a workflow from the
+   **Dependabot autopilot** template.
+2. Select the GitHub installation, the repository scope, the agent, and the
+   model.
+3. Publish the workflow.
+4. Optional: after you confirm that it works, turn off **Dependabot security
+   updates** in GitHub, so that Mogplex is the only tool that opens remediation
+   PRs. Keep **Dependabot alerts** on.
+
+## What the agent does
+
+1. Reads the alert from GitHub. If the alert is already closed, the agent stops.
+   If no patched version exists, the agent reports that the alert needs a human
+   decision.
+2. Checks open PRs to avoid duplicate work.
+3. Uses the repository's own package manager to make the smallest manifest and
+   lockfile change.
+4. Runs the available install, lint, typecheck, test, and build checks.
+5. Opens a PR that lists the alert, GHSA and CVE IDs, severity, package, old and
+   new versions, and check results.
+
+The agent never merges the PR and never dismisses the alert. Major upgrades,
+risky indirect dependency changes, and failed checks are reported for a human
+to decide.
+
+## Alert events
+
+The workflow start node can match `created`, `dismissed`, `fixed`, `reopened`,
+`reintroduced`, and `auto_dismissed`. The template selects only `created`.
+
+- An omitted action list also means `created`. An empty list matches nothing.
+- The other actions record the alert's state. They do not start remediation,
+  close PRs, or cancel runs.
+- Each GitHub delivery starts each matching workflow at most once.
+  Redelivering the same event does not create a second run.
+
+## Verify
+
+In the GitHub App's **Advanced → Recent deliveries**, find a
+`dependabot_alert.created` delivery and confirm that it started one run in
+[Observability](/web/observability).

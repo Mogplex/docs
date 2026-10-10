@@ -1,0 +1,132 @@
+---
+title: GitHub App
+description: Create and configure the GitHub App and OAuth app that give a self-hosted Mogplex repository access, webhooks, checks, and PR reviews.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+A self-hosted deployment needs its **own** GitHub App. The hosted Mogplex App
+sends its webhooks to mogplex.com, not to your deployment.
+
+GitHub has two separate jobs in Mogplex. Configure both:
+
+| Piece | What it unlocks | Variables |
+| --- | --- | --- |
+| GitHub App | Installation-backed repo access, webhooks, check runs, PR reviews, triggers, and automations | `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET` |
+| GitHub OAuth app | Repository listing and import, and reauthorization when a token needs new scopes | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
+
+GitHub *sign-in* (`AUTH_GITHUB_*`) is a third, identity-only setting. See
+[Database and auth](/self-hosting/database-and-auth#sign-in-providers).
+
+## 1. Create the GitHub App
+
+Open **GitHub → Settings → Developer settings → GitHub Apps → New GitHub App**.
+To create the App under an organization, use the organization's settings.
+The repository has no App manifest, so enter these values by hand.
+
+| Field | Value |
+| --- | --- |
+| Homepage URL | `https://<domain>` |
+| Setup URL | `https://<domain>/api/auth/github/callback` (also select **Redirect on update**) |
+| Webhook | Active |
+| Webhook URL | `https://<domain>/api/webhooks/github` |
+| Webhook secret | A random value. Store the same value as `GITHUB_WEBHOOK_SECRET`. |
+| Where can this App be installed? | **Any account**, if users outside your organization will install it |
+
+### Repository permissions
+
+| Permission | Access | Used for |
+| --- | --- | --- |
+| Contents | Read and write | Clone, push branches, read files |
+| Pull requests | Read and write | Open, update, review, and merge PRs |
+| Issues | Read and write | Read and update issues, post comments |
+| Checks | Read and write | The Mogplex PR review check run |
+| Commit statuses | Read and write | Automation `set_status` actions |
+| Actions | Read-only | Read CI workflow runs and job logs |
+| Metadata | Read-only | Required by GitHub |
+| Dependabot alerts | Read-only | [Dependabot remediation](/integrations/dependabot) (optional) |
+
+### Organization permissions
+
+| Permission | Access | Used for |
+| --- | --- | --- |
+| Members | Read-only | Lists org members when you create a team |
+
+### Subscribe to events
+
+- Pull request
+- Push
+- Issues
+- Issue comment
+- Pull request review comment
+- Commit comment
+- Check run
+- Workflow run
+- Repository
+- Dependabot alert (optional, for Dependabot remediation)
+
+GitHub always sends `installation` and `installation_repositories` events to an
+App. Mogplex uses those events to keep repository coverage in sync.
+
+## 2. Generate a private key
+
+On the App page, select **Generate a private key**. Store the PEM as
+`GITHUB_APP_PRIVATE_KEY`. In a single-line env file, replace each newline with
+`\n`.
+
+```bash
+GITHUB_APP_ID=123456
+GITHUB_APP_NAME=my-mogplex          # the App's URL slug: github.com/apps/<slug>
+GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIE...\n-----END RSA PRIVATE KEY-----\n"
+GITHUB_WEBHOOK_SECRET=...
+```
+
+Mogplex treats the App as configured only when `GITHUB_APP_ID`,
+`GITHUB_APP_PRIVATE_KEY`, and `GITHUB_APP_NAME` are all set.
+`GITHUB_APP_NAME` builds the install link
+`https://github.com/apps/<GITHUB_APP_NAME>/installations/new`.
+
+## 3. Create the GitHub OAuth app
+
+Open **Developer settings → OAuth Apps → New OAuth App**.
+
+| Field | Value |
+| --- | --- |
+| Homepage URL | `https://<domain>` |
+| Authorization callback URL | `https://<domain>/api/auth/github/callback` |
+
+Mogplex requests the `repo`, `read:org`, `read:user`, and `user:email` scopes.
+Store the credentials:
+
+```bash
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+```
+
+<Callout title="One OAuth app for sign-in and repo access">
+  GitHub accepts any redirect path under an OAuth app's callback URL. If you set
+  the callback URL to `https://<domain>/api/auth`, one OAuth app serves both
+  `/api/auth/github/callback` and GitHub sign-in at
+  `/api/auth/callback/github`. Then use the same credentials for
+  `GITHUB_CLIENT_*` and `AUTH_GITHUB_*`.
+</Callout>
+
+## 4. Install and verify
+
+1. Redeploy so the app reads the new variables.
+2. Sign in, open **Settings → Account**, and connect GitHub. This installs the
+   App on the accounts or organizations that own your repositories.
+3. Open [Installations](/web/installations) and confirm coverage. Then import a
+   repository in [Projects](/web/spaces).
+4. In the App's **Advanced → Recent deliveries**, confirm that deliveries return
+   `2xx`. A `401` means `GITHUB_WEBHOOK_SECRET` does not match the App's
+   webhook secret.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| **Connect GitHub** opens an OAuth screen instead of the App install | One of `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, or `GITHUB_APP_NAME` is missing. |
+| Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
+| `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
+| New permissions have no effect | Each installation must accept the new permissions on GitHub. |

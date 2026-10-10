@@ -1,0 +1,74 @@
+---
+title: Self-Hosting
+description: Run Mogplex on your own infrastructure. Learn which services it depends on, what each one unlocks, and which deployment shape to choose.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Mogplex is open source under Apache-2.0. The code in
+[github.com/Mogplex/mogplex](https://github.com/Mogplex/mogplex) is the same code
+that runs [mogplex.com](https://mogplex.com). Self-hosting has no license fee, no
+seat limit, and no gated features.
+
+You run the Next.js app. Your own accounts supply the database, background jobs,
+sandboxes, models, and GitHub App. You control the data, the credentials, and
+the bill.
+
+<Callout title="Community supported">
+  Self-hosting has no SLA. Ask questions in
+  [GitHub Discussions](https://github.com/Mogplex/mogplex/discussions) and file
+  bugs as [issues](https://github.com/Mogplex/mogplex/issues). The project treats
+  friction in the self-hosting path as a bug.
+</Callout>
+
+## How a deployment fits together
+
+| Part | Runs on | Required? | Without it |
+| --- | --- | --- | --- |
+| Web app (Next.js) | Vercel, or any container host | Yes | Nothing runs. |
+| Postgres 17 + Better Auth | [Neon](https://neon.tech) or any Postgres 17 with `vector` and `pg_trgm` | Yes | The app cannot boot or sign anyone in. |
+| Email ([Resend](https://resend.com)) | Resend | Yes, for email sign-in | Email and password sign-up cannot verify addresses. Social sign-in still works. |
+| GitHub App | Your own GitHub App | For repo work | No repo access, webhooks, PR reviews, or GitHub triggers. |
+| Background jobs | [Trigger.dev](https://trigger.dev), cloud or self-hosted | For agent work | Automations, Slack runs, syncs, and long agent runs do not start. |
+| Sandboxes | [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) | For code execution | Agents cannot clone, edit, or run code. |
+| Models | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) key, or per-user provider keys | For agent work | Chat and agents have no model to call. |
+| Slack app | Your own Slack app | Optional | No Slack integration. |
+| Sentry | Your own Sentry project | Optional | No error tracking. |
+| Stripe | Your own Stripe account | Optional | No billing. See [Give users access](/self-hosting/sandboxes-and-models#give-users-access). |
+
+The app boots with only Postgres configured. Each additional service unlocks one
+feature area, so you can bring Mogplex up in stages.
+
+<Callout type="warn" title="Grant access before you test agents">
+  Hosted AI and sandboxes are gated per user. A user needs a positive billing
+  balance, a profile flag, or an entry in the `PLATFORM_ACCESS_*` allowlists.
+  Without Stripe, nobody has a balance, so add your users to the allowlist. If
+  you skip this step, every run fails with "requires a positive billing
+  balance". See [Give users access](/self-hosting/sandboxes-and-models#give-users-access).
+</Callout>
+
+## Choose a deployment shape
+
+**Vercel (recommended).** Fork the repo, link it to a project in your own Vercel
+team, set the environment variables, and deploy. Production runs this way every
+day. Vercel also runs the cron routes and syncs env vars to Trigger.dev for you.
+
+**Docker.** Build the image from the repo and run it on any container host. The
+image contains only the web app. You provision every backing service yourself,
+schedule the cron routes yourself, and copy env vars into Trigger.dev by hand.
+Sandboxes still need a Vercel account.
+
+## Time to plan
+
+- **App shell** (Postgres, auth, one sign-in provider): about 15 minutes.
+- **Full product** (GitHub App, Trigger.dev, sandboxes, models, Slack): an
+  afternoon. Each service has its own sign-up, billing, and credential rotation.
+
+## Read next
+
+<Cards>
+  <Card title="Quickstart" href="/self-hosting/quickstart" description="Go from a fork to a signed-in deployment, then add services one at a time." />
+  <Card title="Environment variables" href="/self-hosting/environment-variables" description="Every variable, grouped by feature, with required and optional marked." />
+  <Card title="GitHub App" href="/self-hosting/github-app" description="Create the GitHub App: permissions, events, URLs, and keys." />
+  <Card title="Operations" href="/self-hosting/operations" description="Upgrades, migrations, cron jobs, secrets, and known constraints." />
+</Cards>

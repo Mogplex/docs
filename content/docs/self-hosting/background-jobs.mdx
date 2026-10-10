@@ -1,0 +1,118 @@
+---
+title: Background Jobs
+description: Connect a Trigger.dev project for automations and long agent runs, deploy the Mogplex tasks, and schedule the cron routes.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Mogplex runs long and scheduled work outside the web request cycle. Two pieces
+do this work:
+
+- **Trigger.dev tasks** (`trigger/`): automations, Slack runs, agent runs,
+  model syncs, billing reconciliation, and scheduled cleanup.
+- **Cron routes** (`/api/cron/*`): small HTTP endpoints that repair and reap
+  stuck jobs and sandboxes.
+
+## Trigger.dev
+
+Use a project on [Trigger.dev Cloud](https://trigger.dev), or
+[self-host Trigger.dev](https://trigger.dev/docs/self-hosting/overview). The
+self-hosted stack includes a webapp, Postgres, Redis, ClickHouse, object
+storage, a container registry, and worker nodes.
+
+### 1. Configure the app
+
+```bash
+TRIGGER_PROJECT_REF=proj_xxxxxxxxxxxxxxxxxxxx
+TRIGGER_SECRET_KEY=tr_prod_...
+```
+
+<Callout type="warn" title="Always set TRIGGER_PROJECT_REF">
+  If `TRIGGER_PROJECT_REF` is unset, `trigger.config.ts` falls back to the
+  hosted Mogplex project ref. Your deploy then targets a project you do not
+  own and fails.
+</Callout>
+
+For a self-hosted Trigger.dev instance, also set `TRIGGER_API_URL` to your
+instance URL, both in the app's environment and when you deploy.
+
+### 2. Deploy the tasks
+
+```bash
+pnpm trigger:deploy
+```
+
+The wrapper loads `.env` and `.env.local`, plus any comma-separated files you
+list in `TRIGGER_CLI_ENV_FILES`. Then it runs the Trigger.dev CLI version that
+matches the installed SDK. Authenticate the CLI first with
+`pnpm dlx trigger.dev login`, or set `TRIGGER_ACCESS_TOKEN` in CI.
+
+Deploy the tasks every time you deploy the app, from the same commit. Tasks and
+the app share code in `lib/`, and mismatched versions cause hard-to-trace
+failures.
+
+For local development, `pnpm trigger:dev` runs the tasks against your
+development environment.
+
+### 3. Give the tasks their environment
+
+Tasks import the same server code as the app. They need the same server
+environment: database URLs, AI keys, `CRON_SECRET`, Sentry DSNs, and the GitHub
+and Slack credentials.
+
+- **On Vercel:** when a Vercel token and project ID are available at deploy
+  time (`VERCEL_ACCESS_TOKEN` or `PLATFORM_VERCEL_TOKEN`, plus
+  `VERCEL_PROJECT_ID` or `PLATFORM_VERCEL_PROJECT_ID`, and optionally
+  `VERCEL_TEAM_ID`), the deploy syncs the Vercel project's env vars into
+  Trigger.dev.
+- **Otherwise:** copy the server variables into the Trigger.dev project's
+  environment variables by hand. Update them there whenever you change them in
+  the app.
+
+### Task runtime
+
+`trigger.config.ts` sets Node 22, a maximum run duration of 30 minutes, and one
+attempt per task. Scheduled tasks register themselves on deploy:
+
+| Task | Schedule (UTC) |
+| --- | --- |
+| `sync-models` | `0 6,18 * * *` |
+| `sandbox-reaper` | every 5 minutes |
+| `zombie-row-reaper` | every 5 minutes |
+| `reconcile-ai-call-costs` | every 10 minutes |
+| `vercel-link-reconciliation` | every 15 minutes |
+| `reconcile-sandbox-billing` | every minute |
+| `ai-spend-divergence-check` | `0 5 * * *` |
+| `sandbox-baseline-snapshot-reaper` | `0 5 * * *` |
+| `grant-annual-included-usage` | `30 6 * * *` |
+| `slack-tool-execution-retention` | `17 * * * *` |
+
+## Cron routes
+
+Each cron route accepts `GET` with `Authorization: Bearer <CRON_SECRET>`. If
+`CRON_SECRET` is unset, the route returns `503 CRON_SECRET_NOT_CONFIGURED`. A
+wrong token returns `401`.
+
+| Route | Schedule |
+| --- | --- |
+| `/api/cron/sync-models` | `0 6 * * *` |
+| `/api/cron/sandbox-reaper` | `*/5 * * * *` |
+| `/api/cron/repair-jobs` | `*/5 * * * *` |
+| `/api/cron/reconcile-job-runs` | `*/5 * * * *` |
+| `/api/cron/zombie-row-reaper` | `*/5 * * * *` |
+
+**On Vercel**, `vercel.json` schedules these routes and sends the secret for
+you.
+
+**On Docker or another host**, schedule them yourself. Example crontab:
+
+```bash
+*/5 * * * * curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://<domain>/api/cron/sandbox-reaper
+*/5 * * * * curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://<domain>/api/cron/repair-jobs
+*/5 * * * * curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://<domain>/api/cron/reconcile-job-runs
+*/5 * * * * curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://<domain>/api/cron/zombie-row-reaper
+0 6 * * *   curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://<domain>/api/cron/sync-models
+```
+
+Without these routes, stuck jobs are not repaired and idle sandboxes keep
+running and billing.

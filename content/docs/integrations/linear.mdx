@@ -1,0 +1,47 @@
+---
+title: Linear
+description: Connect Linear so Mogplex agents can read and update issues, projects, and cycles while they work on code.
+---
+
+Connect Linear to let agents read the issue they are working on, search related
+issues, and update issues, projects, and comments as the work moves.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.linear.app/mcp` |
+| Credential | Linear personal API key or OAuth access token (`lin_api_…`) |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. In Linear, create a personal API key. See
+   [Linear MCP](https://linear.app/docs/mcp).
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Linear**.
+4. Paste the key, then select **Add**.
+5. Test the saved connection and confirm that it lists tools.
+
+Agents act as the Linear user who owns the key. Use a key from an account whose
+access matches what agents should be able to change.
+
+## Use it
+
+- "Read LIN-482, implement the fix, and open a PR that links the issue."
+- "List open bugs in the Platform project and summarize which ones touch the
+  billing code."
+- In an [automation](/web/automations), give an agent node an instruction to
+  comment on the Linear issue when the PR opens.
+
+## What it does not do
+
+Linear is a tool connection only. Mogplex does not receive Linear webhooks, so
+Linear events cannot start runs. Start work from GitHub, Slack, a schedule, a
+[signed webhook](/integrations/webhooks), or the [API](/reference/api).
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Test fails with an auth error | The key was revoked or copied incompletely. Create a new key and update the connection. |
+| Tools are missing in one repo | The connection may be excluded from that repo. See [scope resolution](/configure-and-extend/connections-and-mcp#scope-resolution). |
+| Tools are missing in workspace chat or Slack | The connection is set to **Ask before running tools**. Those surfaces cannot ask, so use Control. |

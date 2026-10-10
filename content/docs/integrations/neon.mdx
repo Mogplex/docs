@@ -1,0 +1,44 @@
+---
+title: Neon
+description: Connect Neon so Mogplex agents can manage Postgres projects and branches and run SQL.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Connect Neon to let agents create database branches for a change, inspect
+schemas, run SQL, and prepare migrations.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.neon.tech/mcp` |
+| Credential | Neon API key |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. In Neon, create an API key under
+   [**Account settings → API keys**](https://console.neon.tech/app/settings/api-keys).
+   The preset's **Get a token** link opens this page.
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Neon**.
+4. Paste the key, then select **Add**.
+5. Test the saved connection and confirm that it lists tools.
+
+<Callout type="warn">
+  A Neon API key can manage and delete projects the account owns. Prefer an
+  organization key with limited reach, scope the connection to the repos that
+  need it, and consider **Ask before running tools**.
+</Callout>
+
+## Use it
+
+- "Create a Neon branch from `main`, apply the migration in this PR to it, and
+  report any errors."
+- "Explain why this query on the `events` table is slow and suggest an index."
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Test fails with an auth error | The key was revoked. Create a new key and update the connection. |
+| Agent cannot see a project | The key belongs to a different account or organization. |

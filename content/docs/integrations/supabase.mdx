@@ -1,0 +1,46 @@
+---
+title: Supabase
+description: Connect Supabase so Mogplex agents can inspect and manage databases, auth, storage, and edge functions.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Connect Supabase to let agents inspect schemas, run queries, read logs, and
+manage edge functions in your Supabase projects.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.supabase.com/mcp` |
+| Credential | Supabase personal access token (`sbp_…`) |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. In Supabase, create a personal access token under **Account → Access
+   Tokens**. See [Supabase MCP](https://supabase.com/docs/guides/getting-started/mcp).
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Supabase**.
+4. Paste the token, then select **Add**.
+5. Test the saved connection and confirm that it lists tools.
+
+<Callout type="warn">
+  A personal access token can act on every project the account can reach,
+  including production. Scope the connection to the
+  [repos that need it](/configure-and-extend/connections-and-mcp#scope-resolution),
+  and consider **Ask before running tools** so that Control asks before each
+  call.
+</Callout>
+
+## Use it
+
+- "Check the `orders` table schema in Supabase and write a migration that adds
+  a `refunded_at` column."
+- "Read the last hour of edge function logs for `stripe-webhook` and find why
+  it returns 500."
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Test fails with `401` | The token was revoked or copied incompletely. Create a new token. |
+| A project is missing | The token's account is not a member of that organization. |

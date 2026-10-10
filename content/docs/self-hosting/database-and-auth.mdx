@@ -1,0 +1,117 @@
+---
+title: Database and Auth
+description: Provision Postgres, apply Mogplex migrations, set up a least-privilege runtime role, and configure Better Auth sign-in providers and email.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Postgres holds all application state. Better Auth handles sign-in and sessions
+and stores its data in the same database.
+
+## Postgres requirements
+
+- Postgres 17.
+- The `vector` and `pg_trgm` extensions must be **available**. The migration
+  script creates them.
+- An owner role that can create schemas, extensions, and roles.
+
+Production runs on [Neon](https://neon.tech). Any Postgres that meets these
+requirements works.
+
+## Connection URLs
+
+| Variable | Used by | Notes |
+| --- | --- | --- |
+| `DATABASE_URL` | Migrations, and the app as a fallback | Owner connection. Use the pooled URL. |
+| `DATABASE_URL_UNPOOLED` | The app as a fallback | Direct, unpooled URL. `pg LISTEN` needs it. |
+| `MOGPLEX_RUNTIME_DATABASE_URL` | The app (preferred) | Pooled URL for the least-privilege `service_role`. |
+| `MOGPLEX_RUNTIME_DATABASE_URL_UNPOOLED` | The app (preferred) | Direct URL for `service_role`. |
+
+The app uses the first one it finds: `MOGPLEX_RUNTIME_DATABASE_URL`, then
+`DATABASE_URL`. Migrations always use `DATABASE_URL`.
+
+### Use a least-privilege runtime role
+
+Running the app as the database owner works, but production should not. The
+migrations harden a `service_role` that can read and write data but cannot
+create databases, roles, or schema objects. The migrations leave the role
+without `LOGIN`, so enable it yourself through an owner connection:
+
+```sql
+alter role service_role with login password '<a strong, rotatable password>';
+```
+
+Then point `MOGPLEX_RUNTIME_DATABASE_URL` and
+`MOGPLEX_RUNTIME_DATABASE_URL_UNPOOLED` at `service_role`. Never put this
+password in a migration or a checked-in file.
+
+## Apply migrations
+
+```bash
+# Local: load .env.local
+pnpm exec tsx --env-file=.env.local scripts/apply-neon-migrations.ts
+
+# CI or production: DATABASE_URL already exported
+pnpm exec tsx scripts/apply-neon-migrations.ts
+
+# Preview without changing anything
+pnpm exec tsx --env-file=.env.local scripts/apply-neon-migrations.ts --dry-run
+```
+
+The script does the following:
+
+1. Creates a ledger table, `neon_migrations.schema_migrations`.
+2. On an empty database (no tables in `public`), applies `neon/baseline.sql` and
+   records every migration the baseline covers as applied.
+3. Applies pending `neon/migrations/*.sql` files in filename order, each in its
+   own transaction, and records each one.
+4. Exits with code 1 on the first failure.
+
+The app never changes the schema at startup. Run this script before first boot
+and before you deploy each upgrade.
+
+<Callout>
+  A statement that cannot run inside a transaction, such as
+  `CREATE INDEX CONCURRENTLY`, must run separately.
+</Callout>
+
+## Better Auth
+
+| Variable | Required | Value |
+| --- | --- | --- |
+| `BETTER_AUTH_SECRET` | Yes | `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | No | Defaults to `NEXT_PUBLIC_APP_URL`. |
+
+Better Auth is mounted at `/api/auth/*`. It trusts only the configured app URL
+as an origin.
+
+## Sign-in providers
+
+Configure at least one provider. A provider turns on only when both its client
+ID and secret are set.
+
+| Provider | Variables | Callback URL to register |
+| --- | --- | --- |
+| GitHub | `AUTH_GITHUB_CLIENT_ID`, `AUTH_GITHUB_CLIENT_SECRET` | `https://<domain>/api/auth/callback/github` |
+| Google | `AUTH_GOOGLE_CLIENT_ID`, `AUTH_GOOGLE_CLIENT_SECRET` | `https://<domain>/api/auth/callback/google` |
+| Microsoft | `AUTH_MICROSOFT_CLIENT_ID`, `AUTH_MICROSOFT_CLIENT_SECRET`, `AUTH_MICROSOFT_TENANT_ID` (default `common`) | `https://<domain>/api/auth/callback/microsoft` |
+| Email and password | Resend (below) | None |
+
+GitHub sign-in is identity only. Repository access comes from a separate GitHub
+OAuth app and your [GitHub App](/self-hosting/github-app).
+
+## Email
+
+Email and password sign-up requires address verification. Verification and
+password-reset emails go through [Resend](https://resend.com). If sending fails,
+sign-up fails. It does not skip the check.
+
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Sends all transactional email. |
+| `WAITLIST_FROM_EMAIL` | Default sender. It must be on a domain you verified in Resend. |
+| `AUTH_FROM_EMAIL` | Sender for auth email. Falls back to `WAITLIST_FROM_EMAIL`. |
+| `BILLING_FROM_EMAIL` | Sender for billing email. Falls back to `WAITLIST_FROM_EMAIL`. |
+| `EMAIL_UNSUBSCRIBE_SECRET` | Signs unsubscribe links. Required in production. |
+
+If you skip Resend, use social sign-in only.

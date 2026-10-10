@@ -1,0 +1,150 @@
+---
+title: Quickstart
+description: Deploy a self-hosted Mogplex on Vercel or Docker, sign in, and add the services that unlock agent work.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+This guide gets a signed-in deployment running first. Then it adds the services
+that let agents work on repositories.
+
+## Prerequisites
+
+- Node.js `22.22.x` (see `.nvmrc`) and pnpm `10` through Corepack
+  (`corepack enable`).
+- A Postgres 17 database with the `vector` and `pg_trgm` extensions available.
+  [Neon](https://neon.tech) has both. For local development, the
+  `pgvector/pgvector:pg17` Docker image works.
+- A public HTTPS domain for the deployment. OAuth callbacks and webhooks must
+  reach it.
+
+## 1. Get the code
+
+```bash
+git clone https://github.com/Mogplex/mogplex.git
+cd mogplex
+pnpm install
+cp .env.example .env.local
+```
+
+Fork the repository first if you plan to change code or deploy from Git.
+
+## 2. Configure the minimum environment
+
+Set these in `.env.local`. Generate each secret with `openssl rand -base64 32`,
+except `CONNECTIONS_ENCRYPTION_KEY`, which must be 32 bytes of hex
+(`openssl rand -hex 32`).
+
+```bash
+# Backend switches. Both must be "neon". The public one is baked in at build time.
+MOGPLEX_DATA_BACKEND=neon
+NEXT_PUBLIC_MOGPLEX_DATA_BACKEND=neon
+
+NEXT_PUBLIC_APP_URL=https://mogplex.example.com
+
+# Database. DATABASE_URL is the owner connection that migrations use.
+DATABASE_URL=postgres://owner:...@host/db?sslmode=require
+DATABASE_URL_UNPOOLED=postgres://owner:...@direct-host/db?sslmode=require
+
+# Auth
+BETTER_AUTH_SECRET=...
+AUTH_GITHUB_CLIENT_ID=...        # or AUTH_GOOGLE_* / AUTH_MICROSOFT_*
+AUTH_GITHUB_CLIENT_SECRET=...
+
+# Secrets the app requires
+CRON_SECRET=...
+INTERNAL_API_SECRET=...
+CONNECTIONS_ENCRYPTION_KEY=...   # 64 hex characters
+EMAIL_UNSUBSCRIBE_SECRET=...     # required in production
+```
+
+[Database and auth](/self-hosting/database-and-auth) explains the database URLs,
+the least-privilege runtime role, and each sign-in provider.
+
+## 3. Apply migrations
+
+```bash
+pnpm exec tsx --env-file=.env.local scripts/apply-neon-migrations.ts
+```
+
+On an empty database, the script applies `neon/baseline.sql` first. Then it
+applies every pending file in `neon/migrations/`. Run it as the database owner,
+because it creates schemas, extensions, and roles. Add `--dry-run` to preview.
+
+## 4. Deploy
+
+<Tabs items={['Vercel', 'Docker']}>
+  <Tab value="Vercel">
+
+`vercel.json` turns off automatic Git deployments, so deploy with the Vercel CLI
+or from your own CI:
+
+```bash
+vercel link                 # link to a project in your own Vercel team
+vercel env add ...          # or paste .env.local into Project → Settings → Environment Variables
+vercel deploy --prod
+```
+
+To deploy on every push instead, remove `"git": { "deploymentEnabled": false }`
+from `vercel.json` in your fork. Vercel runs the cron routes listed in
+`vercel.json` for you.
+
+  </Tab>
+  <Tab value="Docker">
+
+`NEXT_PUBLIC_*` values are compiled into the client bundle at **build** time.
+Pass them as build args, and rebuild whenever they change.
+
+```bash
+cp .env.local .env
+docker compose build    # reads NEXT_PUBLIC_* build args from .env
+docker compose up -d    # serves on port 3000
+```
+
+Without Compose:
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_APP_URL=https://mogplex.example.com \
+  --build-arg NEXT_PUBLIC_MOGPLEX_DATA_BACKEND=neon \
+  -t mogplex .
+
+docker run --env-file .env -p 3000:3000 mogplex
+```
+
+The image runs Next.js in standalone mode on Node 22 as a non-root user. It
+contains no database, job runner, or cron scheduler. Put a TLS-terminating proxy
+in front of it, and
+[schedule the cron routes](/self-hosting/background-jobs#cron-routes) yourself.
+
+  </Tab>
+</Tabs>
+
+Open the deployment and sign in. If sign-in works, the app shell is done.
+
+## 5. Add services for agent work
+
+Add these in order. Each one is independent.
+
+1. [GitHub App](/self-hosting/github-app): repository access, webhooks, PR
+   reviews, and GitHub triggers.
+2. [Background jobs](/self-hosting/background-jobs): a Trigger.dev project for
+   automations, Slack runs, and long agent runs.
+3. [Sandboxes and models](/self-hosting/sandboxes-and-models): Vercel Sandbox,
+   an AI Gateway key, and **user access**.
+4. [Slack app](/self-hosting/slack-app) (optional).
+
+<Callout type="warn">
+  After step 3, add your users to `PLATFORM_ACCESS_EMAILS` or
+  `PLATFORM_ACCESS_EMAIL_DOMAINS`. Without Stripe billing, no user has hosted
+  AI or sandbox access until you grant it.
+</Callout>
+
+## 6. Verify
+
+- Sign in, then open **Settings → Account** and select **Run checks**.
+- Connect GitHub, install your GitHub App, and import a repository.
+- Start a run against that repository. Confirm in
+  [Observability](/web/observability) that a sandbox starts and the job
+  completes.
