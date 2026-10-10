@@ -22,6 +22,7 @@
     "claude-code-and-codex",
     "vercel",
     "---Triggers---",
-    "webhooks"
+    "webhooks",
+    "api-triggers"
   ]
 }

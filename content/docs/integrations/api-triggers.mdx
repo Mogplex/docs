@@ -1,0 +1,144 @@
+---
+title: API Triggers
+description: Let another system start a Mogplex automation with a Mogplex API key and typed inputs, and limit that key to triggering automations.
+---
+
+An API trigger lets a server you run start a published automation with a
+Mogplex API key. The automation owns the instructions, the repositories it may
+touch, its agents and models, and the inputs it accepts. The caller supplies
+values for those inputs and nothing else.
+
+Use an API trigger when the caller already holds a Mogplex API key and needs a
+run id, a working branch, and run logs back. Use a
+[signed webhook](/integrations/webhooks) when the sender can only send a signed
+HTTP POST.
+
+## Set up the automation
+
+1. Open [Automations](/web/automations) and select the workflow's start node.
+2. Set the trigger event to **API (integrations)**.
+3. Under **Repository scope**, select the repositories the caller may start
+   work in. A trigger for any other repository returns `403 FORBIDDEN`.
+4. Declare the inputs under **Inputs (JSON)**. See [Inputs](#inputs).
+5. Write each agent node's instructions. Use the test payload field to try
+   them.
+6. Publish the workflow and enable it.
+
+The start node shows the **Trigger endpoint** to call.
+
+## Inputs
+
+**Inputs (JSON)** is an array of fields:
+
+```json
+[
+  { "key": "site_url", "type": "string", "required": true, "maxLength": 500, "pattern": "https://.+" },
+  { "key": "page_count", "type": "integer" },
+  { "key": "tone", "type": "string", "enum": ["plain", "playful"] },
+  { "key": "brief", "type": "json", "maxBytes": 16384 }
+]
+```
+
+| Property | Applies to | Meaning |
+| --- | --- | --- |
+| `key` | All | Up to 64 lowercase letters, digits, and underscores, starting with a letter. |
+| `type` | All | `string`, `integer`, `boolean`, or `json`. |
+| `required` | All | The caller must send this field. |
+| `description` | All | A note for whoever edits or calls the automation. |
+| `maxLength` | `string` | Longest accepted value. Default 2,000 characters. |
+| `pattern` | `string` | Regular expression the whole value must match. |
+| `enum` | `string` | The value must be one of these. |
+| `maxBytes` | `json` | Largest serialized value. Default 64 KB. |
+
+An automation can declare up to 32 fields, and a request's inputs can total
+at most 512 KB. A request with a key that is not
+declared is refused rather than ignored.
+
+The agent receives the inputs as JSON after the automation's instructions,
+marked as untrusted data. An input cannot replace the instructions, the
+repository, the branch, or the permissions.
+
+## Trigger a run
+
+```bash
+curl -X POST "https://mogplex.com/api/v1/mogplex/automations/$AUTOMATION_ID/trigger" \
+  -H "Authorization: Bearer $MOGPLEX_TOKEN" \
+  -H "Idempotency-Key: build-4821" \
+  -H "Content-Type: application/json" \
+  --data '{"repoId":"'"$REPO_ID"'","input":{"site_url":"https://example.com"}}'
+```
+
+Get `repoId` from [`GET /repos`](/reference/api#list-repositories). The key
+needs the `write` scope.
+
+A `202 Accepted` response returns the run:
+
+```json
+{
+  "data": {
+    "run": {
+      "automationId": "…",
+      "versionId": "…",
+      "versionNumber": 3,
+      "jobRunId": "…",
+      "workingBranch": "mogplex/automation-0123456789abcdef",
+      "outcome": "queued",
+      "replayed": false,
+      "started": true,
+      "status": "running"
+    }
+  }
+}
+```
+
+The agent commits and pushes to `workingBranch`. It never pushes to the
+default branch, merges, or enables auto-merge, and it opens a pull request only
+when the automation's instructions ask for one.
+
+### Refusals
+
+Each refusal is returned before anything is queued, so no run, sandbox, or
+branch is created.
+
+| Status | Code | Meaning |
+| --- | --- | --- |
+| `400` | `BAD_REQUEST` | The input failed validation. The message names each problem, including undeclared keys. |
+| `403` | `FORBIDDEN` | The repository is outside the automation's repository scope. |
+| `403` | `AUTOMATION_REQUIRED` | The key is held to automations, by its own access or its team's, and this automation has no API trigger. |
+| `404` | `NOT_FOUND` | The automation or repository does not exist or is not owned by this account. |
+| `409` | `CONFLICT` | The automation is unpublished or disabled. |
+| `409` | `IDEMPOTENCY_CONFLICT` | The `Idempotency-Key` was already used with different input. |
+
+### Retries
+
+Idempotency keys are scoped to the account and the automation. Sending the
+same key with the same input returns the original run with `replayed: true`
+and starts nothing. Each key maps to one working branch, so a retried unit of
+work returns to the same branch. Use a new key for new work.
+
+## Follow a run
+
+```txt
+GET  /api/v1/mogplex/automations/{automationId}/runs/{jobRunId}
+POST /api/v1/mogplex/automations/{automationId}/runs/{jobRunId}/cancel
+```
+
+The run detail includes `status`, node runs, AI calls, and `metadata`. The
+metadata records the automation version (`flow_version_id`,
+`flow_version_number`), the accepted `input` and its `input_hash`,
+`working_branch`, and `trigger` (credential kind, key id, and key name).
+
+In the app, the same runs appear on the automation's **Runs** tab with the
+version, trigger, input, branch, and links to the transcript and sandbox.
+
+## Limit the key to automations
+
+A key that only needs to trigger automations should not be able to do anything
+else. Set its access to **Automations only** in
+[Settings → Mogplex Keys](/web/settings#mogplex-keys). The key can still read,
+and it can start work only by triggering an automation with an API trigger.
+See [Key access](/web/settings#key-access) for the full list of what it is
+refused.
+
+A team owner can hold every member's key to the same rule on the team's
+repositories. See [Team key access](/web/settings#team-key-access).

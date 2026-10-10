@@ -12,8 +12,11 @@ a workflow.
 
 ## Prereqs
 
-1. A PAT with the `write` scope, issued at
-   [mogplex.com/settings/api-keys](https://mogplex.com/settings/api-keys).
+1. A PAT with the `write` scope and **Full access**, issued at
+   [mogplex.com/settings/api-keys](https://mogplex.com/settings/api-keys). A
+   key set to [Automations only](/web/settings#key-access), or held to
+   automations by its team, cannot start runs and gets
+   `403 AUTOMATION_REQUIRED`.
 2. Store the token in your CI's secret store. Never commit it.
 3. Pick the repo ID(s) you want to operate on:
    ```bash
