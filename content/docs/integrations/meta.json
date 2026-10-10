@@ -3,8 +3,26 @@
   "root": true,
   "pages": [
     "index",
+    "---Source Control and Chat---",
     "github",
+    "dependabot",
+    "slack",
+    "---Tool Connections---",
+    "linear",
+    "notion",
+    "sentry",
+    "supabase",
+    "neon",
+    "browserbase",
+    "sanity",
+    "zapier",
+    "trigger-dev",
+    "---Models and Agents---",
+    "ai-provider-keys",
+    "claude-code-and-codex",
     "vercel",
-    "slack"
+    "---Triggers---",
+    "webhooks",
+    "api-triggers"
   ]
 }

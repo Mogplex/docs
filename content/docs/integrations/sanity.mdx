@@ -1,0 +1,37 @@
+---
+title: Sanity
+description: Connect Sanity CMS so Mogplex agents can query and edit structured content, media, and releases.
+---
+
+Connect Sanity to let agents query documents with GROQ, draft and edit content,
+and work with releases next to the code that renders them.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, `https://mcp.sanity.io` |
+| Credential | Sanity API token |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. In Sanity, create an API token for your project. Give it the least access
+   the agents need, such as **Viewer** for read-only work. See
+   [Sanity MCP server](https://www.sanity.io/docs/ai/mcp-server).
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Sanity CMS**.
+4. Paste the token, then select **Add**.
+5. Test the saved connection and confirm that it lists tools.
+
+## Use it
+
+- "Find every `post` document without an SEO description and draft one for
+  each."
+- "Add a `heroVideo` field to the `landingPage` schema and update the page
+  component to render it."
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Writes fail with permission errors | The token's role is read-only. Create a token with **Editor** access if agents should write. |
+| Test fails | The token was deleted, or it belongs to a different project. |

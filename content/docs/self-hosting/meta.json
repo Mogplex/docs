@@ -1,0 +1,17 @@
+{
+  "title": "Self-Hosting",
+  "root": true,
+  "pages": [
+    "index",
+    "quickstart",
+    "---Services---",
+    "database-and-auth",
+    "github-app",
+    "background-jobs",
+    "sandboxes-and-models",
+    "slack-app",
+    "---Reference---",
+    "environment-variables",
+    "operations"
+  ]
+}

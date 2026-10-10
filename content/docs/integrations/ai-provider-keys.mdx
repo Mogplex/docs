@@ -1,0 +1,53 @@
+---
+title: AI Provider Keys
+description: Bring your own Vercel AI Gateway, Anthropic, OpenAI, or OpenRouter key so Mogplex model usage bills to your provider account.
+---
+
+By default, Mogplex bills model usage to your Mogplex plan. Add your own
+provider key to send usage to your own provider account instead, or to use
+models and harnesses that your plan does not include.
+
+## Supported providers
+
+| Provider | Used for | Key format |
+| --- | --- | --- |
+| Vercel AI Gateway | Every model and both CLI harnesses, through one key | AI Gateway API key |
+| Anthropic | Claude models and the [Claude Code](/integrations/claude-code-and-codex) harness | `sk-ant-…` |
+| OpenAI | OpenAI models and the [Codex](/integrations/claude-code-and-codex) harness | `sk-…` |
+| OpenRouter | OpenRouter models | `sk-or-…` |
+
+## Add a key
+
+1. Open **Settings → Provider Keys**.
+2. Paste the key for the provider and select **Save**.
+3. Select **Verify** to confirm that the provider accepts the key.
+
+Personal keys belong to your account. To set keys for a team, open
+**Team Settings → Provider Keys**. Team permissions control who can manage
+them. Keys are stored encrypted and are never shown again after you save them.
+
+## Which key a run uses
+
+For sandbox harness runs (Claude Code and Codex), Mogplex chooses the first
+match:
+
+1. **Your AI Gateway key.** Usage bills to your gateway account.
+2. **Mogplex platform AI**, if your plan includes it. Usage bills to your
+   Mogplex balance.
+3. **Your Anthropic key** (Claude Code) or **OpenAI key** (Codex). Usage bills
+   to that provider.
+
+If none of these is available, the harness is unavailable, and the automation
+harness picker disables it.
+
+Chat and native Mogplex agent runs use the provider of the selected model.
+Models served through OpenRouter need an OpenRouter key.
+
+## Troubleshooting
+
+| Message | Fix |
+| --- | --- |
+| "Hosted AI requires a positive billing balance" | Add funds or choose a plan in **Settings → Billing**, or add your own key. |
+| "No Anthropic API key configured" | Add an Anthropic or AI Gateway key, or choose a different harness. |
+| "No OpenRouter API key configured" | Add an OpenRouter key, or choose a model from another provider. |
+| Verification fails when you save | The key is invalid, revoked, or lacks API access on the provider's side. |

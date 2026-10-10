@@ -1,0 +1,95 @@
+---
+title: Sandboxes and Models
+description: Configure Vercel Sandbox compute, model access through AI Gateway or provider keys, and per-user access on a self-hosted Mogplex.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Agents need two things to work on code: a sandbox to run in, and a model to
+call. On a self-hosted deployment, your accounts provide both. You also decide
+which users may use them.
+
+## Sandboxes (Vercel Sandbox)
+
+Each agent session runs in a [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox)
+microVM. Mogplex has no local or container substitute. Without these variables,
+sandbox features return "Sandbox service not configured".
+
+| Variable | Value |
+| --- | --- |
+| `PLATFORM_VERCEL_TOKEN` | A Vercel access token that can create sandboxes in your team |
+| `PLATFORM_VERCEL_TEAM_ID` | The team that owns and pays for the sandboxes |
+| `VERCEL_PROJECT_ID` or `PLATFORM_VERCEL_PROJECT_ID` | The Vercel project the sandboxes belong to. This can be the project that hosts Mogplex. |
+
+Sandbox usage bills to that Vercel team. Optionally, set
+`PLATFORM_SANDBOX_COST_CENTS_PER_SECOND` (default `0.0028`) so that Mogplex's
+cost reporting matches your Vercel pricing.
+
+## Models
+
+Mogplex resolves model access in this order:
+
+1. **The user's own AI Gateway key** (Settings → Provider Keys). The user's
+   gateway account pays for the usage.
+2. **The platform AI Gateway key**, `AI_GATEWAY_API_KEY`, for users who have
+   [platform access](#give-users-access). Your gateway account pays for the
+   usage.
+3. **The user's direct provider keys**: Anthropic for Claude Code and Claude
+   models, OpenAI for Codex and OpenAI models, and OpenRouter for OpenRouter
+   models.
+
+| Variable | Purpose |
+| --- | --- |
+| `AI_GATEWAY_API_KEY` | Platform model access through [Vercel AI Gateway](https://vercel.com/docs/ai-gateway). |
+| `OPENROUTER_API_KEY` | Refreshes the model catalog. |
+| `OPENAI_API_KEY` | Memory embeddings. Without it, memory search falls back to plain text matching. |
+| `EXA_API_KEY`, `EXA_RESEARCH_SECRET` | Agent web search and page extraction (optional). |
+
+The model catalog syncs twice a day. To populate it on a new deployment, call
+`/api/cron/sync-models` once (see [Cron routes](/self-hosting/background-jobs#cron-routes)).
+
+## Give users access
+
+Platform AI (`AI_GATEWAY_API_KEY`) and platform sandboxes are gated per user. A
+user has access when **any** of these is true:
+
+- The user's billing account has a positive balance (requires Stripe).
+- The user's ID, email, or email domain is in an allowlist variable.
+- The user's profile row has `allow_platform_ai` or `allow_platform_sandbox` set
+  to `true`.
+
+Without Stripe, no account has a balance. Use the allowlists:
+
+```bash
+PLATFORM_ACCESS_EMAIL_DOMAINS=example.com          # everyone at example.com
+PLATFORM_ACCESS_EMAILS=alice@example.org,bob@example.org
+PLATFORM_ACCESS_USER_IDS=                          # Mogplex user IDs
+```
+
+The allowlists grant both AI and sandbox access. To grant one without the
+other, set the profile flag directly:
+
+```sql
+update public.profiles
+set allow_platform_sandbox = true, allow_platform_ai = false
+where email = 'alice@example.org';
+```
+
+<Callout type="warn">
+  Users without access still see the app. Their runs fail with "Hosted AI
+  requires a positive billing balance" or "Hosted sandbox compute requires a
+  positive billing balance". These messages usually mean the user is missing
+  from the allowlist, not that billing is broken.
+</Callout>
+
+A user without platform AI access can still add their own AI Gateway,
+Anthropic, OpenAI, or OpenRouter key under **Settings → Provider Keys**. See
+[AI provider keys](/integrations/ai-provider-keys).
+
+## Agent harnesses
+
+Runs use the native Mogplex agent, Claude Code, or Codex. Claude Code and
+Codex install inside the sandbox at run time and authenticate with the model
+access above. Codex runs over the Agent Client Protocol by default. Set
+`MOGPLEX_HARNESS_ACP=off` to fall back to the one-shot Codex CLI. See
+[Claude Code and Codex](/integrations/claude-code-and-codex).

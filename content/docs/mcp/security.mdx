@@ -52,6 +52,13 @@ PAT in the `Authorization: Bearer mog_...` header and protect it like a password
 | `read` | List and detail operations for repos, agents, models, automations, runs, sandboxes, logs, and env var keys on the linked Vercel project (keys and targets only — never values). |
 | `write` | Sandbox creation; env var creation, update, and deletion on the linked Vercel project; and automation creation, update, publication, model changes, triggers, and run cancellation. |
 
+A PAT's owner can limit it to **Automations only** in
+[Settings → Mogplex Keys](/web/settings#key-access). MCP tools call the API
+with the PAT, so such a key can read, cancel runs, and trigger automations that
+have an [API trigger](/integrations/api-triggers). Tools that start runs or
+sandboxes, or change automations, environment variables, or settings, return
+`AUTOMATION_REQUIRED`. OAuth logins are not affected.
+
 <Callout type="warn" title="Do not expose PATs">
   Never place a PAT in a prompt, issue, chat transcript, repository, or
   checked-in client configuration. Prefer browser OAuth whenever the client

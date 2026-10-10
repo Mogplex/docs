@@ -7,7 +7,9 @@ export const docsNavItems = [
   { label: 'Guides', href: '/guides' },
   { label: 'CLI', href: '/cli' },
   { label: 'Web app', href: '/web' },
+  { label: 'Integrations', href: '/integrations' },
   { label: 'Reference', href: '/reference' },
+  { label: 'Self-hosting', href: '/self-hosting' },
 ] as const;
 
 export const docsSearchLinks: [string, string][] = [

@@ -1,0 +1,42 @@
+---
+title: Zapier
+description: Connect your Zapier MCP server so Mogplex agents can run actions across thousands of apps.
+---
+
+Connect Zapier to give agents the actions you configured in Zapier MCP, such as
+sending email, creating calendar events, updating a CRM, or posting to a channel.
+
+| | |
+| --- | --- |
+| Type | Remote MCP server, at a URL unique to your Zapier account |
+| Credential | The secret Zapier MCP server URL |
+| Where tools load | Every surface that loads [connection tools](/configure-and-extend/connections-and-mcp#where-connection-tools-load) |
+
+## Connect
+
+1. In Zapier MCP, choose the actions that agents may run. Then copy your
+   server URL from the **Connect** tab. See
+   [Use Zapier MCP with your client](https://help.zapier.com/hc/en-us/articles/36265392843917-Use-Zapier-MCP-with-your-client).
+2. In Mogplex, open **Connections → Integrations**.
+3. Under **Quick Add — MCP Presets**, select **+ Add** on **Zapier**.
+4. Paste the full server URL, then select **Add**.
+5. Test the saved connection and confirm that it lists your actions.
+
+The URL is the credential. Anyone who has it can run your actions, so Mogplex
+stores it encrypted. If the URL leaks, rotate it in Zapier and update the
+connection.
+
+## Use it
+
+- "When the deploy finishes, email the release notes to the team using Zapier."
+- "Create a HubSpot task for each customer issue mentioned in this thread."
+
+Agents can use only the actions you enabled in Zapier. To add an action, enable
+it in Zapier, then test the connection again.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| An action is missing | It is not enabled in Zapier MCP. |
+| Test fails | The URL was rotated in Zapier. Paste the new URL. |
