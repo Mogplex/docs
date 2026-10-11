@@ -131,6 +131,21 @@ metadata records the automation version (`flow_version_id`,
 In the app, the same runs appear on the automation's **Runs** tab with the
 version, trigger, input, branch, and links to the transcript and sandbox.
 
+## Read the output
+
+If the automation's instructions have the agent commit a JSON file under
+`.mogplex/artifacts/`, read it once the run succeeds:
+
+```txt
+GET /api/v1/mogplex/automations/{automationId}/runs/{jobRunId}/artifact?path=.mogplex/artifacts/<name>.json
+```
+
+The file is read from the run's working branch with your account's GitHub
+access, so the integration never holds a GitHub credential. A key limited to
+automations can call it. See
+[Read an automation run artifact](/reference/api#read-an-automation-run-artifact)
+for the response and errors.
+
 ## Limit the key to automations
 
 A key that only needs to trigger automations should not be able to do anything

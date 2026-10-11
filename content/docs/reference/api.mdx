@@ -176,6 +176,7 @@ type MogplexApiError = {
 | `POST` | [`/automations/{automationId}/trigger`](#trigger-an-automation) | `write` | Trigger the published automation. |
 | `GET` | [`/automations/{automationId}/runs`](#list-automation-runs) | `read` | List recent automation runs. |
 | `GET` | [`/automations/{automationId}/runs/{runId}`](#read-automation-run-logs) | `read` | Read detailed automation run logs. |
+| `GET` | [`/automations/{automationId}/runs/{runId}/artifact`](#read-an-automation-run-artifact) | `read` | Read a JSON file an API-triggered run committed. |
 | `POST` | [`/pr-reviews/rerun`](#rerun-a-pr-review) | `write` | Queue a fresh Mogplex PR review. |
 | `POST` | [`/runs`](#start-a-run) | `write` | Start a Codex, Claude Code, or Mogplex agent run. |
 | `GET` | [`/runs/{runId}`](#get-a-run) | `read` | Read run state. |
@@ -667,6 +668,51 @@ dispatch event, and node-run summaries.
 No query or body. Response payload: `{ run: AutomationRunDetail | null }`.
 The detail includes node runs, dispatch events, AI calls and events, errors,
 usage, and review findings.
+
+### Read an automation run artifact
+
+`GET /automations/{automationId}/runs/{runId}/artifact`
+
+Reads a JSON file that an [API-triggered](/integrations/api-triggers) run
+committed under `.mogplex/artifacts/` on its own working branch. The run must
+have succeeded. The repository and branch come from the run's trigger record,
+and the file is read with your account's GitHub access. Automation runs don't
+record a final commit, so the file is read at the branch tip; `commitSha` names
+the commit that was read.
+
+Request query:
+
+```typescript
+type AutomationRunArtifactQuery = {
+  path: string; // A .json file under .mogplex/artifacts/, at most 1 MiB.
+};
+```
+
+Response payload:
+
+```typescript
+type AutomationRunArtifactData = {
+  artifact: {
+    automationId: string;
+    jobRunId: string;
+    repoId: string;
+    path: string;
+    branch: string;    // mogplex/automation-<16 hex characters>
+    commitSha: string;
+    pinned: false;
+    content: unknown;  // The parsed JSON file.
+  };
+};
+```
+
+Endpoint-specific errors:
+
+| Code | HTTP | Meaning |
+| --- | --- | --- |
+| `BAD_REQUEST` | 400 | The ids aren't UUIDs, the path isn't a JSON file in `.mogplex/artifacts/`, or the file is over 1 MiB or isn't valid JSON. |
+| `NOT_FOUND` | 404 | The automation, run, repository, branch, or file doesn't exist for this account. |
+| `CONFLICT` | 409 | The run hasn't succeeded, wasn't triggered through the API, or GitHub needs reconnecting. |
+| `SERVICE_UNAVAILABLE` | 502 | GitHub couldn't be reached or returned an error. Retry. |
 
 ## PR reviews
 
