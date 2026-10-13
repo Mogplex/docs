@@ -50,15 +50,36 @@ The model catalog syncs twice a day. To populate it on a new deployment, call
 
 ## Give users access
 
-Platform AI (`AI_GATEWAY_API_KEY`) and platform sandboxes are gated per user. A
-user has access when **any** of these is true:
+Platform AI (`AI_GATEWAY_API_KEY`) and platform sandboxes are gated per user. On
+mogplex.com, the gate is a funded billing account. Without Stripe, no account
+has a balance.
+
+### Self-host mode (recommended)
+
+```bash
+MOGPLEX_SELF_HOSTED=1
+MOGPLEX_SELF_HOSTED_ALLOWED_EMAIL_DOMAINS=example.com   # optional
+```
+
+Self-host mode grants platform AI and sandbox access to every signed-in user,
+and hides the billing screens. With
+`MOGPLEX_SELF_HOSTED_ALLOWED_EMAIL_DOMAINS`, it grants access only to users whose
+email domain matches. Everyone else falls back to the rules below. Set the same
+variables in Trigger.dev, so that automation runs get the same access.
+
+Self-host mode never turns on in two cases. It logs a warning instead:
+
+- `STRIPE_SECRET_KEY` is set, because billing then controls access.
+- The process runs in the hosted Mogplex Trigger.dev project.
+
+### Finer control
+
+A user also has access when **any** of these is true:
 
 - The user's billing account has a positive balance (requires Stripe).
 - The user's ID, email, or email domain is in an allowlist variable.
 - The user's profile row has `allow_platform_ai` or `allow_platform_sandbox` set
   to `true`.
-
-Without Stripe, no account has a balance. Use the allowlists:
 
 ```bash
 PLATFORM_ACCESS_EMAIL_DOMAINS=example.com          # everyone at example.com
@@ -78,13 +99,39 @@ where email = 'alice@example.org';
 <Callout type="warn">
   Users without access still see the app. Their runs fail with "Hosted AI
   requires a positive billing balance" or "Hosted sandbox compute requires a
-  positive billing balance". These messages usually mean the user is missing
-  from the allowlist, not that billing is broken.
+  positive billing balance". These messages usually mean self-host mode is off
+  or the user is missing from the allowlist, not that billing is broken.
+  `pnpm setup:doctor` reports which access rule applies.
 </Callout>
 
 A user without platform AI access can still add their own AI Gateway,
 Anthropic, OpenAI, or OpenRouter key under **Settings → Provider Keys**. See
 [AI provider keys](/integrations/ai-provider-keys).
+
+## Your own model endpoint
+
+Serve models from any server that implements the OpenAI chat completions API,
+such as [LiteLLM](https://docs.litellm.ai/), [vLLM](https://docs.vllm.ai/), or
+[Ollama](https://ollama.com/). This suits air-gapped deployments.
+
+```bash
+MOGPLEX_OPENAI_COMPATIBLE_BASE_URL=http://litellm:4000/v1   # the URL before /chat/completions
+MOGPLEX_OPENAI_COMPATIBLE_API_KEY=sk-...                    # optional
+MOGPLEX_OPENAI_COMPATIBLE_MODELS=llama3.1:8b=Llama 3.1 8B,qwen2.5-coder
+```
+
+- Each listed model appears in the model pickers as `openai-compatible/<id>`
+  for every user. The text after `=` is the display name.
+- Users can turn a model off in **Settings → Models**. Team model allowlists
+  accept these IDs.
+- Requests go straight to your endpoint, never through AI Gateway, and do not
+  need platform AI access. Mogplex sends only
+  `MOGPLEX_OPENAI_COMPATIBLE_API_KEY` to the endpoint.
+- The endpoint has no pricing data, so usage is recorded without a cost.
+- These models serve the native Mogplex agent and chat. Claude Code and Codex
+  keep their own model access.
+- Set the same variables in Trigger.dev, so that automation runs can use these
+  models.
 
 ## Agent harnesses
 

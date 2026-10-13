@@ -18,11 +18,31 @@ GitHub has two separate jobs in Mogplex. Configure both:
 GitHub *sign-in* (`AUTH_GITHUB_*`) is a third, identity-only setting. See
 [Database and auth](/self-hosting/database-and-auth#sign-in-providers).
 
+## Fast path: create the App from your deployment
+
+Mogplex can create the GitHub App for you with GitHub's manifest flow. The
+permissions, events, and URLs come from `github-app-manifest.json` in the repo.
+
+1. Leave the `GITHUB_APP_*` variables unset. In production, also set
+   `MOGPLEX_SETUP_ENABLED=1`. Outside production the page is always available.
+2. Sign in and open `/admin/setup/github`. Optionally enter an organization to
+   own the App.
+3. Approve the App on GitHub. GitHub returns to `/admin/setup/github/complete`,
+   which shows `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, and
+   `GITHUB_WEBHOOK_SECRET` **once**. Mogplex does not store them.
+4. Copy them into your environment and into Trigger.dev, remove
+   `MOGPLEX_SETUP_ENABLED`, and redeploy.
+5. Create the GitHub OAuth app in [step 3](#3-create-the-github-oauth-app). The
+   App's own client credentials cannot replace it.
+
+Then continue with [Install and verify](#4-install-and-verify). The manual
+steps below do the same thing by hand.
+
 ## 1. Create the GitHub App
 
 Open **GitHub → Settings → Developer settings → GitHub Apps → New GitHub App**.
 To create the App under an organization, use the organization's settings.
-The repository has no App manifest, so enter these values by hand.
+Enter these values, or paste them from `github-app-manifest.json`.
 
 | Field | Value |
 | --- | --- |

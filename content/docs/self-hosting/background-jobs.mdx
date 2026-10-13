@@ -28,13 +28,29 @@ TRIGGER_SECRET_KEY=tr_prod_...
 ```
 
 <Callout type="warn" title="Always set TRIGGER_PROJECT_REF">
-  If `TRIGGER_PROJECT_REF` is unset, `trigger.config.ts` falls back to the
-  hosted Mogplex project ref. Your deploy then targets a project you do not
-  own and fails.
+  `pnpm trigger:deploy` and `pnpm trigger:dev` stop with setup guidance when
+  `TRIGGER_PROJECT_REF` is unset, unless you pass `--project-ref`. Without
+  that guard, the deploy would target the hosted Mogplex project.
 </Callout>
 
-For a self-hosted Trigger.dev instance, also set `TRIGGER_API_URL` to your
-instance URL, both in the app's environment and when you deploy.
+### Self-hosted Trigger.dev
+
+For your own Trigger.dev v4 instance, set its URL in the app's environment and
+in `.env.local`:
+
+```bash
+TRIGGER_API_URL=https://trigger.example.com
+```
+
+- The Trigger.dev SDK reads `TRIGGER_API_URL`, so every task the app starts goes
+  to your instance.
+- The `pnpm trigger:*` wrapper passes `--api-url` to the Trigger.dev CLI for
+  `deploy`, `dev`, `login`, and the other commands that accept it. An explicit
+  `--api-url` argument wins.
+- An instance without a remote build server builds the worker image locally.
+  The deploy machine needs Docker with `buildx` and a `docker login` to the
+  registry your instance pulls from. Pass extra CLI flags after `--`, for
+  example `pnpm trigger:deploy -- --local-build`.
 
 ### 2. Deploy the tasks
 
@@ -45,7 +61,7 @@ pnpm trigger:deploy
 The wrapper loads `.env` and `.env.local`, plus any comma-separated files you
 list in `TRIGGER_CLI_ENV_FILES`. Then it runs the Trigger.dev CLI version that
 matches the installed SDK. Authenticate the CLI first with
-`pnpm dlx trigger.dev login`, or set `TRIGGER_ACCESS_TOKEN` in CI.
+`pnpm exec tsx scripts/trigger-cli.ts login`, or set `TRIGGER_ACCESS_TOKEN` in CI.
 
 Deploy the tasks every time you deploy the app, from the same commit. Tasks and
 the app share code in `lib/`, and mismatched versions cause hard-to-trace
@@ -104,7 +120,15 @@ wrong token returns `401`.
 **On Vercel**, `vercel.json` schedules these routes and sends the secret for
 you.
 
-**On Docker or another host**, schedule them yourself. Example crontab:
+**With Docker Compose**, the `cron` service calls these routes on schedule.
+
+**Elsewhere**, run the same scheduler as a long-lived process:
+
+```bash
+CRON_SECRET=... CRON_TARGET_URL=https://<domain> node scripts/self-host-cron.mjs
+```
+
+Or schedule the routes in your own cron. Example crontab:
 
 ```bash
 */5 * * * * curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://<domain>/api/cron/sandbox-reaper
