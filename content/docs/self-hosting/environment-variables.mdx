@@ -23,7 +23,7 @@ Trigger.dev tasks need the same **server** variables as the app. See
 | --- | --- |
 | `MOGPLEX_DATA_BACKEND` | `neon`. |
 | `NEXT_PUBLIC_MOGPLEX_DATA_BACKEND` | `neon`. Must match `MOGPLEX_DATA_BACKEND`. Build-time. |
-| `NEXT_PUBLIC_APP_URL` | Public URL of the deployment, such as `https://mogplex.example.com`. Build-time. |
+| `APP_URL` or `NEXT_PUBLIC_APP_URL` | Public URL of the deployment, such as `https://mogplex.example.com`. `APP_URL` wins and is read at runtime, so one image serves any domain. |
 | `DATABASE_URL` | Owner connection. Migrations use it, and the app falls back to it. |
 | `DATABASE_URL_UNPOOLED` | Direct connection, for `pg LISTEN`. |
 | `BETTER_AUTH_SECRET` | `openssl rand -base64 32`. |
@@ -32,6 +32,8 @@ Trigger.dev tasks need the same **server** variables as the app. See
 | `CONNECTIONS_ENCRYPTION_KEY` | 32-byte hex key (`openssl rand -hex 32`) that encrypts saved connection credentials. Do not rotate without a plan: see [Operations](/self-hosting/operations#secrets). |
 | `EMAIL_UNSUBSCRIBE_SECRET` | Signs unsubscribe links. The app throws in production without it. |
 | One sign-in provider | `AUTH_GITHUB_*`, `AUTH_GOOGLE_*`, `AUTH_MICROSOFT_*`, or Resend for email and password. |
+
+`pnpm setup:doctor` checks these and the optional services below.
 
 ## Database
 
@@ -64,7 +66,8 @@ See [Database and auth](/self-hosting/database-and-auth#use-a-least-privilege-ru
 | `GITHUB_APP_NAME` | GitHub App slug, as in `github.com/apps/<slug>`. |
 | `GITHUB_APP_PRIVATE_KEY` | PEM. Write newlines as `\n` in single-line env files. |
 | `GITHUB_WEBHOOK_SECRET` | Must match the App's webhook secret. |
-| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | GitHub OAuth app for repository listing and reauthorization. Not in `.env.example`. |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | Classic GitHub OAuth app for repository listing and reauthorization. The GitHub App's own client credentials do not work here. |
+| `MOGPLEX_SETUP_ENABLED` | `1` enables `/admin/setup/github` in production while the GitHub App is unconfigured. Remove it after setup. |
 
 See [GitHub App](/self-hosting/github-app).
 
@@ -72,9 +75,9 @@ See [GitHub App](/self-hosting/github-app).
 
 | Variable | Notes |
 | --- | --- |
-| `TRIGGER_PROJECT_REF` | Your Trigger.dev project ref. Always set it. |
+| `TRIGGER_PROJECT_REF` | Your Trigger.dev project ref. `pnpm trigger:*` refuses to run without it. |
 | `TRIGGER_SECRET_KEY` | Secret key for the Trigger.dev environment. |
-| `TRIGGER_API_URL` | Only for a self-hosted Trigger.dev instance. |
+| `TRIGGER_API_URL` | Only for a self-hosted Trigger.dev instance. The SDK and `pnpm trigger:*` both use it. |
 | `TRIGGER_CLI_ENV_FILES` | Optional. Extra comma-separated env files for `pnpm trigger:deploy`. |
 
 ## Sandboxes
@@ -99,11 +102,16 @@ See [GitHub App](/self-hosting/github-app).
 | `AUTOMATION_GATEWAY_FALLBACK_MODELS` | Optional. Comma-separated fallback models for automation jobs. |
 | `DECISION_MODES`, `DECISIONS_DISABLED` | Optional. Overrides for the decision layer. |
 | `MOGPLEX_HARNESS_ACP` | Optional. `off` runs Codex through its CLI instead of the Agent Client Protocol. |
+| `MOGPLEX_OPENAI_COMPATIBLE_BASE_URL` | Optional. Your OpenAI-compatible endpoint, such as LiteLLM, vLLM, or Ollama. |
+| `MOGPLEX_OPENAI_COMPATIBLE_API_KEY` | Optional. Sent only to that endpoint. |
+| `MOGPLEX_OPENAI_COMPATIBLE_MODELS` | Comma-separated model IDs, with an optional `id=Label`. |
 
 ## User access
 
 | Variable | Notes |
 | --- | --- |
+| `MOGPLEX_SELF_HOSTED` | `1` grants platform AI and sandbox access to every signed-in user and hides billing. Ignored while `STRIPE_SECRET_KEY` is set. |
+| `MOGPLEX_SELF_HOSTED_ALLOWED_EMAIL_DOMAINS` | Optional. Limits self-host mode to these email domains. |
 | `PLATFORM_ACCESS_EMAILS` | Comma-separated emails with platform AI and sandbox access. |
 | `PLATFORM_ACCESS_EMAIL_DOMAINS` | Comma-separated domains, such as `example.com`. |
 | `PLATFORM_ACCESS_USER_IDS` | Comma-separated Mogplex user IDs. |
@@ -147,6 +155,13 @@ Leave these unset to run without billing. Then grant access with the
 | `CAPACITY_BILLING_OPERATIONS_ENABLED` | Default `false`. Turns on capacity billing operations. |
 | `CAPACITY_BILLING_LIVE_WRITES_ENABLED` | Default `false`. Required with a live Stripe key. |
 | `CAPACITY_BILLING_PILOT_ACCOUNT_IDS` | Comma-separated billing account IDs for the reserved-concurrency pilot. |
+
+## Docker Compose
+
+| Variable | Notes |
+| --- | --- |
+| `POSTGRES_PASSWORD` | Password for the bundled Postgres. Ignored when you set `DATABASE_URL`. |
+| `CRON_TARGET_URL` | Base URL the cron scheduler calls. Compose sets it to the `app` service. |
 
 ## Other
 

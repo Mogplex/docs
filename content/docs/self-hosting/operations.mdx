@@ -5,6 +5,23 @@ description: Upgrade a self-hosted Mogplex safely, manage its secrets, expose th
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
+## Check your setup
+
+```bash
+pnpm setup:doctor          # configuration checks
+pnpm setup:doctor --live   # also tests Trigger.dev and Vercel credentials
+```
+
+The doctor checks the database (connection, pending migrations, runtime role),
+auth, the GitHub App, Trigger.dev, sandboxes, models, required secrets, and user
+access. Each result is pass, warn, or fail, with a link to the page that fixes
+it. It never prints secret values. It exits non-zero on a failure, so you can use
+it as a deploy gate.
+
+For uptime monitoring, `GET /api/health` returns `200` when the database is
+reachable and `503` when it is not. The response lists which services are
+configured and contains no secrets.
+
 ## Upgrades
 
 Release notes on the [releases page](https://github.com/Mogplex/mogplex/releases)
@@ -13,9 +30,11 @@ list breaking changes to env vars and migrations. For each upgrade:
 1. Pull `main` or a tagged release into your fork.
 2. Add any new variables to the app **and** to Trigger.dev.
 3. Apply migrations:
-   `pnpm exec tsx scripts/apply-neon-migrations.ts`.
+   `pnpm exec tsx scripts/apply-neon-migrations.ts`. With Docker Compose, the
+   `migrate` service does this on `docker compose up`.
 4. Deploy the app.
 5. Deploy the Trigger.dev tasks from the same commit: `pnpm trigger:deploy`.
+6. Run `pnpm setup:doctor`.
 
 Migrations stay compatible with the previous app release, so apply them
 **before** you deploy the new code. Production uses the same order.
@@ -100,10 +119,9 @@ See [CLI automation](/cli/automation#base-url).
   pluggable backend would be a welcome contribution. Open a
   [discussion](https://github.com/Mogplex/mogplex/discussions) before you start
   so the interface is agreed first.
-- **The Docker image has no health check.** Probe `/` or `/login` from your
-  orchestrator.
-- **Cron routes are not self-scheduling.** Outside Vercel, you must
-  [schedule them](/self-hosting/background-jobs#cron-routes).
+- **Cron routes need a scheduler.** Vercel and the Compose `cron` service
+  schedule them. On other hosts, [schedule them](/self-hosting/background-jobs#cron-routes)
+  yourself.
 - **Bring-your-own Vercel compute for end users is not available.** Sandboxes
   always bill to the deployment's `PLATFORM_VERCEL_*` account.
 - **Team-shared connections are not available yet.** Connections belong to
@@ -113,10 +131,11 @@ See [CLI automation](/cli/automation#base-url).
 
 | Symptom | Likely cause |
 | --- | --- |
-| Runs fail with "requires a positive billing balance" | The user is not in the [access allowlist](/self-hosting/sandboxes-and-models#give-users-access). |
+| Runs fail with "requires a positive billing balance" | `MOGPLEX_SELF_HOSTED` is off, or ignored because `STRIPE_SECRET_KEY` is set. See [Give users access](/self-hosting/sandboxes-and-models#give-users-access). |
 | "Sandbox service not configured" | `PLATFORM_VERCEL_TOKEN` or the project ID is missing. |
 | Automations and Slack runs never start | Trigger.dev is not configured, the tasks are not deployed, or the tasks are missing env vars. |
-| `pnpm trigger:deploy` targets the wrong project | `TRIGGER_PROJECT_REF` is unset. |
+| `pnpm trigger:deploy` stops with project-ref guidance | `TRIGGER_PROJECT_REF` is unset. |
+| The `app` container is unhealthy | `/api/health` cannot reach the database. Check `DATABASE_URL` and the `migrate` service logs. |
 | GitHub deliveries return `401` | `GITHUB_WEBHOOK_SECRET` does not match the App. |
 | A changed `NEXT_PUBLIC_*` value has no effect | Rebuild. These values are fixed at build time. |
 | Auth routes return errors | `DATABASE_URL` and `MOGPLEX_RUNTIME_DATABASE_URL` are both unset, or migrations have not run. |

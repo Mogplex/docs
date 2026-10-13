@@ -39,12 +39,12 @@ the bill.
 The app boots with only Postgres configured. Each additional service unlocks one
 feature area, so you can bring Mogplex up in stages.
 
-<Callout type="warn" title="Grant access before you test agents">
-  Hosted AI and sandboxes are gated per user. A user needs a positive billing
-  balance, a profile flag, or an entry in the `PLATFORM_ACCESS_*` allowlists.
-  Without Stripe, nobody has a balance, so add your users to the allowlist. If
-  you skip this step, every run fails with "requires a positive billing
-  balance". See [Give users access](/self-hosting/sandboxes-and-models#give-users-access).
+<Callout type="warn" title="Turn on self-host mode before you test agents">
+  Hosted AI and sandboxes are gated per user. On mogplex.com, the gate is a
+  funded billing account. Without Stripe, nobody has a balance, so set
+  `MOGPLEX_SELF_HOSTED=1`. If you skip this step, every run fails with
+  "requires a positive billing balance". See
+  [Give users access](/self-hosting/sandboxes-and-models#give-users-access).
 </Callout>
 
 ## Choose a deployment shape
@@ -53,14 +53,16 @@ feature area, so you can bring Mogplex up in stages.
 team, set the environment variables, and deploy. Production runs this way every
 day. Vercel also runs the cron routes and syncs env vars to Trigger.dev for you.
 
-**Docker.** Build the image from the repo and run it on any container host. The
-image contains only the web app. You provision every backing service yourself,
-schedule the cron routes yourself, and copy env vars into Trigger.dev by hand.
-Sandboxes still need a Vercel account.
+**Docker.** Run `docker compose up` from the repo, or pull a prebuilt image from
+`ghcr.io/mogplex/mogplex`. Compose starts Postgres with pgvector, applies the
+migrations, runs the app, and calls the cron routes on schedule. You still
+provide Trigger.dev, sandboxes, models, and the GitHub App, and you copy env vars
+into Trigger.dev by hand. Sandboxes still need a Vercel account.
 
 ## Time to plan
 
-- **App shell** (Postgres, auth, one sign-in provider): about 15 minutes.
+- **App shell** (Postgres, auth, one sign-in provider): about 15 minutes, or
+  less with Docker Compose.
 - **Full product** (GitHub App, Trigger.dev, sandboxes, models, Slack): an
   afternoon. Each service has its own sign-up, billing, and credential rotation.
 
@@ -70,5 +72,5 @@ Sandboxes still need a Vercel account.
   <Card title="Quickstart" href="/self-hosting/quickstart" description="Go from a fork to a signed-in deployment, then add services one at a time." />
   <Card title="Environment variables" href="/self-hosting/environment-variables" description="Every variable, grouped by feature, with required and optional marked." />
   <Card title="GitHub App" href="/self-hosting/github-app" description="Create the GitHub App: permissions, events, URLs, and keys." />
-  <Card title="Operations" href="/self-hosting/operations" description="Upgrades, migrations, cron jobs, secrets, and known constraints." />
+  <Card title="Operations" href="/self-hosting/operations" description="The setup doctor, upgrades, migrations, secrets, and known constraints." />
 </Cards>

@@ -12,8 +12,9 @@ workspaces. Users install it from **Connections → Slack** in your deployment.
 ## 1. Create the app from a manifest
 
 Open [api.slack.com/apps](https://api.slack.com/apps), select **Create New App →
-From a manifest**, and paste the manifest below. Replace `mogplex.example.com`
-with your domain.
+From a manifest**, and paste the manifest below. It is also in the repo as
+`slack-app-manifest.yml`, and a unit test keeps its scopes in sync with the
+install flow. Replace `mogplex.example.com` with your domain.
 
 ```yaml
 display_information:
