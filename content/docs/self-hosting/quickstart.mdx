@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Deploy a self-hosted Mogplex on Vercel or Docker, sign in, and add the services that unlock agent work.
+description: Deploy a self-hosted Mogplex with Docker or Vercel, sign in, and add the services that unlock agent work.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
@@ -13,10 +13,10 @@ that let agents work on repositories.
 
 - Node.js `22.22.x` (see `.nvmrc`) and pnpm `10` through Corepack
   (`corepack enable`).
+- **Docker path:** Docker with Compose, on amd64 or arm64. Compose pulls the
+  published image and runs Postgres for you.
 - **Vercel path:** a Postgres 17 database with the `vector` and `pg_trgm`
   extensions available. [Neon](https://neon.tech) has both.
-- **Docker path:** Docker with Compose and about 6 GB of memory for the build.
-  Compose runs Postgres for you.
 - A public HTTPS domain for the deployment. OAuth callbacks and webhooks must
   reach it.
 
@@ -29,7 +29,9 @@ pnpm install
 cp .env.example .env.local    # use .env for Docker
 ```
 
-Fork the repository first if you plan to change code or deploy from Git.
+Fork the repository first if you plan to change code or deploy from Git. The
+Docker path runs a prebuilt image; you still need the checkout to deploy the
+Trigger.dev tasks and to run the setup doctor.
 
 ## 2. Configure the minimum environment
 
@@ -77,7 +79,11 @@ the least-privilege runtime role, and each sign-in provider.
 docker compose up -d
 ```
 
-Compose starts four services:
+This pulls `ghcr.io/mogplex/mogplex:latest`. To pin a release, set
+`MOGPLEX_VERSION` in `.env`, for example `MOGPLEX_VERSION=v0.2.0`. Set
+`MOGPLEX_PORT` to serve on a host port other than 3000.
+
+Compose starts four services from that one image:
 
 | Service | What it does |
 | --- | --- |
@@ -86,13 +92,25 @@ Compose starts four services:
 | `app` | The web app on port 3000. Its health check calls `GET /api/health`. |
 | `cron` | Calls each cron route on its schedule with `Authorization: Bearer $CRON_SECRET`. |
 
-To skip the build, point `app` and `cron` at a prebuilt image,
-`ghcr.io/mogplex/mogplex:<release tag>`, in a `docker-compose.override.yml`.
 Put a TLS-terminating proxy in front of port 3000.
 
-Some `NEXT_PUBLIC_*` values are still compiled in at build time: the Sentry DSN,
-the consent backend, the Vercel sign-in client ID, and the legacy Supabase keys.
-Set them in `.env` and run `docker compose build` after you change them.
+Some `NEXT_PUBLIC_*` values are compiled in at build time, so the published
+image leaves them unset: the Sentry DSN, the consent backend, the Vercel sign-in
+client ID, and the legacy Supabase keys. To set them, or to run unreleased code,
+build the image from your checkout instead:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+```
+
+Without Compose, the same image runs each role:
+
+```bash
+docker run --rm --env-file .env ghcr.io/mogplex/mogplex node scripts/migrate.cjs
+docker run -d --env-file .env -p 3000:3000 ghcr.io/mogplex/mogplex
+docker run -d -e CRON_SECRET -e CRON_TARGET_URL=https://mogplex.example.com \
+  ghcr.io/mogplex/mogplex node scripts/self-host-cron.mjs
+```
 
   </Tab>
   <Tab value="Vercel">
