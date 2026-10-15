@@ -10,6 +10,9 @@ import { Callout } from 'fumadocs-ui/components/callout';
 ```bash
 pnpm setup:doctor          # configuration checks
 pnpm setup:doctor --live   # also tests Trigger.dev and Vercel credentials
+
+# Docker: the image ships the same doctor
+docker compose exec app node scripts/doctor.cjs [--live]
 ```
 
 The doctor checks the database (connection, pending migrations, runtime role),
@@ -20,7 +23,8 @@ it as a deploy gate.
 
 For uptime monitoring, `GET /api/health` returns `200` when the database is
 reachable and `503` when it is not. The response lists which services are
-configured and contains no secrets.
+configured and contains no secrets. `models` counts as configured with an AI
+Gateway key or an OpenAI-compatible endpoint that lists at least one model.
 
 ## Upgrades
 
@@ -35,7 +39,8 @@ list breaking changes to env vars and migrations. For each upgrade:
    `migrate` service applies them before the new app starts.
 4. Deploy the app.
 5. Deploy the Trigger.dev tasks from the same commit: `pnpm trigger:deploy`.
-6. Run `pnpm setup:doctor`.
+6. Run `pnpm setup:doctor`, or `docker compose exec app node scripts/doctor.cjs`
+   with Docker.
 
 Migrations stay compatible with the previous app release, so apply them
 **before** you deploy the new code. Production uses the same order.
