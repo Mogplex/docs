@@ -30,8 +30,9 @@ list breaking changes to env vars and migrations. For each upgrade:
 1. Pull `main` or a tagged release into your fork.
 2. Add any new variables to the app **and** to Trigger.dev.
 3. Apply migrations:
-   `pnpm exec tsx scripts/apply-neon-migrations.ts`. With Docker Compose, the
-   `migrate` service does this on `docker compose up`.
+   `pnpm exec tsx scripts/apply-neon-migrations.ts`. With Docker Compose, set
+   `MOGPLEX_VERSION` to the new release and run `docker compose up -d`; the
+   `migrate` service applies them before the new app starts.
 4. Deploy the app.
 5. Deploy the Trigger.dev tasks from the same commit: `pnpm trigger:deploy`.
 6. Run `pnpm setup:doctor`.

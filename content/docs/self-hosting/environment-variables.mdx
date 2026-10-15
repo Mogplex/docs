@@ -160,6 +160,9 @@ Leave these unset to run without billing. Then grant access with the
 
 | Variable | Notes |
 | --- | --- |
+| `MOGPLEX_VERSION` | Image tag to run, such as `v0.2.0`. Default `latest`. |
+| `MOGPLEX_IMAGE` | Image repository. Default `ghcr.io/mogplex/mogplex`; set it to use a mirror. |
+| `MOGPLEX_PORT` | Host port for the app. Default `3000`. |
 | `POSTGRES_PASSWORD` | Password for the bundled Postgres. Ignored when you set `DATABASE_URL`. |
 | `CRON_TARGET_URL` | Base URL the cron scheduler calls. Compose sets it to the `app` service. |
 

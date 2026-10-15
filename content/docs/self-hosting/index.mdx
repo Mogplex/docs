@@ -49,15 +49,17 @@ feature area, so you can bring Mogplex up in stages.
 
 ## Choose a deployment shape
 
-**Vercel (recommended).** Fork the repo, link it to a project in your own Vercel
-team, set the environment variables, and deploy. Production runs this way every
-day. Vercel also runs the cron routes and syncs env vars to Trigger.dev for you.
+**Containers.** Pull the published image, `ghcr.io/mogplex/mogplex` (amd64 and
+arm64), and run it with Docker Compose, Kubernetes, or any platform that runs
+OCI images, on any cloud or your own hardware. Compose starts Postgres with
+pgvector, applies the migrations, runs the app, and calls the cron routes on
+schedule. You still provide Trigger.dev, sandboxes, models, and the GitHub App,
+and you copy env vars into Trigger.dev by hand. Sandboxes still need a Vercel
+account.
 
-**Docker.** Run `docker compose up` from the repo, or pull a prebuilt image from
-`ghcr.io/mogplex/mogplex`. Compose starts Postgres with pgvector, applies the
-migrations, runs the app, and calls the cron routes on schedule. You still
-provide Trigger.dev, sandboxes, models, and the GitHub App, and you copy env vars
-into Trigger.dev by hand. Sandboxes still need a Vercel account.
+**Vercel.** Fork the repo, link it to a project in your own Vercel team, set the
+environment variables, and deploy. This is how mogplex.com runs. Vercel also
+runs the cron routes and syncs env vars to Trigger.dev for you.
 
 ## Time to plan
 
