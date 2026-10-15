@@ -160,6 +160,7 @@ Leave these unset to run without billing. Then grant access with the
 
 | Variable | Notes |
 | --- | --- |
+| `COMPOSE_PROFILES` | `postgres` starts the bundled Postgres; `.env.example` sets it. Remove it when `DATABASE_URL` points at an external database. |
 | `MOGPLEX_VERSION` | Image tag to run, such as `v0.2.0`. Default `latest`. |
 | `MOGPLEX_IMAGE` | Image repository. Default `ghcr.io/mogplex/mogplex`; set it to use a mirror. |
 | `MOGPLEX_PORT` | Host port for the app. Default `3000`. |
