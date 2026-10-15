@@ -87,7 +87,7 @@ Compose starts four services from that one image:
 
 | Service | What it does |
 | --- | --- |
-| `postgres` | Postgres 17 with pgvector. Set `POSTGRES_PASSWORD` to change the default password. Set `DATABASE_URL` and `DATABASE_URL_UNPOOLED` to use an external database instead. |
+| `postgres` | Postgres 17 with pgvector, started by `COMPOSE_PROFILES=postgres` from `.env.example`. Set `POSTGRES_PASSWORD` to change the default password. To use an external database instead, set `DATABASE_URL` and `DATABASE_URL_UNPOOLED` and remove `COMPOSE_PROFILES`; no local Postgres starts. |
 | `migrate` | Applies `neon/baseline.sql` and `neon/migrations/`, then exits. The app starts only after it succeeds. |
 | `app` | The web app on port 3000. Its health check calls `GET /api/health`. |
 | `cron` | Calls each cron route on its schedule with `Authorization: Bearer $CRON_SECRET`. |
