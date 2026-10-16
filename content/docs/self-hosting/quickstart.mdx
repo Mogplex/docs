@@ -159,6 +159,9 @@ Add these in order. Each one is independent.
 
 ```bash
 pnpm setup:doctor          # add --live to test credentials against the services
+
+# Docker: run it inside the image, no checkout needed
+docker compose exec app node scripts/doctor.cjs
 ```
 
 The doctor reports each service as pass, warn, or fail, and links the page that
