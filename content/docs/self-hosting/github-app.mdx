@@ -52,7 +52,7 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | Field | Value |
 | --- | --- |
 | Homepage URL | `https://<domain>` |
-| Callback URL | `https://<domain>/api/auth/github/app-user/callback` (only for [personal repositories](#client-credentials-for-personal-repositories)) |
+| Callback URL | `https://<domain>/api/auth/github/app-user/callback` (only for [personal repositories](#client-credentials-for-personal-repositories)). Leave **Request user authorization (OAuth) during installation** unchecked: installs return through the Setup URL. |
 | Setup URL | `https://<domain>/api/auth/github/callback` (also select **Redirect on update**) |
 | Webhook | Active |
 | Webhook URL | `https://<domain>/api/webhooks/github` |
@@ -119,7 +119,9 @@ The App also needs the Repository creation permission and the
 created the App before Mogplex added this callback, add it under **Callback
 URL** on the App page.
 
-Without these variables, users can create repositories only in organizations.
+Mogplex stores each user's authorization and refreshes it before it expires,
+so users authorize once. Without these variables, users can create
+repositories only in organizations.
 
 ## 2. Generate a private key
 
@@ -184,7 +186,7 @@ GITHUB_CLIENT_SECRET=...
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
 | New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see [Repository creation failures](#repository-creation-failures). |
 | Creating a repository in an organization fails with "cannot create repositories yet" | GitHub returned `Resource not accessible by integration`. See [Repository creation failures](#repository-creation-failures). |
-| Creating a repository in a personal account asks to authorize again | `GITHUB_APP_CLIENT_ID` or `GITHUB_APP_CLIENT_SECRET` is missing or wrong, or the App has no `/api/auth/github/app-user/callback` callback URL. |
+| Creating a repository in a personal account asks to authorize again | `GITHUB_APP_CLIENT_ID` or `GITHUB_APP_CLIENT_SECRET` is missing or wrong, the App has no `/api/auth/github/app-user/callback` callback URL, or the user revoked Mogplex in GitHub **Settings → Applications**. |
 
 ### Repository creation failures
 
