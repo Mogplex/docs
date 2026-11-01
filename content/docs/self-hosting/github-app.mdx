@@ -73,7 +73,9 @@ Enter these values, or paste them from `github-app-manifest.json`.
 Repository creation is GitHub's narrow alternative to Administration: it
 creates repositories without rename, delete, transfer, settings, or access
 management. Organization owners must approve it. Leave it out if you never
-create repositories from Mogplex.
+create repositories from Mogplex. The [fast path](#fast-path-create-the-app-from-your-deployment)
+always requests it, because `github-app-manifest.json` includes it; to drop it,
+remove it under the App's **Permissions & events** after you create the App.
 
 ### Organization permissions
 
