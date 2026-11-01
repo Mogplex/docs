@@ -31,8 +31,18 @@ not have GitHub App coverage.
 | --- | --- | --- |
 | GitHub disconnected | Nothing GitHub-backed | Repo import, repo creation, webhook routing |
 | OAuth connected | Account identity and repo import | Webhook-backed routing |
-| App installed | Repo coverage for GitHub events, and repo creation in organizations you own | Synced repos until import or sync completes |
+| App installed | Repo coverage for GitHub events | Synced repos until import or sync completes |
 | App installed and repos synced | Full GitHub-backed setup | N/A |
+
+Creating a repository from Mogplex has its own requirements:
+
+- **In an organization**, you must be an owner of the organization, the App
+  must be installed there, and the owner must accept the App's Repository
+  creation permission. If Mogplex says the App "cannot create repositories
+  yet", see [GitHub App troubleshooting](/self-hosting/github-app#troubleshooting).
+- **In your personal account**, select **Authorize GitHub** when Mogplex asks.
+  GitHub creates personal repositories only for the account owner, so Mogplex
+  needs your authorization once.
 
 Use [GitHub App Coverage](/web/guides/github-app-coverage) when a repo is
 visible but [Triggers](/web/triggers) or [Automations](/web/automations) cannot

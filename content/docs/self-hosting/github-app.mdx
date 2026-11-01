@@ -47,6 +47,7 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | Field | Value |
 | --- | --- |
 | Homepage URL | `https://<domain>` |
+| Callback URL | `https://<domain>/api/auth/github/app-user/callback` (only for [personal repositories](#create-personal-repositories)) |
 | Setup URL | `https://<domain>/api/auth/github/callback` (also select **Redirect on update**) |
 | Webhook | Active |
 | Webhook URL | `https://<domain>/api/webhooks/github` |
@@ -107,6 +108,21 @@ GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIE...\n-----END RSA P
 GITHUB_WEBHOOK_SECRET=...
 ```
 
+### Create personal repositories
+
+GitHub creates a repository in a personal account only with that user's own
+token. To let users do this, select **Generate a new client secret** on the App
+page and store the App's client credentials:
+
+```bash
+GITHUB_APP_CLIENT_ID=Iv23...
+GITHUB_APP_CLIENT_SECRET=...
+```
+
+The App also needs the `/api/auth/github/app-user/callback` callback URL from
+[step 1](#1-create-the-github-app). Without these variables, users can create
+repositories only in organizations.
+
 Mogplex treats the App as configured only when `GITHUB_APP_ID`,
 `GITHUB_APP_PRIVATE_KEY`, and `GITHUB_APP_NAME` are all set.
 `GITHUB_APP_NAME` builds the install link
@@ -156,4 +172,18 @@ GITHUB_CLIENT_SECRET=...
 | Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
 | New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see the next row. |
-| Creating a repository in an organization fails | Mogplex reports "cannot create repositories yet"; GitHub returns `Resource not accessible by integration`. The organization's owner must accept Repository creation for the installation (a pending request shows in the installation's settings). If it still fails, check that the organization's **Settings → Member privileges → Repository creation** allows private repositories. If the App was created before Mogplex requested that permission, add it under **Permissions & events** first. |
+| Creating a repository in an organization fails with "cannot create repositories yet" | GitHub returned `Resource not accessible by integration`. See [Repository creation failures](#repository-creation-failures). |
+| Creating a repository in a personal account asks to authorize again | `GITHUB_APP_CLIENT_ID` or `GITHUB_APP_CLIENT_SECRET` is missing or wrong, or the App has no `/api/auth/github/app-user/callback` callback URL. |
+
+### Repository creation failures
+
+Check these in order:
+
+- **Pending permission request.** The organization owner must accept Repository
+  creation for the installation. The request shows in the installation's
+  settings on GitHub.
+- **App created before Mogplex asked for the permission.** Add Repository
+  creation under the App's **Permissions & events**. Then the owner accepts it.
+- **Organization policy.** If GitHub accepts the permission but creation still
+  fails, check that **Settings → Member privileges → Repository creation**
+  allows private repositories. This policy applies to GitHub Apps too.
