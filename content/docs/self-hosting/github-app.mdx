@@ -33,7 +33,8 @@ permissions, events, and URLs come from `github-app-manifest.json` in the repo.
 4. Copy them into your environment and into Trigger.dev, remove
    `MOGPLEX_SETUP_ENABLED`, and redeploy.
    To let users create repositories in personal accounts, also add the
-   [client credentials](#client-credentials-for-personal-repositories). The
+   [client credentials](#client-credentials-for-personal-repositories) to the
+   app environment only (Trigger.dev does not need them), then redeploy. The
    manifest already registers the `/api/auth/github/app-user/callback`
    callback URL.
 5. Create the GitHub OAuth app in [step 3](#3-create-the-github-oauth-app). The
@@ -104,8 +105,9 @@ App. Mogplex uses those events to keep repository coverage in sync.
 ### Client credentials for personal repositories
 
 This part is optional. GitHub creates a repository in a personal account only
-with that user's own token. To let users do this, select **Generate a new
-client secret** on the App page and store the App's client credentials:
+with that user's own token. To let users do this, copy the **Client ID** from
+the App page's **About** section, select **Generate a new client secret**, and
+store both in the app environment (Trigger.dev does not need them):
 
 ```bash
 GITHUB_APP_CLIENT_ID=Iv23...
@@ -113,7 +115,9 @@ GITHUB_APP_CLIENT_SECRET=...
 ```
 
 The App also needs the Repository creation permission and the
-`/api/auth/github/app-user/callback` callback URL from the table above.
+`/api/auth/github/app-user/callback` callback URL from the table above. If you
+created the App before Mogplex added this callback, add it under **Callback
+URL** on the App page.
 
 Without these variables, users can create repositories only in organizations.
 
@@ -178,7 +182,7 @@ GITHUB_CLIENT_SECRET=...
 | **Connect GitHub** opens an OAuth screen instead of the App install | One of `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, or `GITHUB_APP_NAME` is missing. |
 | Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
-| New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see the next row. |
+| New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see [Repository creation failures](#repository-creation-failures). |
 | Creating a repository in an organization fails with "cannot create repositories yet" | GitHub returned `Resource not accessible by integration`. See [Repository creation failures](#repository-creation-failures). |
 | Creating a repository in a personal account asks to authorize again | `GITHUB_APP_CLIENT_ID` or `GITHUB_APP_CLIENT_SECRET` is missing or wrong, or the App has no `/api/auth/github/app-user/callback` callback URL. |
 
