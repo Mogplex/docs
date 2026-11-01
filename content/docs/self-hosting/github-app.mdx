@@ -119,9 +119,13 @@ The App also needs the Repository creation permission and the
 created the App before Mogplex added this callback, add it under **Callback
 URL** on the App page.
 
-Mogplex stores each user's authorization and refreshes it before it expires,
-until GitHub's refresh token expires. Without these variables, users can
-create repositories only in organizations.
+Mogplex stores each user's authorization and refreshes it in the background.
+The authorization lapses only if it goes unused for about six months or the
+user revokes the App, and Mogplex then asks them to authorize again. This
+assumes user-to-server token expiration is enabled for the App, as it is by
+default.
+
+Without these variables, users can create repositories only in organizations.
 
 ## 2. Generate a private key
 
