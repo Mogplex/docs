@@ -34,21 +34,22 @@ not have GitHub App coverage.
 | App installed | Repo coverage for GitHub events | Synced repos until import or sync completes |
 | App installed and repos synced | Full GitHub-backed setup | N/A |
 
+## Repository creation
+
 Creating a repository from Mogplex has its own requirements:
 
 - **In an organization**, the App must be installed there and an organization
   owner must accept the App's Repository creation permission on GitHub. If
-  Mogplex says the App "cannot create repositories yet", either that request is
-  still pending in the App's installation settings, or the organization's
-  **Settings → Member privileges → Repository creation** policy blocks it. That
-  policy applies to GitHub Apps too. Mogplex also allows only
+  Mogplex says the App "cannot create repositories yet", the request is still
+  pending or the organization's repository creation policy blocks it. Mogplex
+  also allows only
   organization owners to create organization repositories. This is a Mogplex
   rule, not a GitHub setting. If you self-host, see also
   [GitHub App troubleshooting](/self-hosting/github-app#repository-creation-failures).
 - **In your personal account**, the App must be installed on your account, so
   Mogplex can work in the new repository. Then select **Authorize GitHub** when
-  Mogplex asks. GitHub creates personal repositories only for the account
-  owner, so Mogplex needs your authorization. It renews automatically.
+  Mogplex asks. Mogplex creates personal repositories with your own GitHub
+  authorization, so it acts as you there. It renews automatically.
   Mogplex asks you to **Authorize GitHub** again only if the authorization goes
   unused for about six months or you revoke Mogplex in GitHub **Settings →
   Applications**.
