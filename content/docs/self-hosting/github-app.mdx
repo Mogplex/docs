@@ -150,4 +150,5 @@ GITHUB_CLIENT_SECRET=...
 | **Connect GitHub** opens an OAuth screen instead of the App install | One of `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, or `GITHUB_APP_NAME` is missing. |
 | Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
-| New permissions have no effect | Each installation must accept the new permissions on GitHub. Creating a repository in an organization fails until its owner accepts Repository creation. If the App was created before Mogplex requested that permission, add it under **Permissions & events** first. |
+| New permissions have no effect | Each installation must accept the new permissions on GitHub. |
+| Creating a repository in an organization fails | The organization's owner must accept Repository creation for the installation. If the App was created before Mogplex requested that permission, add it under **Permissions & events** first. |
