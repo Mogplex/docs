@@ -32,11 +32,11 @@ permissions, events, and URLs come from `github-app-manifest.json` in the repo.
    `GITHUB_WEBHOOK_SECRET` **once**. Mogplex does not store them.
 4. Copy them into your environment and into Trigger.dev, remove
    `MOGPLEX_SETUP_ENABLED`, and redeploy.
+
    To let users create repositories in personal accounts, also add the
    [client credentials](#client-credentials-for-personal-repositories) to the
-   app environment only (Trigger.dev does not need them), then redeploy. The
-   manifest already registers the `/api/auth/github/app-user/callback`
-   callback URL.
+   app environment only, then redeploy. The manifest already registers the
+   `/api/auth/github/app-user/callback` callback URL.
 5. Create the GitHub OAuth app in [step 3](#3-create-the-github-oauth-app). The
    App's own client credentials cannot replace it.
 
