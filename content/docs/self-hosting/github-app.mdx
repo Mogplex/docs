@@ -12,7 +12,7 @@ GitHub has two separate jobs in Mogplex. Configure both:
 
 | Piece | What it unlocks | Variables |
 | --- | --- | --- |
-| GitHub App | Installation-backed repo access, webhooks, check runs, PR reviews, triggers, and automations | `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET` |
+| GitHub App | Installation-backed repo access, webhooks, check runs, PR reviews, triggers, and automations | `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET`, and optionally `GITHUB_APP_CLIENT_ID` and `GITHUB_APP_CLIENT_SECRET` |
 | GitHub OAuth app | Repository listing and import, and reauthorization when a token needs new scopes | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
 
 GitHub *sign-in* (`AUTH_GITHUB_*`) is a third, identity-only setting. See
@@ -32,6 +32,8 @@ permissions, events, and URLs come from `github-app-manifest.json` in the repo.
    `GITHUB_WEBHOOK_SECRET` **once**. Mogplex does not store them.
 4. Copy them into your environment and into Trigger.dev, remove
    `MOGPLEX_SETUP_ENABLED`, and redeploy.
+   To let users create repositories in personal accounts, also add the
+   [client credentials](#client-credentials-for-personal-repositories).
 5. Create the GitHub OAuth app in [step 3](#3-create-the-github-oauth-app). The
    App's own client credentials cannot replace it.
 
@@ -47,7 +49,7 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | Field | Value |
 | --- | --- |
 | Homepage URL | `https://<domain>` |
-| Callback URL | `https://<domain>/api/auth/github/app-user/callback` (only for [personal repositories](#create-personal-repositories)) |
+| Callback URL | `https://<domain>/api/auth/github/app-user/callback` (only for [personal repositories](#client-credentials-for-personal-repositories)) |
 | Setup URL | `https://<domain>/api/auth/github/callback` (also select **Redirect on update**) |
 | Webhook | Active |
 | Webhook URL | `https://<domain>/api/webhooks/github` |
@@ -95,6 +97,21 @@ create repositories from Mogplex.
 GitHub always sends `installation` and `installation_repositories` events to an
 App. Mogplex uses those events to keep repository coverage in sync.
 
+### Client credentials for personal repositories
+
+This part is optional. GitHub creates a repository in a personal account only
+with that user's own token. To let users do this, select **Generate a new
+client secret** on the App page and store the App's client credentials:
+
+```bash
+GITHUB_APP_CLIENT_ID=Iv23...
+GITHUB_APP_CLIENT_SECRET=...
+```
+
+The App also needs the `/api/auth/github/app-user/callback` callback URL from
+the table above. Without these variables, users can create repositories only
+in organizations.
+
 ## 2. Generate a private key
 
 On the App page, select **Generate a private key**. Store the PEM as
@@ -107,21 +124,6 @@ GITHUB_APP_NAME=my-mogplex          # the App's URL slug: github.com/apps/<slug>
 GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nMIIE...\n-----END RSA PRIVATE KEY-----\n"
 GITHUB_WEBHOOK_SECRET=...
 ```
-
-### Create personal repositories
-
-GitHub creates a repository in a personal account only with that user's own
-token. To let users do this, select **Generate a new client secret** on the App
-page and store the App's client credentials:
-
-```bash
-GITHUB_APP_CLIENT_ID=Iv23...
-GITHUB_APP_CLIENT_SECRET=...
-```
-
-The App also needs the `/api/auth/github/app-user/callback` callback URL from
-[step 1](#1-create-the-github-app). Without these variables, users can create
-repositories only in organizations.
 
 Mogplex treats the App as configured only when `GITHUB_APP_ID`,
 `GITHUB_APP_PRIVATE_KEY`, and `GITHUB_APP_NAME` are all set.
