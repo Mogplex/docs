@@ -59,13 +59,18 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | --- | --- | --- |
 | Contents | Read and write | Clone, push branches, read files |
 | Pull requests | Read and write | Open, update, review, and merge PRs |
-| Repository creation | Read and write | Create repositories in an organization from Mogplex, without the rest of Administration (no rename, delete, transfer, settings, or access). Org owners must approve it. Omit it if you never create repositories from Mogplex. |
+| Repository creation | Read and write | Create repositories in an organization from Mogplex (optional; see below) |
 | Issues | Read and write | Read and update issues, post comments |
 | Checks | Read and write | The Mogplex PR review check run |
 | Commit statuses | Read and write | Automation `set_status` actions |
 | Actions | Read-only | Read CI workflow runs and job logs |
 | Metadata | Read-only | Required by GitHub |
 | Dependabot alerts | Read-only | [Dependabot remediation](/integrations/dependabot) (optional) |
+
+Repository creation is GitHub's narrow alternative to Administration: it
+creates repositories without rename, delete, transfer, settings, or access
+management. Organization owners must approve it. Leave it out if you never
+create repositories from Mogplex.
 
 ### Organization permissions
 
@@ -151,4 +156,4 @@ GITHUB_CLIENT_SECRET=...
 | Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
 | New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see the next row. |
-| Creating a repository in an organization fails with "cannot create repositories yet" (GitHub: `Resource not accessible by integration`) | The organization's owner must accept Repository creation for the installation; a pending request shows in the installation's settings. If the App was created before Mogplex requested that permission, add it under **Permissions & events** first. |
+| Creating a repository in an organization fails | Mogplex reports "cannot create repositories yet"; GitHub returns `Resource not accessible by integration`. The organization's owner must accept Repository creation for the installation (a pending request shows in the installation's settings). If it still fails, check that the organization's **Settings → Member privileges → Repository creation** allows private repositories. If the App was created before Mogplex requested that permission, add it under **Permissions & events** first. |
