@@ -120,8 +120,8 @@ created the App before Mogplex added this callback, add it under **Callback
 URL** on the App page.
 
 Mogplex stores each user's authorization and refreshes it before it expires,
-so users authorize once. Without these variables, users can create
-repositories only in organizations.
+until GitHub's refresh token expires. Without these variables, users can
+create repositories only in organizations.
 
 ## 2. Generate a private key
 
