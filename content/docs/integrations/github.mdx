@@ -38,6 +38,28 @@ Use [GitHub App Coverage](/web/guides/github-app-coverage) when a repo is
 visible but [Triggers](/web/triggers) or [Automations](/web/automations) cannot
 route work into it.
 
+## Repository creation
+
+Creating a repository from Mogplex has its own requirements:
+
+- **In an organization**, the App must be installed there and an organization
+  owner must accept the App's Repository creation permission on GitHub. If
+  Mogplex says the App "cannot create repositories yet", the request is still
+  pending or the organization's repository creation policy blocks it. If you
+  self-host, see also
+  [GitHub App troubleshooting](/self-hosting/github-app#repository-creation-failures).
+
+  Separately, only organization owners can create organization repositories
+  from Mogplex. That is a Mogplex rule, not a GitHub setting.
+- **In your personal account**, the App must be installed on your account, so
+  Mogplex can work in the new repository. Then select **Authorize GitHub** when
+  Mogplex asks. Mogplex creates personal repositories with your own GitHub
+  authorization, so it acts as you there. Mogplex renews the authorization in
+  the background; you authorize again only if it goes unused for about six
+  months or you revoke Mogplex in GitHub **Settings → Applications**. If you
+  self-host, configure the
+  [App client credentials](/self-hosting/github-app#client-credentials-for-personal-repositories).
+
 ## What GitHub can start
 
 Mogplex GitHub routing can start work from issue comments, PR comments, PR

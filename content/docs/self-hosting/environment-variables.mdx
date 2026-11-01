@@ -67,6 +67,7 @@ See [Database and auth](/self-hosting/database-and-auth#use-a-least-privilege-ru
 | `GITHUB_APP_PRIVATE_KEY` | PEM. Write newlines as `\n` in single-line env files. |
 | `GITHUB_WEBHOOK_SECRET` | Must match the App's webhook secret. |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | Classic GitHub OAuth app for repository listing and reauthorization. The GitHub App's own client credentials do not work here. |
+| `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET` | Optional. The App's own OAuth client credentials, used only to create repositories in personal accounts. App service only; Trigger.dev does not need them. Callback: `/api/auth/github/app-user/callback`. See [GitHub App](/self-hosting/github-app#client-credentials-for-personal-repositories). |
 | `MOGPLEX_SETUP_ENABLED` | `1` enables `/admin/setup/github` in production while the GitHub App is unconfigured. Remove it after setup. |
 
 See [GitHub App](/self-hosting/github-app).

@@ -12,7 +12,7 @@ GitHub has two separate jobs in Mogplex. Configure both:
 
 | Piece | What it unlocks | Variables |
 | --- | --- | --- |
-| GitHub App | Installation-backed repo access, webhooks, check runs, PR reviews, triggers, and automations | `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET` |
+| GitHub App | Installation-backed repo access, webhooks, check runs, PR reviews, triggers, and automations | `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET`, and optionally `GITHUB_APP_CLIENT_ID` and `GITHUB_APP_CLIENT_SECRET` |
 | GitHub OAuth app | Repository listing and import, and reauthorization when a token needs new scopes | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
 
 GitHub *sign-in* (`AUTH_GITHUB_*`) is a third, identity-only setting. See
@@ -32,6 +32,11 @@ permissions, events, and URLs come from `github-app-manifest.json` in the repo.
    `GITHUB_WEBHOOK_SECRET` **once**. Mogplex does not store them.
 4. Copy them into your environment and into Trigger.dev, remove
    `MOGPLEX_SETUP_ENABLED`, and redeploy.
+
+   To let users create repositories in personal accounts, also add the
+   [client credentials](#client-credentials-for-personal-repositories) to the
+   app environment only, then redeploy. The manifest already registers the
+   `/api/auth/github/app-user/callback` callback URL.
 5. Create the GitHub OAuth app in [step 3](#3-create-the-github-oauth-app). The
    App's own client credentials cannot replace it.
 
@@ -47,6 +52,7 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | Field | Value |
 | --- | --- |
 | Homepage URL | `https://<domain>` |
+| Callback URL | `https://<domain>/api/auth/github/app-user/callback` (only for [personal repositories](#client-credentials-for-personal-repositories)). Leave **Request user authorization (OAuth) during installation** unchecked: installs return through the Setup URL. |
 | Setup URL | `https://<domain>/api/auth/github/callback` (also select **Redirect on update**) |
 | Webhook | Active |
 | Webhook URL | `https://<domain>/api/webhooks/github` |
@@ -59,12 +65,20 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | --- | --- | --- |
 | Contents | Read and write | Clone, push branches, read files |
 | Pull requests | Read and write | Open, update, review, and merge PRs |
+| Repository creation | Read and write | Create repositories from Mogplex, in organizations and, with [client credentials](#client-credentials-for-personal-repositories), in personal accounts (optional; see below) |
 | Issues | Read and write | Read and update issues, post comments |
 | Checks | Read and write | The Mogplex PR review check run |
 | Commit statuses | Read and write | Automation `set_status` actions |
 | Actions | Read-only | Read CI workflow runs and job logs |
 | Metadata | Read-only | Required by GitHub |
 | Dependabot alerts | Read-only | [Dependabot remediation](/integrations/dependabot) (optional) |
+
+Repository creation is GitHub's narrow alternative to Administration: it
+creates repositories without rename, delete, transfer, settings, or access
+management. Organization owners must approve it. Leave it out if you never
+create repositories from Mogplex. The [fast path](#fast-path-create-the-app-from-your-deployment)
+always requests it, because `github-app-manifest.json` includes it; to drop it,
+remove it under the App's **Permissions & events** after you create the App.
 
 ### Organization permissions
 
@@ -87,6 +101,32 @@ Enter these values, or paste them from `github-app-manifest.json`.
 
 GitHub always sends `installation` and `installation_repositories` events to an
 App. Mogplex uses those events to keep repository coverage in sync.
+
+### Client credentials for personal repositories
+
+This part is optional. Mogplex creates a repository in a personal account with
+that user's own App authorization, so it acts as the user there. To let users
+do this, copy the **Client ID** from
+the App page's **About** section, select **Generate a new client secret**, and
+store both in the app environment (Trigger.dev does not need them):
+
+```bash
+GITHUB_APP_CLIENT_ID=Iv23...
+GITHUB_APP_CLIENT_SECRET=...
+```
+
+The App also needs the Repository creation permission and the
+`/api/auth/github/app-user/callback` callback URL from the table above. If you
+created the App before Mogplex added this callback, add it under **Callback
+URL** on the App page.
+
+Mogplex stores each user's authorization and refreshes it in the background.
+The authorization lapses only if it goes unused for about six months or the
+user revokes the App, and Mogplex then asks them to authorize again. This
+assumes user-to-server token expiration is enabled for the App, as it is by
+default.
+
+Without these variables, users can create repositories only in organizations.
 
 ## 2. Generate a private key
 
@@ -149,4 +189,20 @@ GITHUB_CLIENT_SECRET=...
 | **Connect GitHub** opens an OAuth screen instead of the App install | One of `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, or `GITHUB_APP_NAME` is missing. |
 | Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
-| New permissions have no effect | Each installation must accept the new permissions on GitHub. |
+| New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see [Repository creation failures](#repository-creation-failures). |
+| Creating a repository in an organization fails with "cannot create repositories yet" | GitHub returned `Resource not accessible by integration`. See [Repository creation failures](#repository-creation-failures). |
+| Creating a repository in a personal account asks to authorize again | `GITHUB_APP_CLIENT_ID` or `GITHUB_APP_CLIENT_SECRET` is missing or wrong, the App has no `/api/auth/github/app-user/callback` callback URL, or the user revoked Mogplex in GitHub **Settings → Applications**. |
+
+### Repository creation failures
+
+Check these in order:
+
+- **Pending permission request.** The organization owner must accept Repository
+  creation for the installation. The request shows in the installation's
+  settings on GitHub.
+- **App created before Mogplex asked for the permission.** Add Repository
+  creation under the App's **Permissions & events**. Then the owner accepts it.
+- **Organization policy.** If GitHub accepts the permission but creation still
+  fails, check that **Settings → Member privileges → Repository creation**
+  allows the visibility you chose (public or private). This policy applies to
+  GitHub Apps too.
