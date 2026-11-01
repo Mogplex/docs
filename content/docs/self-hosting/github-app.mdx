@@ -33,7 +33,9 @@ permissions, events, and URLs come from `github-app-manifest.json` in the repo.
 4. Copy them into your environment and into Trigger.dev, remove
    `MOGPLEX_SETUP_ENABLED`, and redeploy.
    To let users create repositories in personal accounts, also add the
-   [client credentials](#client-credentials-for-personal-repositories).
+   [client credentials](#client-credentials-for-personal-repositories). The
+   manifest already registers the `/api/auth/github/app-user/callback`
+   callback URL.
 5. Create the GitHub OAuth app in [step 3](#3-create-the-github-oauth-app). The
    App's own client credentials cannot replace it.
 
@@ -62,7 +64,7 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | --- | --- | --- |
 | Contents | Read and write | Clone, push branches, read files |
 | Pull requests | Read and write | Open, update, review, and merge PRs |
-| Repository creation | Read and write | Create repositories in an organization from Mogplex (optional; see below) |
+| Repository creation | Read and write | Create repositories from Mogplex, in organizations and, with [client credentials](#client-credentials-for-personal-repositories), in personal accounts (optional; see below) |
 | Issues | Read and write | Read and update issues, post comments |
 | Checks | Read and write | The Mogplex PR review check run |
 | Commit statuses | Read and write | Automation `set_status` actions |
@@ -110,8 +112,8 @@ GITHUB_APP_CLIENT_ID=Iv23...
 GITHUB_APP_CLIENT_SECRET=...
 ```
 
-The App also needs the `/api/auth/github/app-user/callback` callback URL from
-the table above. Without these variables, users can create repositories only
+The App also needs the Repository creation permission and the
+`/api/auth/github/app-user/callback` callback URL from the table above. Without these variables, users can create repositories only
 in organizations.
 
 ## 2. Generate a private key
