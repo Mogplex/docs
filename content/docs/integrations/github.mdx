@@ -38,8 +38,10 @@ Creating a repository from Mogplex has its own requirements:
 
 - **In an organization**, the App must be installed there and an organization
   owner must accept the App's Repository creation permission on GitHub. If
-  Mogplex says the App "cannot create repositories yet", that request is still
-  pending in the App's installation settings. Mogplex also allows only
+  Mogplex says the App "cannot create repositories yet", either that request is
+  still pending in the App's installation settings, or the organization's
+  **Settings → Member privileges → Repository creation** policy blocks it. That
+  policy applies to GitHub Apps too. Mogplex also allows only
   organization owners to create organization repositories. This is a Mogplex
   rule, not a GitHub setting. If you self-host, see also
   [GitHub App troubleshooting](/self-hosting/github-app#repository-creation-failures).
