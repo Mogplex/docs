@@ -57,6 +57,7 @@ Enter these values, or paste them from `github-app-manifest.json`.
 
 | Permission | Access | Used for |
 | --- | --- | --- |
+| Administration | Read and write | Create repositories in an organization from Mogplex |
 | Contents | Read and write | Clone, push branches, read files |
 | Pull requests | Read and write | Open, update, review, and merge PRs |
 | Issues | Read and write | Read and update issues, post comments |
@@ -65,6 +66,10 @@ Enter these values, or paste them from `github-app-manifest.json`.
 | Actions | Read-only | Read CI workflow runs and job logs |
 | Metadata | Read-only | Required by GitHub |
 | Dependabot alerts | Read-only | [Dependabot remediation](/integrations/dependabot) (optional) |
+
+If you add Administration to an existing App, GitHub asks each installation's
+owner to accept the new permission. Creating a repository in that organization
+fails until the owner accepts it.
 
 ### Organization permissions
 
