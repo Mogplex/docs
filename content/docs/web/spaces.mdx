@@ -1,126 +1,106 @@
 ---
 title: Projects
-description: Use Projects at /spaces to organize repos, launch Sandbox compute, open workspace sessions, and enter Control with the correct repository context.
+description: Projects live in the Command Center sidebar. Use the project menu for environment variables and project settings, and Settings → Repositories to sync, remove, or restore repos.
 ---
 
-In the Mogplex app, the top-bar label is **Projects** and the route is
-`/spaces`.
-
-This page is the operational starting point for repo-backed work. It is where
-repo discovery turns into a running workspace, a live preview, or standing
-automation attached to a specific repository.
+Projects live in the Command Center sidebar. Each repo you work on is a
+project group there, with its missions listed underneath. There is no separate
+Projects page: the old `/spaces` and `/projects/repositories` URLs redirect to
+Command Center.
 
 ## Mental model
 
 - A **repo** is the imported GitHub repository Mogplex knows about.
-- A **project** is the grouping layer shown in the UI. Under the hood, this is
-  a workspace record that holds shared sandbox defaults.
-- A **workspace session** is the live chat/editor/terminal session you open for
-  a repo.
+- A **project** is a repo as it appears in the Command Center sidebar, with
+  its missions grouped under it.
 - A **sandbox** is the runtime and preview environment attached to that repo
   work.
 - A **worktree** is a separate task checkout inside selected Sandbox compute.
   Starting the Sandbox does not create one.
 
-## What Projects actually manages
+## Start work on a repo
 
-Use Projects when you need to:
+Open Command Center and pick the repo in the composer's project picker.
+**New project…** is pinned at the top of the picker and creates a fresh GitHub
+repository. If the repo does not have a running sandbox yet, Mogplex launches
+one when the mission starts.
 
-- sync imported repositories and search them quickly
-- group repos into projects and organize the list
-- favorite repos, hide noisy repos, or filter by owner
-- start or stop a preview sandbox
-- open a workspace session for a repo
-- add monorepo sub-project entries instead of forcing one root for the whole
-  repo
-- create repo-bound work such as assignments or cron-backed automation
-- edit repo settings, secrets, and snapshots
+## Project settings
 
-Opening a workspace is not a passive navigation step. If the repo does not
-already have a running sandbox, Mogplex can launch one first and then bind the
-workspace session to it automatically.
+Open the **⋯** menu on a project in the sidebar:
 
-## Repo card quick actions
+- **Environment variables** opens the Project settings drawer on its
+  environment variables tab.
+- **Project settings** opens the same drawer on **General**.
 
-Each repo card can surface:
+The drawer has these tabs.
 
-- preview state such as live, starting, unreachable, idle, or error
-- the current working branch when a sandbox exists
-- effective sandbox timeout and preview port hints
-- assigned agents and cron schedules
-- quick actions for **Open workspace**, **Start Preview**, **Stop Preview**,
-  **Assign Agent**, **Create Cron**, **Settings**, **Favorite**, and **Hide**
+### Environment variables
 
-If you need a cross-repo list of running or pending sandboxes, use
-[Sandboxes](/web/sandboxes).
+A key/value table for the repo's sandbox variables. Values are masked; use the
+eye button to show one. **Paste .env** imports `KEY=value` lines: existing keys
+take the pasted value and new keys are added. **Variable scope** applies to
+every variable in the repo:
 
-After a workspace opens in Control, use [Worktrees](/web/worktrees) only for
-planned coding tasks that need isolated checkouts. Preview and command requests
-use the selected Sandbox without a Worktree.
+- **Sandbox only**: the sandbox gets exactly the variables in the table.
+- **Sandbox + preview conventions**: the sandbox also gets Vercel-style
+  preview defaults such as `VERCEL_ENV=preview` and `NEXT_PUBLIC_APP_URL` set
+  to the preview URL. A variable in the table always wins over a default.
 
-## Repo settings you can control
-
-The repo settings dialog has three tabs.
+Unsaved edits stay in the drawer while you switch tabs. Select **Save
+variables** to store them.
 
 ### General
 
-General settings are where you control the runtime shape for that repo:
+The runtime shape for the repo: runtime, sandbox billing, root directory for
+monorepos or sub-projects, install command, dev command, and dev port.
 
-- managed sandbox access state for hosted workspace launches
-- repo-linked Vercel team and Vercel project
-- env mapping mode: sandbox only, sandbox + preview conventions, or sync from a
-  linked Vercel project
-- root directory for monorepos or sub-projects
-- install command, dev command, and dev port
-- sandbox timeout override
-- manual environment variables in `.env`-style `KEY=value` format
+### GitHub Secrets, Skills, Rules, Models, Snapshot
 
-### GitHub Secrets
+- **GitHub Secrets**: GitHub secret configuration managed alongside the repo.
+- **Skills** and **Rules**: repo-level skills and rules for agent runs.
+- **Models**: repo-specific exclusions from the globally enabled model set.
+- **Snapshot**: the snapshot state Mogplex uses for sandbox work.
 
-Use this tab when the repo needs GitHub secret configuration managed alongside
-its Mogplex setup.
+## Repository settings
 
-### Snapshot
+**Settings → Repositories** holds the account-wide repo controls:
 
-Use this tab to inspect the repo snapshot state Mogplex is using for sandbox
-work.
+- **Sync GitHub** to pull in newly accessible repositories
+- search and filter connected repositories by owner
+- remove a repository from Mogplex lists, or remove all repositories from one
+  owner
+- **Show removed** to restore a repository you removed earlier
+- a link to [Sandboxes](/web/sandboxes) for cross-repo sandbox management
+
+Removing a repository hides it; it does not touch the GitHub repo, and you can
+restore it at any time.
 
 ## A practical first workflow
 
 1. Connect GitHub in [Settings](/web/settings).
 2. Confirm the right user or org has Mogplex GitHub App coverage in
    [Installations](/web/installations).
-3. Sync repos and find the target repo in Projects.
-4. Open repo settings if you need to set a root directory, dev command, preview
-   port, or optional Vercel metadata before boot.
-5. Open the workspace. If no sandbox is running yet, Mogplex can launch it as
-   part of that action.
-6. From the repo card, choose the next layer:
-   - stay in the live workspace for interactive work
-   - create a repo-bound [Assignment](/web/assignments)
-   - add a [Trigger](/web/triggers) when routing should be installation-wide
-   - move to [Automations](/web/automations) for multi-step flows
+3. Open **Settings → Repositories** and select **Sync GitHub** if the repo is
+   new.
+4. In Command Center, pick the repo in the project picker.
+5. Open **Project settings** from the project's **⋯** menu if you need to set
+   environment variables, a root directory, dev command, or dev port before
+   boot.
+6. Start the mission. If no sandbox is running yet, Mogplex launches it.
 
-## Monorepos and sub-projects
+## Monorepos
 
-Projects has explicit support for monorepos.
-
-If a repo has multiple app or package entrypoints, use the monorepo browser to
-scan detected workspaces and add sub-project repos for specific
-`root_directory` paths. That keeps preview commands, env mapping, and sandbox
-settings aligned to the actual app you want to run.
-
-If automatic detection misses the right target, set `root_directory` manually
-in repo settings.
+If a repo has multiple app or package entrypoints, Mogplex picks a web app
+workspace automatically when it can. If it picks the wrong one, set the root
+directory in the **General** tab so preview commands and sandbox settings
+match the app you want to run.
 
 ## Sandbox management
 
-Projects is where sandbox launch usually starts, but it is not the only sandbox
-surface.
-
 Use [Sandboxes](/web/sandboxes) when you need a cross-repo operational view
 of running or pending previews, or when you want manual override on a specific
-sandbox instead of going through the repo card.
+sandbox.
 
 Use [Control Execution Environments](/guides/control-execution-environments)
 when you need to choose between Sandbox compute and a task Worktree.
@@ -130,20 +110,20 @@ when you need to choose between Sandbox compute and a task Worktree.
 - **Repo is visible but trigger-backed features do not work**:
   GitHub OAuth is connected, but the correct GitHub App installation is
   missing.
-- **Open workspace feels slow the first time**:
+- **The first mission on a repo feels slow**:
   the repo probably needs its sandbox created or installed first.
 - **Sandbox launch says access is unavailable**:
   the account plan may not include managed sandbox access yet.
 - **Preview opens the wrong app in a monorepo**:
-  create a sub-project repo or set `root_directory`, `dev_command`, and
-  `dev_port` explicitly.
+  set the root directory, dev command, and dev port in the **General** tab.
 - **Creating a new repository fails**:
   an organization owner must accept the GitHub App's Repository creation
   permission. A personal account needs the App installed and **Authorize
   GitHub** once. See
   [Repository creation](/integrations/github#repository-creation).
-- **A repo disappeared from the main list**:
-  it may be hidden. Toggle removed repos back on from the Projects controls.
+- **A repo disappeared from the project picker**:
+  it may be removed. Restore it from **Settings → Repositories → Show
+  removed**.
 
 ## Related surfaces
 
