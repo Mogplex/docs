@@ -58,23 +58,24 @@ These are account signals, not repo signals.
 
 ### Repo-level coverage state
 
-Each repo effectively falls into one of these buckets:
+Mogplex tracks each repo's coverage as one of these states:
 
-| Repo label | Meaning |
+| State | Meaning |
 | --- | --- |
-| `Trigger-ready` | The repo has a `github_installation_id` and can participate in App-backed routing |
-| `Synced only` | The repo is in Projects, but has no App coverage and no installation is linked to you |
-| `Not covered` | An installation is linked to you, but none of your linked installations covers this repo |
+| `Trigger-ready` | The repo has a `github_installation_id`, from an installation linked to you or from the teammate who shared the repo to your team, and can participate in App-backed routing |
+| `Synced only` | The repo has no installation id, and no installation is linked to you |
+| `Not covered` | An installation is linked to you, but the repo has no installation id |
 
-With a GitHub App, once an installation is linked to you, the Projects list
-shows only repos covered by a linked installation, so listed repos are
-`Trigger-ready`. Repos that no linked installation covers are hidden from the
-list. You see them as `Not covered` only when you open one directly or show
-hidden repos. To fix it, add the repo to the installation on GitHub, or install
-the App on the account that owns it.
+Projects does not show these labels. It uses them to decide what to list. Once
+an installation is linked to you, Projects lists only repos that have an
+installation id, whether it comes from your own installation or from the
+teammate who shared the repo. Repos without one stay out of the list, unless
+none of your repos has one. If a repo you expect is missing, add it to the
+installation on GitHub, or install the App on the account that owns it.
 
-`Synced only` appears in a self-hosted deployment without a GitHub App, or for
-older repo rows while no installation is linked to you.
+While no installation is linked to you, Projects lists every repo you can use,
+including `Synced only` repos. That is the normal state in a self-hosted
+deployment without a GitHub App.
 
 This is the state that matters when the question is "will this route wake up?"
 
@@ -134,8 +135,9 @@ If the question is about routing, coverage is the thing that matters.
 
 1. Check [Settings](/web/settings) and read the current GitHub status label
 2. Confirm the expected owner or org appears in [Installations](/web/installations)
-3. Check whether the repo is actually `Trigger-ready` in
-   [Projects](/web/spaces)
+3. Check that the repo is listed in [Projects](/web/spaces), then use
+   [Repo-level coverage state](#repo-level-coverage-state) to read what the
+   list tells you
 4. If the App install recently changed, reopen **Settings → Account** so
    discovery runs, or rerun repo sync
 5. Retry the exact GitHub event you expect, then confirm it in
