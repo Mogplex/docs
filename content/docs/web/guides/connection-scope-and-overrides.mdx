@@ -59,11 +59,12 @@ this sequence:
 
 That resolved set is what the active repo can actually use.
 
-This matters most for MCP servers. The MCP limit is enforced against the
-**resolved runnable set for that repo**, not just the raw account-wide list.
+This matters most for MCP servers. Mogplex does not limit how many you
+connect, but every server in the **resolved runnable set for that repo** adds
+tools the agent must choose from.
 
 So if one repo is already dense with project MCPs, excluding a noisy global MCP
-can be the difference between a clean tool surface and an overstuffed one.
+keeps that repo's tool surface small.
 
 ## Choose Global vs Project on purpose
 
