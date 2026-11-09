@@ -143,8 +143,8 @@ connection is tested, listed for CLI sync, or used by a run.
 
 ### Sign in to an MCP server through the browser
 
-Choose **OAuth (browser sign-in)** when you add an MCP server that signs users
-in with OAuth. Enter only the server's MCP URL. After you select **Add and sign
+In the **Integrations** tab, choose **OAuth (browser sign-in)** in the custom
+connection form when you add an MCP server that signs users in with OAuth. Enter only the server's MCP URL. After you select **Add and sign
 in**, Mogplex sends you to the server's sign-in page and returns you to
 Connections when you approve access.
 
@@ -302,8 +302,9 @@ for the full operating model.
 Mogplex does not limit how many MCP servers you connect. Each enabled server
 that a run's surface loads adds tools that the agent must choose from. See
 [Where connection tools load](#where-connection-tools-load) for which surfaces
-load which servers. If a repo loads tools that it does
-not need:
+load which servers. Remote servers also share Control's startup deadline, and a
+server that misses it is left out of that turn. If a repo loads tools that it
+does not need:
 
 - disable a connection
 - exclude a global MCP from that repo
@@ -332,8 +333,11 @@ On startup, the CLI can use the remote list, the cache, or no cloud MCP list if
 there is no token and no cache. A network or auth failure can fall back to the
 cache so existing local work is not blocked by a transient catalog fetch issue.
 
-The catalog includes OAuth connections that you signed in to on the web.
-Mogplex refreshes their tokens, so the CLI does not need its own sign-in.
+The same response also carries your enabled MCP connections from the
+**Integrations** tab, as MCP config. If a saved server and a connection share a
+name, the saved server wins. A connection that you signed in to through the
+browser arrives with a current access token. Mogplex refreshes that token, so
+the CLI does not need its own sign-in.
 
 Use `/mcp` in the CLI to inspect MCP state during a session.
 
