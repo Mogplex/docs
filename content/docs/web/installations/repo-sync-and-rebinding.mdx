@@ -93,14 +93,16 @@ The important webhook-backed update paths are:
   and suspend
 - `installation_repositories` events when repos are added to or removed from an
   installation
-
-Only `installation` events for `created`, `new_permissions_accepted`, and
-`unsuspend`, and `installation_repositories` events for `added`, link an
-installation. A repository admin who adds one repo to an installation is not
-linked to it. See
-[How an installation gets linked](/web/installations#how-an-installation-gets-linked).
 - `repository` events such as create, rename, transfer, visibility changes, and
   delete
+
+Some of these events also link an installation: `installation` events for
+`created`, `new_permissions_accepted`, and `unsuspend`, and
+`installation_repositories` events for `added`. Each one links the installation
+to the Mogplex user who made the change, if that user owns the account. A
+repository admin who adds one repo to an org installation does not own the org,
+so that event does not link the installation. See
+[How an installation gets linked](/web/installations#how-an-installation-gets-linked).
 
 ## Rebinding stale trigger and automation state
 

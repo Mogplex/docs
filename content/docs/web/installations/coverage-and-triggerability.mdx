@@ -64,14 +64,13 @@ Each repo effectively falls into one of these buckets:
 | --- | --- |
 | `Trigger-ready` | The repo has a `github_installation_id` and can participate in App-backed routing |
 | `Synced only` | The repo is in Projects, but has no App coverage |
-| `Not covered` | The App is installed somewhere for the user, but not for this repo's owner or scope |
+| `Not covered` | An installation is linked to you, but none of your linked installations covers this repo |
 
 With a GitHub App, once an installation is linked to you, Mogplex lists only
 repos covered by a linked installation, so listed repos are `Trigger-ready`.
 `Synced only` appears in a self-hosted deployment without a GitHub App, or for
-older repo rows while no installation is linked to you. `Not covered` marks an
-older repo row whose owner has no installation linked to you; Mogplex hides
-those rows from the repo list.
+older repo rows while no installation is linked to you. With a GitHub App,
+Mogplex hides `Not covered` rows from the repo list.
 
 This is the state that matters when the question is "will this route wake up?"
 
@@ -115,8 +114,8 @@ When coverage is missing or wrong, users usually see one of these:
 - Automations cannot find the installation they expect
 - an org you belong to is missing from Settings
 - Settings says GitHub is connected, but the status is still `OAuth only`
-- Settings shows an App installation, but the repo you care about is still
-  `Synced only` or `Not covered`
+- Settings shows an App installation, but the repo you care about is missing
+  from Projects
 
 ## Mental model
 
