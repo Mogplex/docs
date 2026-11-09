@@ -27,15 +27,16 @@ where you are an org owner. See
 [Who can link an installation](/web/installations#who-can-link-an-installation).
 
 That distinction matters because Mogplex treats these setup states
-differently:
+differently. The state names match the GitHub status shown in **Settings →
+Account**:
 
 | State | What it unlocks | What it does not unlock yet |
 | --- | --- | --- |
-| Disconnected | Nothing GitHub-backed | Repo import, repo creation, trigger routing |
-| OAuth only | Account identity and team-shared repositories | Your own repo import, repo creation, webhook-backed routing |
-| App install pending | Account identity and team-shared repositories | Trigger-ready coverage until the installation is linked to you |
-| App installed, no synced repos yet | Installation coverage exists | Repos will not show up in Projects until they are synced or imported |
-| App installed with synced repos | Full GitHub-backed setup | N/A |
+| `Not connected` | Nothing GitHub-backed | Repo import, repo creation, trigger routing |
+| `OAuth only` | Account identity and team-shared repositories | Your own repo import, repo creation, webhook-backed routing |
+| `Install pending` | Account identity and team-shared repositories | Trigger-ready coverage until the installation is linked to you |
+| `App installed` | Installation coverage exists, but no covered repos are synced yet | Repos will not show up in Projects until they are synced or imported |
+| `Ready` | Full GitHub-backed setup | N/A |
 
 In a self-hosted deployment without a GitHub App, `OAuth only` still lists and
 imports repos through OAuth. Those repos cannot start App-backed work.
