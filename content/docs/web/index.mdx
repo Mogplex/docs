@@ -146,9 +146,10 @@ For the full redirect map, use [Legacy Routes](/web/guides/legacy-routes).
 - **Why is Triggers empty?** Usually because GitHub is connected but no Mogplex
   GitHub App installation is linked to you for the owner that holds the repo.
   Check [Installations](/web/installations).
-- **Why can I see repos but not launch the kind of work I want?** Repo sync and
-  webhook coverage are separate concerns. Projects can show synced repos before
-  they are fully triggerable.
+- **Why is a repo missing from Projects, or why do Triggers not fire for it?**
+  The repo owner's installation is not linked to you, or the repo is not shared
+  to your Mogplex team. If the repo is listed but a route does not fire, check
+  that the route is bound to the installation that owns the event.
 - **Where do I set up models and external tools?** Use
   [Settings](/web/settings) for account access,
   [Connections](/configure-and-extend/connections-and-mcp) for external services, and

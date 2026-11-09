@@ -135,10 +135,10 @@ Once the repo is imported, choose the lightest surface that matches the job:
 - Use [Automations](/web/automations) when you need branching, multiple steps,
   or publish control
 
-For webhook-backed routing, make sure the repo is App-covered, not just synced.
-
-That is the most common setup miss when a repo looks available in Projects but
-still will not wake Triggers or Automations.
+For webhook-backed routing, confirm the route is bound to the installation or
+repo that owns the event. A repo can be covered while the route points at a
+different installation, or at a stale installation id. See
+[Repo Sync and Rebinding](/web/installations/repo-sync-and-rebinding).
 
 ## 8. Watch it in Observability
 
