@@ -56,8 +56,10 @@ GitHub access.
 Once an installation is linked to you, the repo inventory includes only repos
 the linked installations currently grant. Repos left over from an earlier OAuth
 sync, or transferred out of an installation, are excluded. Their stored
-workspaces, drafts, and history are kept. An installation with no repos never
-brings back the old OAuth-only rows.
+workspaces, drafts, and history are kept. The Projects list has one fallback:
+while none of your repos has an installation id, for example before the first
+sync after an install, it shows all your repos, including old OAuth-only rows,
+so the list is not empty.
 
 Team inventory works the same way. Each team-shared repo is checked against the
 installation of the teammate who shared it. Team members use those repos
