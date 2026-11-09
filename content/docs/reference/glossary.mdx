@@ -85,9 +85,10 @@ Read next: [Custom Slash Commands](/configure-and-extend/custom-slash-commands).
 The state that lets Mogplex receive webhook-backed GitHub events for a user or
 organization.
 
-OAuth visibility can make repos visible in the app, but GitHub App coverage is
-what makes hosted routing healthy for Triggers and Automations. If a repo is
-visible but events do not start work, check App coverage first.
+GitHub sign-in identifies you but grants no repository access. GitHub App
+coverage, from an installation linked to you, is what gives Mogplex repo access
+and makes hosted routing healthy for Triggers and Automations. If a repo is
+missing or events do not start work, check App coverage first.
 
 Read next: [GitHub App Coverage](/web/guides/github-app-coverage).
 
@@ -153,11 +154,12 @@ Read next: [Projects](/web/spaces).
 
 ## Repo visibility
 
-Whether Mogplex can see a repo through account sync.
+Whether a repo appears in Projects for you.
 
-Visibility is not the same as triggerability. A repo can be visible through
-OAuth but still unable to start hosted GitHub-event work until the owning user
-or organization has GitHub App coverage.
+Visibility is not the same as triggerability. With a GitHub App, Mogplex lists
+repos from installations linked to you and repos shared to your team. Only a
+self-hosted deployment without a GitHub App lists repos through GitHub OAuth,
+and those repos cannot start hosted GitHub-event work.
 
 Read next: [GitHub](/integrations/github).
 
@@ -222,11 +224,11 @@ Read next: [Triggers](/web/triggers).
 
 ## Triggerability
 
-Whether a visible repo can actually start hosted GitHub-event work.
+Whether a repo can actually start hosted GitHub-event work.
 
-Triggerability requires the right GitHub App coverage. If a repo appears in
-Projects but Triggers or Automations do not fire, debug triggerability before
-changing the agent.
+Triggerability requires the right GitHub App coverage and a route bound to the
+installation that owns the event. If Triggers or Automations do not fire for a
+repo, debug triggerability before changing the agent.
 
 Read next: [Coverage and Triggerability](/web/installations/coverage-and-triggerability).
 

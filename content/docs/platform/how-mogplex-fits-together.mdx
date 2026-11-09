@@ -27,7 +27,7 @@ Each object answers a different question.
 | Object | Owns | Start here when |
 | --- | --- | --- |
 | Account state | Identity, managed model and sandbox access, CLI tokens, model defaults, Slack installs, connections, MCP definitions | sign-in, model, billing, token, Slack, or connection state looks wrong |
-| GitHub installation | App-backed coverage for one GitHub user or org | repos are visible but GitHub events do not trigger work |
+| GitHub installation | App-backed coverage for one GitHub user or org | repos are missing or GitHub events do not trigger work |
 | Repo | Imported repository state and repo-specific settings | the target repo is missing, duplicated, hidden, or needs runtime settings |
 | Agent | Reusable behavior, slug, prompt, model, skills, rules, and context | the worker itself behaves wrong or a mention slug does not resolve |
 | Route | The rule that decides what wakes work | the wrong event, repo, or workflow starts work |
@@ -60,13 +60,16 @@ Each object answers a different question.
 
 ### Visibility vs triggerability
 
-Repo visibility means Mogplex can see a repo through account sync.
+Repo visibility means Mogplex lists a repo. With a GitHub App, Mogplex lists
+repos from installations linked to you and repos shared to your team.
 
-Triggerability means the owning GitHub user or org has App-backed coverage, so
-GitHub webhook events can start hosted work.
+Triggerability means the owning GitHub user or org has App-backed coverage, and
+a route is bound to that installation or repo, so GitHub webhook events can
+start hosted work.
 
-A repo can be visible without being triggerable. When that happens, fix
-[GitHub App coverage](/web/guides/github-app-coverage) before editing routes.
+If a repo is missing, fix [GitHub App coverage](/web/guides/github-app-coverage).
+If a listed repo does not trigger, check the route's installation binding
+before editing the agent.
 
 ### Agent definition vs route binding
 

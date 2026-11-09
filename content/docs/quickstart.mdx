@@ -22,9 +22,11 @@ needs before it can do useful work:
 - Slack workspace and channel links if work should start from Slack
 - shared connections and MCP definitions, if the repo needs external tools
 
-If a repo is visible through OAuth but not covered by the GitHub App, hosted
-routing will still fail later. Use [Installations](/web/installations) to
-confirm coverage before debugging triggers or automations. The
+GitHub sign-in alone does not give Mogplex repository access. The repo owner's
+GitHub App installation must be linked to you: install the App on your personal
+account, or on an org where you are an org owner. Use
+[Installations](/web/installations) to confirm coverage before debugging
+triggers or automations. The
 [GitHub integration guide](/integrations/github) explains the full setup model.
 
 ## 2. Open the repo

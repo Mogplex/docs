@@ -1,31 +1,30 @@
 ---
 title: Coverage and Triggerability
-description: Learn why GitHub OAuth is not the same as GitHub App coverage, how Mogplex labels connection state, and what makes a repo actually trigger-ready.
+description: Learn why GitHub sign-in is not the same as GitHub App coverage, how Mogplex labels connection state, and what makes a repo actually trigger-ready.
 ---
 
 Most setup confusion in Mogplex comes from mixing up three different states:
 
 - GitHub account connected
-- repo visible in Mogplex
+- installation linked to you
 - repo triggerable for webhook-backed work
 
 Those are related, but they are not the same thing.
 
-## OAuth is not enough
+## Sign-in is not enough
 
-GitHub OAuth can be enough to connect an account and discover repositories.
+The GitHub connection (GitHub OAuth) identifies your GitHub account and reads
+your org memberships. It does not give Mogplex access to repositories.
+Signing in to Mogplex with GitHub is a separate step that only identifies you.
 
-But webhook-backed routing depends on GitHub App coverage.
+Repository access and webhook-backed routing both come from a GitHub App
+installation linked to you. Until one is linked, you can use only repositories
+shared to your Mogplex team. See
+[Who can link an installation](/web/installations#who-can-link-an-installation).
 
-That means a repo can still:
-
-- appear in [Projects](/web/spaces)
-- belong to the right user
-- even be synced already
-
-and still not be eligible for [Triggers](/web/triggers) or
-[Automations](/web/automations) if the GitHub App is not installed for the
-owner that controls that repo.
+Self-hosted deployments without a GitHub App are the exception: there, GitHub
+OAuth lists and imports repositories, but webhook-backed routing is not
+available.
 
 ## What "triggerable" actually means
 
@@ -51,8 +50,8 @@ The account connection can show up in states like:
 
 | State | Meaning |
 | --- | --- |
-| `OAuth only` | GitHub is connected, but routing still needs App coverage |
-| `Install pending` | The App install was started, but GitHub still needs to finish it |
+| `OAuth only` | The GitHub connection exists, but no installation is linked to you. With a GitHub App, you have no repository access of your own yet. In a self-hosted deployment without a GitHub App, this is the normal connected state: repos are listed and imported through OAuth, but none of them can start hosted GitHub-event work. |
+| `Install pending` | The App install was started, but no installation is linked to you yet. If it stays here after you finish on GitHub, see [An org you belong to does not appear](/web/installations#an-org-you-belong-to-does-not-appear). |
 | `App installed` | Coverage exists, but no covered repos are synced into Projects yet |
 | `Ready` | App coverage is active and covered repos are already synced |
 
@@ -60,13 +59,26 @@ These are account signals, not repo signals.
 
 ### Repo-level coverage state
 
-Each repo effectively falls into one of these buckets:
+Mogplex tracks each repo's coverage as one of these states:
 
-| Repo label | Meaning |
+| State | Meaning |
 | --- | --- |
-| `Trigger-ready` | The repo has a `github_installation_id` and can participate in App-backed routing |
-| `Synced only` | The repo is visible in Projects, but has no App coverage yet |
-| `Not covered` | The App is installed somewhere for the user, but not for this repo's owner or scope |
+| `Trigger-ready` | The repo has a `github_installation_id`, from an installation linked to you or from the teammate who shared the repo to your team, and can participate in App-backed routing |
+| `Synced only` | The repo has no installation id, and no installation is linked to you |
+| `Not covered` | An installation is linked to you, but the repo has no installation id |
+
+Projects does not show these labels. It uses them to decide what to list. Once
+an installation is linked to you, Projects lists only repos that have an
+installation id, whether it comes from your own installation or from the
+teammate who shared the repo. Repos without one stay out of the list.
+If none of your repos has an installation id yet, for example before the first
+sync after an install, Projects shows all your repos so the list is not empty.
+If a repo you expect is missing, add it to the
+installation on GitHub, or install the App on the account that owns it.
+
+While no installation is linked to you, Projects lists every repo you can use,
+including `Synced only` repos. That is the normal state in a self-hosted
+deployment without a GitHub App.
 
 This is the state that matters when the question is "will this route wake up?"
 
@@ -88,13 +100,16 @@ Each installation surfaces:
 If installation metadata is incomplete, Mogplex will try to refresh it from
 GitHub before presenting the final view.
 
-## Reconciliation can fill in missing installation state
+## Discovery can fill in missing installation state
 
-Mogplex does not only rely on the user manually refreshing setup pages.
+Mogplex does not only rely on the install callback.
 
-If the app has GitHub App config and knows your GitHub username, the hosted
-surfaces can attempt to reconcile installation state when the current install
-list is still empty.
+Each time you open **Settings → Account**, Mogplex looks for installations on
+your own account and on your GitHub orgs, and links the ones you own. Orgs that
+restrict third-party OAuth apps are not visible to discovery. A GitHub webhook
+can also link an installation when you install the App or, as the account or
+org owner, add repositories to it. See
+[How an installation gets linked](/web/installations#how-an-installation-gets-linked).
 
 That is why these pages can sometimes "heal" after an install finishes in
 GitHub even if you did not manually resync every step yourself.
@@ -105,16 +120,16 @@ When coverage is missing or wrong, users usually see one of these:
 
 - Triggers is empty
 - Automations cannot find the installation they expect
-- a repo shows up in Projects but cannot participate in webhook routing
+- an org you belong to is missing from Settings
 - Settings says GitHub is connected, but the status is still `OAuth only`
-- Settings shows an App installation, but the repo you care about is still
-  `Synced only` or `Not covered`
+- Settings shows an App installation, but the repo you care about is missing
+  from Projects
 
 ## Mental model
 
 Use this rule:
 
-- OAuth answers "who are you?"
+- GitHub sign-in answers "who are you?"
 - installation coverage answers "which owners and repos can Mogplex automate?"
 
 If the question is about routing, coverage is the thing that matters.
@@ -122,10 +137,12 @@ If the question is about routing, coverage is the thing that matters.
 ## Good troubleshooting order
 
 1. Check [Settings](/web/settings) and read the current GitHub status label
-2. Confirm the expected owner or org appears in [Installations](/web/installations)
-3. Check whether the repo is actually `Trigger-ready`, not just visible in
-   [Projects](/web/spaces)
-4. If the App install recently changed, let Mogplex reconcile or rerun repo
-   sync
+2. Confirm the expected owner or org appears under **Settings → Account** (see
+   [Installations](/web/installations))
+3. Check that the repo is listed in [Projects](/web/spaces), then use
+   [Repo-level coverage state](#repo-level-coverage-state) to read what the
+   list tells you
+4. If the App install recently changed, reopen **Settings → Account** so
+   discovery runs, or rerun repo sync
 5. Retry the exact GitHub event you expect, then confirm it in
    [Observability](/web/observability)

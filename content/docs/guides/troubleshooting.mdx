@@ -13,8 +13,8 @@ work started.
 
 | Symptom | Most likely layer |
 | --- | --- |
-| Repo is missing or stale | account sync or Projects |
-| Repo is visible but GitHub events do not fire | GitHub App coverage |
+| Repo is missing or stale | installation not linked to you, repo not shared to your team, or repo sync |
+| GitHub events do not fire for a repo | linked installation or route binding |
 | Mention does not route | agent slug, default mention route, or route enabled state |
 | Slack mention replies but does not start repo work | Slack channel link, user mapping, repo-agent enabled state, or workspace limits |
 | Route exists but no run appears | route source, coverage, enabled state, or published automation |
@@ -41,12 +41,15 @@ work started.
 9. Check [Worktrees](/web/worktrees) when a planned coding task uses an
    isolated checkout.
 
-## Repo is visible but events do not fire
+## GitHub events do not fire
 
-Visibility and triggerability are different.
+Events start work only for repos covered by an installation linked to you, and
+only through a route bound to that installation or repo.
 
 1. Open [Installations](/web/installations).
-2. Confirm the repo owner is covered by the Mogplex GitHub App.
+2. Confirm the repo owner's Mogplex GitHub App installation is linked to you.
+   If an org you belong to is missing, see
+   [An org you belong to does not appear](/web/installations#an-org-you-belong-to-does-not-appear).
 3. Confirm the route is on the same installation or repo that owns the event.
 4. Confirm the route is enabled, or the automation is published.
 5. If work starts, continue into [Observability](/web/observability).

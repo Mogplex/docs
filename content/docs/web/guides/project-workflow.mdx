@@ -18,9 +18,13 @@ If you do those in the right order, setup gets much easier to reason about.
 
 Start in [Settings](/web/settings) and connect GitHub.
 
-That establishes your account identity and is enough to start importing repos.
+That establishes your account identity. It does not give Mogplex access to
+repos.
 
-It is **not** the same thing as GitHub App coverage.
+It is **not** the same thing as GitHub App coverage. Repo access comes from a
+GitHub App installation linked to you: on your personal account, or on an org
+where you are an org owner. See
+[Who can link an installation](/web/installations#who-can-link-an-installation).
 
 That distinction matters because Mogplex treats these setup states
 differently:
@@ -28,15 +32,19 @@ differently:
 | State | What it unlocks | What it does not unlock yet |
 | --- | --- | --- |
 | Disconnected | Nothing GitHub-backed | Repo import, repo creation, trigger routing |
-| OAuth connected | Repo import and repo creation | Webhook-backed routing |
-| App install pending | Repo import can still work if OAuth is already connected | Trigger-ready coverage until the install completes |
+| OAuth only | Account identity and team-shared repositories | Your own repo import, repo creation, webhook-backed routing |
+| App install pending | Account identity and team-shared repositories | Trigger-ready coverage until the installation is linked to you |
 | App installed, no synced repos yet | Installation coverage exists | Repos will not show up in Projects until they are synced or imported |
 | App installed with synced repos | Full GitHub-backed setup | N/A |
 
+In a self-hosted deployment without a GitHub App, `OAuth only` still lists and
+imports repos through OAuth. Those repos cannot start App-backed work.
+
 If you only remember one rule, use this one:
 
-- GitHub connection lets Mogplex see repos
-- GitHub App coverage lets Mogplex route webhook-backed work into them
+- GitHub sign-in tells Mogplex who you are
+- a linked GitHub App installation lets Mogplex use repos and route
+  webhook-backed work into them
 
 ## 2. Confirm App coverage
 
@@ -75,17 +83,18 @@ From [Projects](/web/spaces), you can:
 
 - import repos into the default imported project
 - create additional projects to group repos
-- create a new GitHub repo inside a project when GitHub is already connected
+- create a new GitHub repo inside a project when the owner's installation is
+  linked to you
 - add sub-project repos for monorepo targets
 - configure repo-specific settings such as sandbox behavior, env sync, and
   linked Vercel project state
 
 Two practical nuances matter here:
 
-- If GitHub is connected through OAuth, you can still import repos before the
-  App install is finished.
-- Once installation-backed sync is active, covered repos become the preferred
-  source of truth in Projects, which helps avoid stale OAuth-only duplicates.
+- Repo import needs a linked installation. GitHub sign-in alone does not
+  import repos.
+- Once installation-backed sync is active, Projects lists only repos covered by
+  a linked installation, which hides stale `Synced only` rows.
 
 ## 5. Confirm managed sandbox access if you plan to launch workspaces
 
@@ -129,10 +138,10 @@ Once the repo is imported, choose the lightest surface that matches the job:
 - Use [Automations](/web/automations) when you need branching, multiple steps,
   or publish control
 
-For webhook-backed routing, make sure the repo is App-covered, not just synced.
-
-That is the most common setup miss when a repo looks available in Projects but
-still will not wake Triggers or Automations.
+For webhook-backed routing, confirm the route is bound to the installation or
+repo that owns the event. A repo can be covered while the route points at a
+different installation, or at a stale installation id. See
+[Repo Sync and Rebinding](/web/installations/repo-sync-and-rebinding).
 
 ## 8. Watch it in Observability
 

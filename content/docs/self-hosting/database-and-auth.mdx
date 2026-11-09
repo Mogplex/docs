@@ -97,8 +97,11 @@ ID and secret are set.
 | Microsoft | `AUTH_MICROSOFT_CLIENT_ID`, `AUTH_MICROSOFT_CLIENT_SECRET`, `AUTH_MICROSOFT_TENANT_ID` (default `common`) | `https://<domain>/api/auth/callback/microsoft` |
 | Email and password | Resend (below) | None |
 
-GitHub sign-in is identity only. Repository access comes from a separate GitHub
-OAuth app and your [GitHub App](/self-hosting/github-app).
+GitHub sign-in is identity only. Org membership, which Mogplex uses to find and
+link installations, comes from the GitHub connection through the separate
+GitHub OAuth app (`GITHUB_CLIENT_*`). Repository access comes from your
+[GitHub App](/self-hosting/github-app) installations. A deployment without a
+GitHub App lists repositories through a separate GitHub OAuth app instead.
 
 ## Email
 

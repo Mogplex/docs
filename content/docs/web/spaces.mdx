@@ -107,9 +107,9 @@ when you need to choose between Sandbox compute and a task Worktree.
 
 ## Failure modes that matter
 
-- **Repo is visible but trigger-backed features do not work**:
-  GitHub OAuth is connected, but the correct GitHub App installation is
-  missing.
+- **A repo is missing, or trigger-backed features do not work**:
+  the repo owner's GitHub App installation is not linked to you. See
+  [Installations](/web/installations).
 - **The first mission on a repo feels slow**:
   the repo probably needs its sandbox created or installed first.
 - **Sandbox launch says access is unavailable**:
@@ -117,9 +117,10 @@ when you need to choose between Sandbox compute and a task Worktree.
 - **Preview opens the wrong app in a monorepo**:
   set the root directory, dev command, and dev port in the **General** tab.
 - **Creating a new repository fails**:
-  an organization owner must accept the GitHub App's Repository creation
-  permission. A personal account needs the App installed and **Authorize
-  GitHub** once. See
+  in an organization, you must be an org owner with the org's installation
+  linked to you, and an org owner must accept the GitHub App's Repository
+  creation permission. A personal account needs the App installed and
+  **Authorize GitHub** once. See
   [Repository creation](/integrations/github#repository-creation).
 - **A repo disappeared from the project picker**:
   it may be removed. Restore it from **Settings → Repositories → Show

@@ -62,14 +62,20 @@ Current trigger events are:
 
 Triggers only work for repos covered by an installed GitHub App.
 
-GitHub OAuth on its own is not enough. If the page is empty, or the creation
+GitHub sign-in on its own is not enough. If the page is empty, or the creation
 form says no installations are available, check
 [Installations](/web/installations) and confirm the correct user or org has the
-Mogplex GitHub App installed.
+Mogplex GitHub App installed and the installation is linked to you.
+
+A trigger belongs to an installation linked to the person who creates it.
+Org members who are not org owners cannot link the org installation, so they
+cannot create triggers for its repositories, even for repositories shared to
+their team. Ask an org owner who has linked the installation to create the
+trigger.
 
 The creation form searches installations by both account scope and synced repos,
-so this page is often the fastest way to notice that repos are synced but still
-not webhook-covered.
+so this page is often the fastest way to notice that a repo is in Projects but
+no linked installation covers it.
 
 ## How to create a good trigger
 
@@ -164,7 +170,7 @@ multiple steps, use [Automations](/web/automations).
 ## Common mistakes
 
 - writing `@mogplex triage` instead of `@mogplex/triage`
-- expecting OAuth-synced repos to appear before GitHub App coverage exists
+- expecting repos to appear before a GitHub App installation is linked to you
 - using Triggers when the logic really belongs to one repo and should be an
   [Assignment](/web/assignments)
 - assuming bare `@mogplex` will route anywhere without a default mention route

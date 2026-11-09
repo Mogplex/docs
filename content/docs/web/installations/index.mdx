@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: Understand GitHub App installations, how Mogplex maps repos to them, and why installation coverage is different from simple repo visibility.
+description: Understand GitHub App installations, who can link one to Mogplex, how linking happens, and how Mogplex maps repos to them.
 ---
 
 Installations are the GitHub App coverage layer behind Mogplex repo automation.
@@ -10,18 +10,17 @@ docs section describes the GitHub App installation state surfaced in
 [Settings](/web/settings) and consumed by [Projects](/web/spaces),
 [Triggers](/web/triggers), and [Automations](/web/automations).
 
-## The distinction to keep explicit
+## The GitHub connection and installations do different jobs
 
-For most setup problems, there are three states a repo can be in:
+- **The GitHub connection** (GitHub OAuth, made when you choose **Connect
+  GitHub** or **Install GitHub App**) identifies your GitHub account and reads
+  your org memberships. It never grants repository access when Mogplex uses a
+  GitHub App. Signing in to Mogplex with GitHub is a separate step that only identifies you.
+- **A linked GitHub App installation** gives you its repositories and sends the
+  webhooks that start work for the installed account or org.
 
-1. **not visible at all**
-2. **visible through GitHub OAuth**
-3. **covered by a Mogplex GitHub App installation**
-
-Only the third state is fully eligible for App-backed routing and automation.
-
-That is why Installations deserves its own docs section even though the product
-does not currently expose it as a standalone top-level dashboard page.
+You can use a repo only when it belongs to an installation linked to you, or
+when it is shared to your Mogplex team.
 
 ## Why installations matter
 
@@ -30,54 +29,102 @@ An installation answers two different questions:
 1. which account or org has granted the Mogplex GitHub App access
 2. which repos are therefore eligible for App-backed behavior
 
-That second point is the important one. A repo can be visible through OAuth and
-still not be triggerable.
+When the right installation is linked, Mogplex can:
 
-## OAuth vs installation coverage
-
-Keep this distinction explicit:
-
-- **GitHub OAuth** gives Mogplex an authenticated user identity and supports
-  repo discovery
-- **GitHub App installation** gives Mogplex webhook-backed coverage for the
-  installed account or org
-
-That is why a repo can appear in [Projects](/web/spaces) yet still fail to
-participate in [Triggers](/web/triggers) or installation-backed automations.
-
-## What “covered” unlocks in practice
-
-When the right installation exists, Mogplex can do more than just list repos.
-
-It can:
-
+- list and sync the installation's repos
 - receive webhook events for the installed owner
 - offer that installation as a routing target in [Triggers](/web/triggers)
-- treat repos under that owner as eligible for App-backed workflows
 - reconnect synced repos to the correct owner and installation metadata
+
+## Who can link an installation
+
+You can link an installation on:
+
+- your own personal GitHub account
+- an org where you are an active org owner
+
+Linking gives you the installation's whole repository set. That set can include
+repositories GitHub hides from ordinary org members, so org members who are not
+owners do not link the org installation. They use team-shared repositories:
+repositories that a teammate with the linked installation has shared to the
+Mogplex team. Joining a team does not add your teammates' personal repositories
+to it.
+
+Team members can work on a team-shared repository in Projects and agent runs.
+[Triggers](/web/triggers) and [Automations](/web/automations) are different:
+each one belongs to an installation linked to the person who creates it. To
+add a trigger or an automation for an org's repositories, ask an org owner who
+has linked the org installation to create it.
+
+## How an installation gets linked
+
+Mogplex links an installation to you in three ways:
+
+1. **Install callback.** When you install or configure the App, GitHub returns
+   you to Mogplex and Mogplex links the installation. This works whether you
+   started from **Settings → Account** or directly on GitHub.
+2. **Discovery.** Each time you open **Settings → Account**, Mogplex looks for
+   installations on your own account and on your GitHub orgs, and links the
+   ones you own. Orgs that restrict third-party OAuth apps are not visible to
+   discovery.
+3. **Webhook.** When you install the App, accept new permissions, unsuspend an
+   installation, or add repositories to it, GitHub sends a webhook. Mogplex
+   links the installation to the Mogplex user who made the change, if that user
+   owns the account. A repository admin who adds one repository is not linked.
+
+After the install callback, Mogplex shows a message that says whether the
+installation was linked, or why it was not.
+
+## An org you belong to does not appear
+
+If an org is missing from **Settings → Account**, its installation is not linked
+to you. Common causes:
+
+- the App is not installed on the org yet
+- you are a member of the org, not an org owner
+- the org restricts third-party OAuth apps, so discovery cannot see it
+
+To fix it, an org owner installs or configures the App:
+
+- from Mogplex: open **Settings → Account** and select **Install GitHub App**
+  or **Add org or personal install**, then pick the org on GitHub
+- on GitHub: open the org's **Settings → GitHub Apps → Mogplex →
+  Configure**, then select **Save**
+
+GitHub returns the owner to Mogplex, and the install callback links the
+installation. Mogplex checks ownership with the App's own installation token,
+so an org's third-party OAuth app restriction does not block this.
+
+If you are not an org owner, ask an owner to link the installation and share
+the repositories you need with your Mogplex team.
+
+## When an installation is removed
+
+If an installation is uninstalled, suspended, or loses access to a repository,
+your access to those repositories ends. Mogplex fails closed: it never falls
+back to an older GitHub OAuth grant to reach them. Your stored workspaces,
+drafts, and history are kept.
 
 ## What the app surfaces show
 
-Inside [Settings](/web/settings), each installation can show:
+**Settings → Account** shows each linked installation under **Installed
+scopes**:
 
 - the account or org name
 - whether the scope is personal or org
 - the synced repos Mogplex currently associates with that installation
 - how many repos are mapped to it
-- a direct manage link back to GitHub
+- a **Manage on GitHub** link
 
 This is the fastest way to answer the real operator question:
 
-**Do I have the right App installed on the right owner, or am I only seeing
-repos through OAuth?**
+**Is the App installed on the right owner, and is that installation linked to
+me?**
 
 ## How Mogplex keeps installation state fresh
 
-The installations API is a little self-healing.
-
-If Mogplex has GitHub App config and your GitHub username, but there are no
-stored installations yet, it can reconcile against GitHub again and hydrate the
-local installation records before returning the Settings view.
+Discovery runs each time you open **Settings → Account**, not only when you have
+no installations yet. Mogplex skips accounts that are already linked.
 
 It can also refresh incomplete installation metadata, such as missing account
 login or target type, and then derive:
@@ -90,21 +137,22 @@ without asking you to reconnect everything manually.
 
 ## The most reliable workflow
 
-1. Connect GitHub in [Settings](/web/settings).
-2. Confirm the expected personal account or org appears in the installation
-   list.
+1. In **Settings → Account**, select **Install GitHub App**, or **Add org or
+   personal install** if you already have an installation. Install the App on
+   your personal account or on an org you own.
+2. Confirm the expected personal account or org appears under **Installed
+   scopes**.
 3. Sync repos into [Projects](/web/spaces).
 4. Only after that, debug [Triggers](/web/triggers) or
    [Automations](/web/automations).
 
 If you skip step 2, you can spend time debugging a routing problem that is
-really just missing GitHub App coverage.
+really just an installation that is not linked to you.
 
 ## Common symptoms of missing coverage
 
-- the repo appears in [Projects](/web/spaces), but [Triggers](/web/triggers)
-  offers no useful installations
-- mention or PR-triggered work never fires even though the repo is visible
+- [Triggers](/web/triggers) offers no useful installations
+- mention or PR-triggered work never fires for a repo you expect
 - webhook-backed automation looks empty or unavailable for the owner you need
 - the app appears connected, but Mogplex still behaves as if the repo is
   “outside” the GitHub App boundary
@@ -112,7 +160,7 @@ really just missing GitHub App coverage.
 ## In this section
 
 - [Coverage and Triggerability](/web/installations/coverage-and-triggerability)
-  explains the “repo is visible but not triggerable” setup model
+  explains the connection status labels and what makes a repo trigger-ready
 - [Repo Sync and Rebinding](/web/installations/repo-sync-and-rebinding)
   explains how repos are attached to installations and how stale bindings get
   repaired
