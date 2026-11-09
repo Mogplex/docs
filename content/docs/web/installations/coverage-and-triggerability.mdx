@@ -50,7 +50,7 @@ The account connection can show up in states like:
 
 | State | Meaning |
 | --- | --- |
-| `OAuth only` | GitHub sign-in is connected, but no installation is linked to you. You have no repository access of your own yet. In a self-hosted deployment without a GitHub App, this is the normal connected state. |
+| `OAuth only` | The GitHub connection exists, but no installation is linked to you. With a GitHub App, you have no repository access of your own yet. In a self-hosted deployment without a GitHub App, this is the normal connected state: repos are listed and imported through OAuth, but none of them can start hosted GitHub-event work. |
 | `Install pending` | The App install was started, but no installation is linked to you yet. If it stays here after you finish on GitHub, see [An org you belong to does not appear](/web/installations#an-org-you-belong-to-does-not-appear). |
 | `App installed` | Coverage exists, but no covered repos are synced into Projects yet |
 | `Ready` | App coverage is active and covered repos are already synced |
@@ -107,8 +107,8 @@ Mogplex does not only rely on the install callback.
 Each time you open **Settings → Account**, Mogplex looks for installations on
 your own account and on your GitHub orgs, and links the ones you own. Orgs that
 restrict third-party OAuth apps are not visible to discovery. A GitHub webhook
-can also link an installation when you install the App or add repositories to
-it. See
+can also link an installation when you install the App or, as the account or
+org owner, add repositories to it. See
 [How an installation gets linked](/web/installations#how-an-installation-gets-linked).
 
 That is why these pages can sometimes "heal" after an install finishes in
@@ -137,7 +137,8 @@ If the question is about routing, coverage is the thing that matters.
 ## Good troubleshooting order
 
 1. Check [Settings](/web/settings) and read the current GitHub status label
-2. Confirm the expected owner or org appears in [Installations](/web/installations)
+2. Confirm the expected owner or org appears under **Settings → Account** (see
+   [Installations](/web/installations))
 3. Check that the repo is listed in [Projects](/web/spaces), then use
    [Repo-level coverage state](#repo-level-coverage-state) to read what the
    list tells you

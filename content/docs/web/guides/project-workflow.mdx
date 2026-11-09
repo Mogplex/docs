@@ -37,6 +37,9 @@ differently:
 | App installed, no synced repos yet | Installation coverage exists | Repos will not show up in Projects until they are synced or imported |
 | App installed with synced repos | Full GitHub-backed setup | N/A |
 
+In a self-hosted deployment without a GitHub App, `OAuth only` still lists and
+imports repos through OAuth. Those repos cannot start App-backed work.
+
 If you only remember one rule, use this one:
 
 - GitHub sign-in tells Mogplex who you are
@@ -91,7 +94,7 @@ Two practical nuances matter here:
 - Repo import needs a linked installation. GitHub sign-in alone does not
   import repos.
 - Once installation-backed sync is active, Projects lists only repos covered by
-  a linked installation, which hides stale OAuth-only rows.
+  a linked installation, which hides stale `Synced only` rows.
 
 ## 5. Confirm managed sandbox access if you plan to launch workspaces
 
