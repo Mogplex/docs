@@ -14,28 +14,25 @@ That means sync has two jobs at once:
 
 ## Installation-backed sync
 
-When GitHub App configuration is available, Mogplex prefers installation-scoped
-repo sync.
+When GitHub App configuration is available, Mogplex syncs repos only from the
+installations linked to you. GitHub sign-in does not add repos to the
+inventory.
 
-That matters because installation-backed sync gives Mogplex a real
-`github_installation_id` for the repo instead of just an OAuth-discovered repo
-record.
+Installation-backed sync gives Mogplex a real `github_installation_id` for each
+repo. That id is the source of truth for repo access and automation routing.
 
-In practice, that means covered repos become the preferred source of truth for
-automation routing.
-
-## OAuth sync vs installation sync
+## Sync paths
 
 These paths look similar in the UI, but they behave differently:
 
 | Sync path | What it does | What it avoids doing |
 | --- | --- | --- |
-| OAuth-only sync | Imports repos Mogplex can discover through the connected GitHub user | Does not overwrite an existing App installation id on a repo |
+| OAuth-only sync | Self-hosted deployments without a GitHub App only. Imports repos the connected GitHub user can access | Does not overwrite an existing App installation id on a repo |
 | Installation sync | Imports the repos GitHub says belong to a specific App installation and records that installation id | Does not guess across multiple installations |
 | Webhook reconciliation | Reacts to install, uninstall, repo add/remove, rename, transfer, and delete events | Does not rely on manual resync to stay current |
 
-That separation is deliberate. An OAuth import is useful for visibility, but it
-is not allowed to silently clobber App-backed routing state.
+That separation is deliberate. An OAuth import is not allowed to silently
+clobber App-backed routing state.
 
 ## What Mogplex updates and what it preserves
 
@@ -56,8 +53,15 @@ structure or installation coverage.
 Older OAuth-only repo rows can linger after a user moves to installation-backed
 GitHub access.
 
-When installation-backed sync is active, Mogplex prefers covered repos in
-Projects so stale OAuth-only rows do not crowd the active list.
+Once an installation is linked to you, the repo inventory includes only repos
+the linked installations currently grant. Repos left over from an earlier OAuth
+sync, or transferred out of an installation, are excluded. Their stored
+workspaces, drafts, and history are kept. An installation with no repos never
+brings back the old OAuth-only rows.
+
+Team inventory works the same way. Each team-shared repo is checked against the
+installation of the teammate who shared it. Team members use those repos
+without linking their own installation.
 
 ## Metadata refresh
 
@@ -72,6 +76,8 @@ underlying row started incomplete.
 
 When installation state changes from GitHub webhooks, Mogplex can:
 
+- link the installation to the Mogplex user who made the change, if that user
+  owns the account
 - upsert installation rows
 - resync repos for affected users
 - add installation coverage to newly added repos
@@ -87,6 +93,12 @@ The important webhook-backed update paths are:
   and suspend
 - `installation_repositories` events when repos are added to or removed from an
   installation
+
+Only `installation` events for `created`, `new_permissions_accepted`, and
+`unsuspend`, and `installation_repositories` events for `added`, link an
+installation. A repository admin who adds one repo to an installation is not
+linked to it. See
+[How an installation gets linked](/web/installations#how-an-installation-gets-linked).
 - `repository` events such as create, rename, transfer, visibility changes, and
   delete
 

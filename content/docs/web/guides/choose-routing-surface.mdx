@@ -17,8 +17,7 @@ Answer these questions first:
 
 1. is the source of truth a GitHub App installation event, one repo, or a
    workflow graph?
-2. does the repo owner already have GitHub App coverage, or is it only synced
-   through OAuth?
+2. is the repo owner's GitHub App installation linked to you yet?
 3. do you need draft and publish control, or should the route be live as soon
    as it is created?
 4. is this standing responsibility for one repo, or policy for an installation?
@@ -49,8 +48,8 @@ Use Triggers when you want the smallest routing surface that still works.
 Two prerequisite details matter:
 
 - Triggers are installation-scoped, so GitHub App coverage is required.
-- Seeing a repo in [Projects](/web/spaces) is not enough if that repo is only
-  synced through OAuth.
+- GitHub sign-in alone is not enough. The installation for the repo owner must
+  be linked to you.
 
 If the trigger form has no usable installations, stop and fix App coverage
 before debugging the agent.

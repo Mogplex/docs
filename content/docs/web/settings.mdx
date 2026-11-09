@@ -57,8 +57,8 @@ If the question is “what should run for this repo?”, use
 For a new account, the most reliable order is:
 
 1. connect GitHub
-2. install the Mogplex GitHub App for the personal account or orgs that own the
-   repos you want to use
+2. install the Mogplex GitHub App on your personal account, or on an org where
+   you are an org owner, so the installation is linked to you
 3. confirm the account plan includes the model and sandbox access you need
 4. add shared connections or MCP servers after the account basics are working
 5. generate CLI or API access tokens only when the CLI or scripts need to
@@ -96,13 +96,14 @@ The **Account** page shows:
 
 Two distinctions matter here:
 
-- **GitHub OAuth** is about account identity and repo discovery
-- **GitHub App coverage** is what makes repos triggerable for reviews,
-  automations, and webhook-backed routing
+- **GitHub sign-in** identifies you and reads your org memberships. It does not
+  grant repository access.
+- **A linked GitHub App installation** gives you its repositories and makes
+  them triggerable for reviews, automations, and webhook-backed routing.
 
-If a repo shows up in [Projects](/web/spaces) but still cannot participate in
-[Triggers](/web/triggers) or automation, the usual cause is missing App
-coverage for that owner.
+You can link an installation on your personal account or on an org where you
+are an org owner. If an org you belong to is missing, see
+[An org you belong to does not appear](/web/installations#an-org-you-belong-to-does-not-appear).
 
 ## Run checks
 
@@ -358,8 +359,8 @@ models, and repo-level exclusions.
 
 ## Fast troubleshooting map
 
-- **Triggers page is empty**: GitHub OAuth may be connected, but App coverage is
-  missing for the repo owner.
+- **Triggers page is empty**: GitHub may be connected, but no installation is
+  linked to you for the repo owner.
 - **The CLI signs in but no shared models or MCP entries appear**: the Mogplex
   account exists, but the hosted account may still lack model access or shared
   connection setup.

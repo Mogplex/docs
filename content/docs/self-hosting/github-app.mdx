@@ -13,7 +13,7 @@ GitHub has two separate jobs in Mogplex. Configure both:
 | Piece | What it unlocks | Variables |
 | --- | --- | --- |
 | GitHub App | Installation-backed repo access, webhooks, check runs, PR reviews, triggers, and automations | `GITHUB_APP_ID`, `GITHUB_APP_NAME`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_WEBHOOK_SECRET`, and optionally `GITHUB_APP_CLIENT_ID` and `GITHUB_APP_CLIENT_SECRET` |
-| GitHub OAuth app | Repository listing and import, and reauthorization when a token needs new scopes | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
+| GitHub OAuth app | User identity and org membership, used to find and link installations, and reauthorization when a token needs new scopes. Without a GitHub App, it also lists and imports repositories | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
 
 GitHub *sign-in* (`AUTH_GITHUB_*`) is a third, identity-only setting. See
 [Database and auth](/self-hosting/database-and-auth#sign-in-providers).
@@ -155,15 +155,17 @@ Open **Developer settings → OAuth Apps → New OAuth App**.
 | Homepage URL | `https://<domain>` |
 | Authorization callback URL | `https://<domain>/api/auth/github/callback` |
 
-Mogplex requests the `repo`, `read:org`, `read:user`, and `user:email` scopes.
-Store the credentials:
+With a GitHub App configured, Mogplex requests the `read:org`, `read:user`, and
+`user:email` scopes. Repository access comes only from App installations. In a
+deployment without a GitHub App, Mogplex also requests `repo` so it can list and
+import repositories. Store the credentials:
 
 ```bash
 GITHUB_CLIENT_ID=...
 GITHUB_CLIENT_SECRET=...
 ```
 
-<Callout title="One OAuth app for sign-in and repo access">
+<Callout title="One OAuth app for sign-in and the GitHub connection">
   GitHub accepts any redirect path under an OAuth app's callback URL. If you set
   the callback URL to `https://<domain>/api/auth`, one OAuth app serves both
   `/api/auth/github/callback` and GitHub sign-in at
@@ -174,8 +176,12 @@ GITHUB_CLIENT_SECRET=...
 ## 4. Install and verify
 
 1. Redeploy so the app reads the new variables.
-2. Sign in, open **Settings → Account**, and connect GitHub. This installs the
-   App on the accounts or organizations that own your repositories.
+2. Sign in, open **Settings → Account**, and select **Install GitHub App**.
+   Install the App on your personal account, or on an organization where you
+   are an owner. Mogplex links the installation when GitHub returns you to the
+   deployment. Organization members who are not owners cannot link the org
+   installation. See
+   [Who can link an installation](/web/installations#who-can-link-an-installation).
 3. Open [Installations](/web/installations) and confirm coverage. Then sync
    repositories in **Settings → Repositories** (see [Projects](/web/spaces)).
 4. In the App's **Advanced → Recent deliveries**, confirm that deliveries return
@@ -187,7 +193,8 @@ GITHUB_CLIENT_SECRET=...
 | Symptom | Check |
 | --- | --- |
 | **Connect GitHub** opens an OAuth screen instead of the App install | One of `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, or `GITHUB_APP_NAME` is missing. |
-| Repos are listed but triggers never fire | The App is not installed on that owner, or the webhook URL points somewhere else. |
+| Repos are listed but triggers never fire | The webhook URL points somewhere else, or webhook deliveries fail. Check **Advanced → Recent deliveries**. |
+| An organization does not appear after install | The installation is not linked. An organization owner installs or configures the App so the callback links it. See [An org you belong to does not appear](/web/installations#an-org-you-belong-to-does-not-appear). |
 | `invalid_state` after the GitHub redirect | The callback reached a different domain than the one that started the flow. Make `NEXT_PUBLIC_APP_URL` match the public URL. |
 | New permissions have no effect | Each installation must accept the new permissions on GitHub. For repository creation, see [Repository creation failures](#repository-creation-failures). |
 | Creating a repository in an organization fails with "cannot create repositories yet" | GitHub returned `Resource not accessible by integration`. See [Repository creation failures](#repository-creation-failures). |
