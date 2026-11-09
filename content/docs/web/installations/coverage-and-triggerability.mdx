@@ -13,8 +13,9 @@ Those are related, but they are not the same thing.
 
 ## Sign-in is not enough
 
-GitHub sign-in (GitHub OAuth) identifies you and reads your org memberships. It
-does not give Mogplex access to repositories.
+The GitHub connection (GitHub OAuth) identifies your GitHub account and reads
+your org memberships. It does not give Mogplex access to repositories.
+Signing in to Mogplex with GitHub is a separate step that only identifies you.
 
 Repository access and webhook-backed routing both come from a GitHub App
 installation linked to you. Until one is linked, you can use only repositories
@@ -69,8 +70,10 @@ Mogplex tracks each repo's coverage as one of these states:
 Projects does not show these labels. It uses them to decide what to list. Once
 an installation is linked to you, Projects lists only repos that have an
 installation id, whether it comes from your own installation or from the
-teammate who shared the repo. Repos without one stay out of the list, unless
-none of your repos has one. If a repo you expect is missing, add it to the
+teammate who shared the repo. Repos without one stay out of the list.
+If none of your repos has an installation id yet, for example before the first
+sync after an install, Projects shows all your repos so the list is not empty.
+If a repo you expect is missing, add it to the
 installation on GitHub, or install the App on the account that owns it.
 
 While no installation is linked to you, Projects lists every repo you can use,

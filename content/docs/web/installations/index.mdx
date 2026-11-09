@@ -10,11 +10,12 @@ docs section describes the GitHub App installation state surfaced in
 [Settings](/web/settings) and consumed by [Projects](/web/spaces),
 [Triggers](/web/triggers), and [Automations](/web/automations).
 
-## Sign-in and installations do different jobs
+## The GitHub connection and installations do different jobs
 
-- **GitHub sign-in** (GitHub OAuth) identifies you and reads your org
-  memberships. It never grants repository access when Mogplex uses a GitHub
-  App.
+- **The GitHub connection** (GitHub OAuth, made when you choose **Connect
+  GitHub** or **Install GitHub App**) identifies your GitHub account and reads
+  your org memberships. It never grants repository access when Mogplex uses a
+  GitHub App. Signing in to Mogplex with GitHub is a separate step that only identifies you.
 - **A linked GitHub App installation** gives you its repositories and sends the
   webhooks that start work for the installed account or org.
 
@@ -48,6 +49,12 @@ owners do not link the org installation. They use team-shared repositories:
 repositories that a teammate with the linked installation has shared to the
 Mogplex team. Joining a team does not add your teammates' personal repositories
 to it.
+
+Team members can work on a team-shared repository in Projects and agent runs.
+[Triggers](/web/triggers) and [Automations](/web/automations) are different:
+each one belongs to an installation linked to the person who creates it. To
+add a trigger or an automation for an org's repositories, ask an org owner who
+has linked the org installation to create it.
 
 ## How an installation gets linked
 
