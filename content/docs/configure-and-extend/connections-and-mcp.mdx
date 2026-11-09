@@ -139,6 +139,31 @@ Manual auth modes include none, API key, bearer token, basic auth, and OAuth.
 Connection credentials are stored server-side and resolved only when the
 connection is tested, listed for CLI sync, or used by a run.
 
+### Sign in to an MCP server through the browser
+
+Choose **OAuth (browser sign-in)** when you add an MCP server that signs users
+in with OAuth. Enter only the server's MCP URL. After you select **Add and sign
+in**, Mogplex sends you to the server's sign-in page and returns you to
+Connections when you approve access.
+
+Mogplex follows the MCP authorization spec, so you do not need to register an
+app with the provider first:
+
+- Mogplex reads the server's protected-resource metadata to find its
+  authorization server.
+- Mogplex registers itself as a client with that server.
+- Every sign-in uses PKCE, and the token is issued for that MCP server only.
+
+If the provider gave you a client ID or fixed endpoints, you can enter them from
+the connections pane instead. Mogplex refreshes the token when it expires. If
+the provider revokes access, select **Reconnect** to sign in again.
+
+The Mogplex CLI uses the connection after you sign in on the web. See
+[CLI sync](#cli-sync). The CLI cannot yet start this sign-in by itself.
+
+OAuth for a REST API connection still needs the client ID, client secret,
+authorize URL, and token URL from the provider.
+
 ## Quick-add presets
 
 Connections includes MCP presets for common tool providers:
@@ -267,13 +292,12 @@ connections.
 Read [Connection Scope and Overrides](/web/guides/connection-scope-and-overrides)
 for the full operating model.
 
-## MCP limits
+## Keep the tool surface focused
 
-Mogplex caps enabled MCP server connections from **Integrations** at five per resolved scope.
-The **MCP Servers** catalog has no server-count cap.
-
-The cap protects runs from receiving an oversized or noisy tool surface. If a
-repo reaches the cap, decide whether to:
+Mogplex does not limit how many MCP servers you connect. Every enabled server
+in a repo's resolved set loads into runs for that repo, so each extra server
+adds tools that the agent must choose from. If a repo loads tools that it does
+not need:
 
 - disable a connection
 - exclude a global MCP from that repo
@@ -301,6 +325,9 @@ The CLI stores the fetched catalog in:
 On startup, the CLI can use the remote list, the cache, or no cloud MCP list if
 there is no token and no cache. A network or auth failure can fall back to the
 cache so existing local work is not blocked by a transient catalog fetch issue.
+
+The catalog includes OAuth connections that you signed in to on the web.
+Mogplex refreshes their tokens, so the CLI does not need its own sign-in.
 
 Use `/mcp` in the CLI to inspect MCP state during a session.
 
